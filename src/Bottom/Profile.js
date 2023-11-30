@@ -35,7 +35,22 @@ export default function Profile() {
           alignSelf: "center",
           height: 50,
           borderBottomWidth: 0.3,
+          borderBottomColor: "#8e8e8e",
           marginTop: 20,
+          justifyContent: "center",
+        }}
+        onPress={() => {
+          navigation.navigate("PersonalInformation");
+        }}
+      >
+        <Text>Personal Information</Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={{
+          width: "90%",
+          alignSelf: "center",
+          height: 50,
+          borderBottomWidth: 0.3,
           borderBottomColor: "#8e8e8e",
           justifyContent: "center",
         }}
@@ -56,18 +71,6 @@ export default function Profile() {
         }}
       >
         <Text>My Order</Text>
-      </TouchableOpacity>
-      <TouchableOpacity
-        style={{
-          width: "90%",
-          alignSelf: "center",
-          height: 50,
-          borderBottomWidth: 0.3,
-          borderBottomColor: "#8e8e8e",
-          justifyContent: "center",
-        }}
-      >
-        <Text>My Offers</Text>
       </TouchableOpacity>
     </View>
   );

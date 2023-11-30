@@ -93,7 +93,7 @@ export default function AddAddress() {
         onChangeText={(txt) => setCity(txt)}
       />
       <CommonButton
-        title={"Open Map"}
+        title={"Save"}
         bgColor={"#000"}
         textColor={"#fff"}
         onPress={() => handleSaveAddress()}

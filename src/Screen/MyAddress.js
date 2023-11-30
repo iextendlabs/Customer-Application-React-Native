@@ -30,6 +30,7 @@ const MyAddress = () => {
         <FlatList
           data={addressData}
           renderItem={({ item, index }) => {
+            console.log(index);
             return (
               <View
                 style={{

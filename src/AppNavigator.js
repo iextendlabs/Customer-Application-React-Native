@@ -14,6 +14,7 @@ import Wishlist from "./Bottom/Wishlist";
 import MyAddress from "./Screen/MyAddress";
 import AddAddress from "./Screen/AddAddress";
 import Checkout from "./Screen/Checkout";
+import PersonalInformation from "./Screen/PersonalInformation";
 const Stack = createStackNavigator();
 
 export default function AppNavigator() {
@@ -78,6 +79,11 @@ export default function AppNavigator() {
         <Stack.Screen
           name="Checkout"
           component={Checkout}
+        />
+        <Stack.Screen
+          options={{ title: 'Personal Information' }}
+          name="PersonalInformation"
+          component={PersonalInformation}
         />
       </Stack.Navigator>
     </NavigationContainer>

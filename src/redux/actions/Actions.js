@@ -1,8 +1,10 @@
 import {
   ADD_ADDRESS,
+  ADD_PERSONAL_INFORMATION,
   ADD_TO_CART,
   ADD_TO_WISHLIST,
   DELETE_ADDRESS,
+  DELETE_PERSONAL_INFORMATION,
   REMOVE_FROM_CART,
   REMOVE_FROM_WISHLIST,
 } from "../ActionTypes";
@@ -34,5 +36,15 @@ export const addAddress = (data) => ({
 
 export const deleteAddress = (index) => ({
   type: DELETE_ADDRESS,
+  payload: index,
+});
+
+export const addPersonalInformation = (data) => ({
+  type: ADD_PERSONAL_INFORMATION,
+  payload: data,
+});
+
+export const deletePersonalInformation = (index) => ({
+  type: DELETE_PERSONAL_INFORMATION,
   payload: index,
 });
