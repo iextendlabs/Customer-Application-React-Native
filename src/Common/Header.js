@@ -1,7 +1,7 @@
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
 import React from "react";
 
-export default function Header({title}) {
+export default function Header({ title, onPress, isProfile }) {
   return (
     <View
       style={{
@@ -25,6 +25,18 @@ export default function Header({title}) {
       >
         {title}
       </Text>
+      {isProfile && (
+        <TouchableOpacity
+          onPress={() => {
+            onPress();
+          }}
+        >
+          <Image
+            source={require("../images/logout.png")}
+            style={{ width: 24, height: 24, marginRight: 20 }}
+          />
+        </TouchableOpacity>
+      )}
     </View>
   );
 }

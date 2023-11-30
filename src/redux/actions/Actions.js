@@ -3,6 +3,7 @@ import {
   ADD_PERSONAL_INFORMATION,
   ADD_TO_CART,
   ADD_TO_WISHLIST,
+  CLEAR_CART,
   DELETE_ADDRESS,
   DELETE_PERSONAL_INFORMATION,
   REMOVE_FROM_CART,
@@ -17,6 +18,10 @@ export const addItemToCart = (data) => ({
 export const removeFromCart = (index) => ({
   type: REMOVE_FROM_CART,
   payload: index,
+});
+
+export const clearCart = () => ({
+  type: CLEAR_CART
 });
 
 export const addItemToWishlist = (data) => ({

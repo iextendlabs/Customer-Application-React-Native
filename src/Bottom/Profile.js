@@ -16,9 +16,30 @@ export default function Profile() {
     setName(await AsyncStorage.getItem("@user_name"));
     setEmail(await AsyncStorage.getItem("@user_email"));
   };
+
+  const logout = async () => {
+    try {
+      await AsyncStorage.removeItem("@user_id");
+      await AsyncStorage.removeItem("@access_token");
+      await AsyncStorage.removeItem("@user_name");
+      await AsyncStorage.removeItem("@user_email");
+      navigation.reset({
+        index: 0,
+        routes: [{ name: "Splash" }],
+      });
+    } catch (error) {
+      console.log("Error occurred during logout:", error);
+    }
+  };
   return (
     <View style={{ flex: 1 }}>
-      <Header title={"Profile"} />
+      <Header
+        title={"Profile"}
+        onPress={() => {
+          logout();
+        }}
+        isProfile={true}
+      />
       <Image
         source={require("../images/profile.png")}
         style={{ width: 80, height: 80, alignSelf: "center", marginTop: 30 }}

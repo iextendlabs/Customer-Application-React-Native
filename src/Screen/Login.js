@@ -3,9 +3,10 @@ import React, { useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import CustomTextInput from "../Common/CustomTextInput";
 import CommonButton from "../Common/CommonButton";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { LoginUrl } from "../Config/Api";
 import axios from "axios";
+import { useEffect } from "react";
 
 const Login = () => {
   const navigation = useNavigation();

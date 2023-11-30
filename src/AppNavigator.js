@@ -15,6 +15,7 @@ import MyAddress from "./Screen/MyAddress";
 import AddAddress from "./Screen/AddAddress";
 import Checkout from "./Screen/Checkout";
 import PersonalInformation from "./Screen/PersonalInformation";
+import OrderSuccess from "./Screen/OrderSuccess";
 const Stack = createStackNavigator();
 
 export default function AppNavigator() {
@@ -67,23 +68,26 @@ export default function AppNavigator() {
           component={Wishlist}
         />
         <Stack.Screen
-          options={{ title: 'My Address' }}
+          options={{ title: "My Address" }}
           name="MyAddress"
           component={MyAddress}
         />
         <Stack.Screen
-          options={{ title: 'Add Address' }}
+          options={{ title: "Add Address" }}
           name="AddAddress"
           component={AddAddress}
         />
+        <Stack.Screen name="Checkout" component={Checkout} />
         <Stack.Screen
-          name="Checkout"
-          component={Checkout}
-        />
-        <Stack.Screen
-          options={{ title: 'Personal Information' }}
+          options={{ title: "Personal Information" }}
           name="PersonalInformation"
           component={PersonalInformation}
+        />
+
+        <Stack.Screen
+          options={{ headerShown: false }}
+          name="OrderSuccess"
+          component={OrderSuccess}
         />
       </Stack.Navigator>
     </NavigationContainer>

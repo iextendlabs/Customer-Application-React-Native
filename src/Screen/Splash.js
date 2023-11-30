@@ -12,13 +12,20 @@ const Splash = () => {
   }, []);
 
   const getData = async () => {
-     const user = await AsyncStorage.getItem("@user_id");
-      if(user === '' || user === null){
-        navigation.navigate('Login');
-      }else{
-        navigation.navigate('Home');
-      }
-  }
+    const user = await AsyncStorage.getItem("@user_id");
+    if (user === '' || user === null) {
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'Login' }],
+      });
+    } else {
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'Home' }],
+      });
+    }
+  };
+  
   return (
     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
       <Image

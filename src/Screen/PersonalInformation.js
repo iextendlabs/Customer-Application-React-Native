@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Text, View, FlatList } from "react-native";
+import { Text, View, TouchableOpacity, Image, StyleSheet } from "react-native";
 import CustomTextInput from "../Common/CustomTextInput";
 import CommonButton from "../Common/CommonButton";
 import { useDispatch, useSelector } from "react-redux";
@@ -17,6 +17,7 @@ export default function PersonalInformation() {
   const [email, setEmail] = useState("");
   const [number, setNumber] = useState("");
   const [whatsapp, setWhatsapp] = useState("");
+  const [selectedGender, setSelectedGender] = useState("");
   const [error, setError] = useState("");
 
   const personalInformationData = useSelector(
@@ -26,16 +27,18 @@ export default function PersonalInformation() {
   useEffect(() => {
     getData();
   }, []);
+
   useEffect(() => {
-    // If personalInformationData is available, set values from it
     if (personalInformationData && personalInformationData.length > 0) {
       const info = personalInformationData[0];
       setName(info.name || "");
       setEmail(info.email || "");
       setNumber(info.number || "");
       setWhatsapp(info.whatsapp || "");
+      setSelectedGender(info.gender || ""); // Set the selected gender from the saved data
     }
   }, [personalInformationData]);
+
   const getData = async () => {
     try {
       const storedName = await AsyncStorage.getItem("@user_name");
@@ -63,8 +66,14 @@ export default function PersonalInformation() {
       name.trim() !== "" &&
       email.trim() !== "" &&
       number.trim() !== "" &&
-      whatsapp.trim() !== ""
+      whatsapp.trim() !== "" &&
+      selectedGender.trim() !== ""
     ) {
+
+      if(selectedGender.trim() == "Male"){
+        setError("Sorry, No Male Services Listed in Our App.");
+        return;
+      }
       if (!isValidEmail(email)) {
         setError("Enter a valid email address.");
         return;
@@ -75,6 +84,7 @@ export default function PersonalInformation() {
         email: email,
         number: number,
         whatsapp: whatsapp,
+        gender: selectedGender,
       };
 
       if (personalInformationData && personalInformationData.length > 0) {
@@ -89,6 +99,7 @@ export default function PersonalInformation() {
       setError("Fill up all fields.");
     }
   };
+
   return (
     <View style={{ flex: 1 }}>
       {error !== "" && (
@@ -123,6 +134,35 @@ export default function PersonalInformation() {
         onChangeText={(txt) => setWhatsapp(txt)}
         keyboardType="numeric"
       />
+      <View style={{ flexDirection: "row", marginLeft: 40, marginTop: 30 }}>
+        <Text style={{ marginRight: 20, marginTop: 5 }}>Gender:</Text>
+        <TouchableOpacity
+          onPress={() => setSelectedGender("Male")}
+          style={[
+            styles.genderOption,
+            selectedGender === "Male" && styles.selectedGender,
+          ]}
+        >
+          <Image
+            source={require("../images/male.png")}
+            style={{ width: 20, height: 20 }}
+          />
+          <Text style={{ marginLeft: 5 }}>Male</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => setSelectedGender("Female")}
+          style={[
+            styles.genderOption,
+            selectedGender === "Female" && styles.selectedGender,
+          ]}
+        >
+          <Image
+            source={require("../images/female.png")}
+            style={{ width: 20, height: 20 }}
+          />
+          <Text style={{ marginLeft: 5 }}>Female</Text>
+        </TouchableOpacity>
+      </View>
       <CommonButton
         title={personalInformationData.length > 0 ? "Update" : "Save"}
         bgColor="#000"
@@ -132,3 +172,15 @@ export default function PersonalInformation() {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  genderOption: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  selectedGender: {
+    backgroundColor: "#ADD8E6", // Change this color to your highlight color
+    borderRadius: 5,
+    padding: 5,
+  },
+});
