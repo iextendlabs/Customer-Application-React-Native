@@ -14,12 +14,13 @@ import { BaseUrl, availableTimeSlotUrl } from "../Config/Api";
 import { useNavigation } from "@react-navigation/native";
 import { Calendar } from "react-native-calendars";
 import axios from "axios";
+import { Picker } from "@react-native-picker/picker";
 
 export default function Checkout() {
   const navigation = useNavigation();
   const cartData = useSelector((state) => state.cart);
   const addressData = useSelector((state) => state.address);
-  const [selectedAddress, setSelectedAddress] = useState("");
+  const [selectedAddress, setSelectedAddress] = useState(null);
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedArea, setSelectedArea] = useState(null);
   const [selectedStaff, setSelectedStaff] = useState(null);
@@ -27,8 +28,9 @@ export default function Checkout() {
   const [availableStaff, setAvailableStaff] = useState([]);
   const [availableSlot, setAvailableSlot] = useState([]);
   const [selectedSlot, setSelectedSlot] = useState(null);
+  const [selectedSlotValue, setSelectedSlotValue] = useState(null);
   const [selectedSlotId, setSelectedSlotId] = useState(null);
-  const [error, setError] = useState("");
+  const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
   const getTotal = () => {
@@ -52,9 +54,9 @@ export default function Checkout() {
 
   const fetchAvailableTimeSlots = async (date, area) => {
     setLoading(true);
-    setError("");
-    setSelectedStaff("");
-    setSelectedStaffId("");
+    setError(null);
+    setSelectedStaff(null);
+    setSelectedStaffId(null);
     setAvailableStaff([]);
     setAvailableSlot([]);
     try {
@@ -141,7 +143,7 @@ export default function Checkout() {
           <Text style={{ fontWeight: "800" }}>Total :</Text>
           <Text>AED {getTotal()}</Text>
         </View>
-        {selectedAddress === "" && (
+        {selectedAddress === null && (
           <View>
             <Text
               style={{
@@ -249,11 +251,14 @@ export default function Checkout() {
                     justifyContent: "center",
                   }}
                   onPress={() => {
-                    setSelectedAddress("");
+                    setSelectedAddress(null);
                     setAvailableStaff([]);
                     setAvailableSlot([]);
-                    setSelectedStaff("");
-                    setSelectedStaffId("");
+                    setSelectedStaff(null);
+                    setSelectedStaffId(null);
+                    setSelectedSlot(null);
+                    setSelectedSlotValue(null);
+                    setSelectedSlotId(null);
                   }}
                 >
                   <Text>Change</Text>
@@ -270,7 +275,7 @@ export default function Checkout() {
                 borderColor: "#8e8e8e",
               }}
             >
-              {selectedAddress === ""
+              {selectedAddress === null
                 ? "Note: Please Select Address From the Above List!"
                 : selectedAddress}
             </Text>
@@ -285,8 +290,11 @@ export default function Checkout() {
                   setSelectedDate(null);
                   setAvailableStaff([]);
                   setAvailableSlot([]);
-                  setSelectedStaff("");
-                  setSelectedStaffId("");
+                  setSelectedStaff(null);
+                  setSelectedStaffId(null);
+                  setSelectedSlot(null);
+                  setSelectedSlotValue(null);
+                  setSelectedSlotId(null);
                 }}
               >
                 Date: {selectedDate && selectedDate}
@@ -312,9 +320,12 @@ export default function Checkout() {
                       onPress={() => {
                         setAvailableStaff([]);
                         setAvailableSlot([]);
-                        setSelectedStaff("");
-                        setSelectedStaffId("");
+                        setSelectedStaff(null);
+                        setSelectedStaffId(null);
                         fetchAvailableTimeSlots(selectedDate, selectedArea);
+                        setSelectedSlot(null);
+                        setSelectedSlotValue(null);
+                        setSelectedSlotId(null);
                       }}
                     >
                       Staff: {selectedStaff && selectedStaff}
@@ -389,10 +400,66 @@ export default function Checkout() {
                                     fontSize: 18,
                                     fontWeight: "800",
                                   }}
+                                  onPress={() => {
+                                    setSelectedSlot(null);
+                                    setSelectedSlotValue(null);
+                                    setSelectedSlotId(null);
+                                  }}
                                 >
-                                  Slot:
+                                  Slot: {selectedSlotValue && selectedSlotValue}
                                 </Text>
-                               
+                                {selectedSlot === null && (
+                                  <View style={{
+                                    height: 50,
+                                    width: "80%",
+                                    alignSelf: "center",
+                                    borderWidth: 0.5,
+                                    borderColor: "#8e8e8e",
+                                  }}>
+                                    <Picker
+                                      selectedValue={
+                                        selectedSlot
+                                          ? selectedSlot[0] +
+                                            "," +
+                                            selectedSlot[1]
+                                          : undefined
+                                      }
+                                      onValueChange={(itemValue, itemIndex) => {
+                                        setSelectedSlot(itemValue);
+
+                                        // Add a check to ensure itemValue is defined
+                                        if (itemValue) {
+                                          const [slotId, timeRange] =
+                                            itemValue.split(",");
+                                          setSelectedSlotId(slotId);
+                                          setSelectedSlotValue(timeRange);
+                                        }
+                                      }}
+                                      
+                                    >
+                                      <Picker.Item label="Select Time Slot"/>
+                                      {Object.keys(availableSlot).map(
+                                        (slotIndex) => {
+                                          // Display slots only for the selected staff
+                                          if (slotIndex == selectedStaffId) {
+                                            return availableSlot[slotIndex].map(
+                                              (slot) => (
+                                                <Picker.Item
+                                                  key={slot[0]}
+                                                  label={slot[1]}
+                                                  value={
+                                                    slot[0] + "," + slot[1]
+                                                  } // Keep the value as a string
+                                                />
+                                              )
+                                            );
+                                          }
+                                          return null;
+                                        }
+                                      )}
+                                    </Picker>
+                                  </View>
+                                )}
                               </View>
                             )}
                           </View>
