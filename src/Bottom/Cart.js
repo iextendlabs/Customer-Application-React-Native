@@ -6,6 +6,7 @@ import { removeFromCart, addItemToWishlist } from "../redux/actions/Actions";
 import Header from "../Common/Header";
 import CommonButton from "../Common/CommonButton";
 import { useNavigation } from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function Cart() {
   const navigation = useNavigation();
@@ -13,6 +14,14 @@ export default function Cart() {
   const cartData = useSelector((state) => state.cart);
   const wishlistData = useSelector((state) => state.wishlist);
 
+  const checkAuthentication = async () => {
+    const user = await AsyncStorage.getItem("@user_id");
+    if (user === '' || user === null) {
+      navigation.navigate("Login");
+    } else {
+      navigation.navigate("Checkout");
+    }
+  };
   const onAddToWishlist = (item) => {
     const isItemInWishlist = wishlistData.some(
       (wishlistItem) => wishlistItem.id === item.id
@@ -67,7 +76,7 @@ export default function Cart() {
             bgColor={"green"}
             textColor={"#fff"}
             onPress={() => {
-              navigation.navigate("Checkout");
+              checkAuthentication();
             }}
           />
         </View>

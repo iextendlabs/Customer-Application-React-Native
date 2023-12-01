@@ -1,4 +1,4 @@
-import { View, Text, Image, ScrollView, ActivityIndicator } from "react-native";
+import { View, Text, Image, ActivityIndicator } from "react-native";
 import React, { useState } from "react";
 import CustomTextInput from "../Common/CustomTextInput";
 import CommonButton from "../Common/CommonButton";
@@ -68,7 +68,6 @@ const Signup = () => {
       });
 
       if (response.status === 200) {
-
         const userId = response.data.user.id;
         const userName = response.data.user.name;
         const userEmail = response.data.user.email;
@@ -82,142 +81,140 @@ const Signup = () => {
         const headers = {
           Authorization: `Bearer ${accessToken}`,
         };
-        navigation.navigate('Home');
+        navigation.navigate("Home");
       } else if (response.status === 201) {
         setError(response.data.errors.email);
       } else {
         setError("Signup failed. Please try again.");
       }
     } catch (error) {
-    //   setError(error);
+      //   setError(error);
     }
     setLoading(false);
   };
 
   return (
-    <ScrollView style={{ flex: "1" }} showsVerticalScrollIndicator={false}>
-      <View style={{ flex: 1 }}>
-        {loading && (
-          <View
-            style={{
-              justifyContent: "center",
-              alignItems: "center",
-              marginTop: 30,
-            }}
-          >
-            <ActivityIndicator size="large" color="#0000ff" />
-          </View>
-        )}
-        <Image
-          source={require("../images/logo.png")}
+    <View style={{ flex: 1 }}>
+      {loading && (
+        <View
           style={{
-            width: 60,
-            height: 60,
-            alignSelf: "center",
-            marginTop: 40,
-          }}
-        />
-        <Text
-          style={{
-            marginTop: 20,
-            alignSelf: "center",
-            fontSize: 24,
-            fontWeight: 600,
-            color: "#000",
+            justifyContent: "center",
+            alignItems: "center",
+            marginTop: 30,
           }}
         >
-          Create New Account
+          <ActivityIndicator size="large" color="#0000ff" />
+        </View>
+      )}
+      <Image
+        source={require("../images/logo.png")}
+        style={{
+          width: 60,
+          height: 60,
+          alignSelf: "center",
+          marginTop: 40,
+        }}
+      />
+      <Text
+        style={{
+          marginTop: 20,
+          alignSelf: "center",
+          fontSize: 24,
+          fontWeight: 600,
+          color: "#000",
+        }}
+      >
+        Create New Account
+      </Text>
+      {error && (
+        <Text style={{ marginTop: 10, marginLeft: 40, color: "red" }}>
+          {error}
         </Text>
-        {error && (
-          <Text style={{ marginTop: 10, marginLeft: 40, color: "red" }}>
-            {error}
-          </Text>
-        )}
-        <CustomTextInput
-          placeholder={"Enter Name"}
-          icon={require("../images/user.png")}
-          value={name}
-          onChangeText={(txt) => {
-            setName(txt);
-          }}
-        />
-        {badName === true && (
-          <Text style={{ marginTop: 10, marginLeft: 40, color: "red" }}>
-            Please Enter Name
-          </Text>
-        )}
-        <CustomTextInput
-          placeholder={"Enter Email"}
-          icon={require("../images/mail.png")}
-          value={email}
-          onChangeText={(txt) => {
-            setEmail(txt);
-          }}
-        />
-        {badEmail === true && (
-          <Text style={{ marginTop: 10, marginLeft: 40, color: "red" }}>
-            Please Enter Email
-          </Text>
-        )}
-        <CustomTextInput
-          placeholder={"Enter Password"}
-          icon={require("../images/lock.png")}
-          type={"password"}
-          value={password}
-          onChangeText={(txt) => {
-            setPassword(txt);
-          }}
-        />
-        {badPassword === true && (
-          <Text style={{ marginTop: 10, marginLeft: 40, color: "red" }}>
-            Please Enter Password
-          </Text>
-        )}
-        <CustomTextInput
-          placeholder={"Enter Confirm Password"}
-          icon={require("../images/lock.png")}
-          type={"password"}
-          value={confirmPassword}
-          onChangeText={(txt) => {
-            setConfirmPassword(txt);
-          }}
-        />
-        {badConfirmPassword === true && (
-          <Text style={{ marginTop: 10, marginLeft: 40, color: "red" }}>
-            Please Enter Confirm Password
-          </Text>
-        )}
+      )}
+      <CustomTextInput
+        placeholder={"Enter Name"}
+        icon={require("../images/user.png")}
+        value={name}
+        onChangeText={(txt) => {
+          setName(txt);
+        }}
+      />
+      {badName === true && (
+        <Text style={{ marginTop: 10, marginLeft: 40, color: "red" }}>
+          Please Enter Name
+        </Text>
+      )}
+      <CustomTextInput
+        placeholder={"Enter Email"}
+        icon={require("../images/mail.png")}
+        value={email}
+        onChangeText={(txt) => {
+          setEmail(txt);
+        }}
+      />
+      {badEmail === true && (
+        <Text style={{ marginTop: 10, marginLeft: 40, color: "red" }}>
+          Please Enter Email
+        </Text>
+      )}
+      <CustomTextInput
+        placeholder={"Enter Password"}
+        icon={require("../images/lock.png")}
+        type={"password"}
+        value={password}
+        onChangeText={(txt) => {
+          setPassword(txt);
+        }}
+      />
+      {badPassword === true && (
+        <Text style={{ marginTop: 10, marginLeft: 40, color: "red" }}>
+          Please Enter Password
+        </Text>
+      )}
+      <CustomTextInput
+        placeholder={"Enter Confirm Password"}
+        icon={require("../images/lock.png")}
+        type={"password"}
+        value={confirmPassword}
+        onChangeText={(txt) => {
+          setConfirmPassword(txt);
+        }}
+      />
+      {badConfirmPassword === true && (
+        <Text style={{ marginTop: 10, marginLeft: 40, color: "red" }}>
+          Please Enter Confirm Password
+        </Text>
+      )}
 
-        {notValidPassword === true && (
-          <Text style={{ marginTop: 10, marginLeft: 40, color: "red" }}>
-            The password and confirm-password must match.
-          </Text>
-        )}
-        <CommonButton
-          title={"Signup"}
-          bgColor={"#000"}
-          textColor={"#fff"}
-          onPress={() => {
-            handleSignup();
-          }}
-        />
-        <Text
-          style={{
-            fontSize: 18,
-            fontWeight: "600",
-            alignSelf: "center",
-            marginTop: 20,
-            marginBottom: 40,
-            textDecorationLine: "underline",
-          }}
-          onPress={() => {
-            navigation.goBack();
-          }}
-        >
-          Already Have Account?
+      {notValidPassword === true && (
+        <Text style={{ marginTop: 10, marginLeft: 40, color: "red" }}>
+          The password and confirm-password must match.
         </Text>
-      </View>
-    </ScrollView>
+      )}
+      <CommonButton
+        title={"Signup"}
+        bgColor={"#000"}
+        textColor={"#fff"}
+        onPress={() => {
+          handleSignup();
+        }}
+      />
+      <Text
+        style={{
+          fontSize: 18,
+          fontWeight: "600",
+          alignSelf: "center",
+          marginTop: 20,
+          marginBottom: 40,
+          textDecorationLine: "underline",
+        }}
+        onPress={() => {
+          navigation.goBack();
+        }}
+      >
+        Already Have Account?
+      </Text>
+    </View>
   );
 };
 

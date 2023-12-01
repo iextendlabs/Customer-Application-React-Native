@@ -56,7 +56,10 @@ const Login = () => {
         const headers = {
           Authorization: `Bearer ${accessToken}`,
         };
-        navigation.navigate('Home');
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'Home' }],
+        });
       } else {
         setError("Login failed. Please try again.");
       }

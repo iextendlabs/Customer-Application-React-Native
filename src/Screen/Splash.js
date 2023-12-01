@@ -1,31 +1,18 @@
 import { View, Text, Image } from "react-native";
 import React, { useEffect } from "react";
 import { useNavigation } from "@react-navigation/native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Splash = () => {
   const navigation = useNavigation();
   useEffect(() => {
     setTimeout(() => {
-      getData();
-    }, 1000);
-  }, []);
-
-  const getData = async () => {
-    const user = await AsyncStorage.getItem("@user_id");
-    if (user === '' || user === null) {
-      navigation.reset({
-        index: 0,
-        routes: [{ name: 'Login' }],
-      });
-    } else {
       navigation.reset({
         index: 0,
         routes: [{ name: 'Home' }],
       });
-    }
-  };
-  
+    }, 1000);
+  }, []);
+
   return (
     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
       <Image

@@ -10,11 +10,17 @@ export default function Profile() {
   const [email, setEmail] = useState();
   const navigation = useNavigation();
   useEffect(() => {
-    getData();
+    checkAuthentication();
   }, []);
-  const getData = async () => {
-    setName(await AsyncStorage.getItem("@user_name"));
-    setEmail(await AsyncStorage.getItem("@user_email"));
+
+  const checkAuthentication = async () => {
+    const user = await AsyncStorage.getItem("@user_id");
+    if (user === "" || user === null) {
+      navigation.navigate("Login");
+    } else {
+      setName(await AsyncStorage.getItem("@user_name"));
+      setEmail(await AsyncStorage.getItem("@user_email"));
+    }
   };
 
   const logout = async () => {

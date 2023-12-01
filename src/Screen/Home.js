@@ -4,7 +4,6 @@ import {
   View,
   TouchableOpacity,
   Image,
-  ScrollView,
 } from "react-native";
 import React, { useState } from "react";
 import Cart from "../Bottom/Cart";
