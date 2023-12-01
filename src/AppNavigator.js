@@ -16,6 +16,7 @@ import AddAddress from "./Screen/AddAddress";
 import Checkout from "./Screen/Checkout";
 import PersonalInformation from "./Screen/PersonalInformation";
 import OrderSuccess from "./Screen/OrderSuccess";
+import MyOrders from "./Screen/MyOrders";
 const Stack = createStackNavigator();
 
 export default function AppNavigator() {
@@ -83,11 +84,15 @@ export default function AppNavigator() {
           name="PersonalInformation"
           component={PersonalInformation}
         />
-
         <Stack.Screen
           options={{ headerShown: false }}
           name="OrderSuccess"
           component={OrderSuccess}
+        />
+        <Stack.Screen
+          options={{ title: "My Orders" }}
+          name="MyOrders"
+          component={MyOrders}
         />
       </Stack.Navigator>
     </NavigationContainer>

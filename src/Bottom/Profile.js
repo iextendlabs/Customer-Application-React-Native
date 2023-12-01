@@ -96,6 +96,9 @@ export default function Profile() {
           borderBottomColor: "#8e8e8e",
           justifyContent: "center",
         }}
+        onPress={() => {
+          navigation.navigate("MyOrders");
+        }}
       >
         <Text>My Order</Text>
       </TouchableOpacity>

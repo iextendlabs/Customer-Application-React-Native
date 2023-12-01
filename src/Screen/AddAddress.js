@@ -1,11 +1,21 @@
-import React, { useState } from "react";
-import { Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import React, { useEffect, useState } from "react";
+import {
+  Modal,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  ActivityIndicator,
+  View,
+} from "react-native";
 import CustomTextInput from "../Common/CustomTextInput";
 import CommonButton from "../Common/CommonButton";
 // import MapView, { Marker } from "react-native-maps";
 import { useDispatch } from "react-redux";
 import { addAddress } from "../redux/actions/Actions";
 import { useNavigation } from "@react-navigation/native";
+import { getStaffZoneUrl } from "../Config/Api";
+import axios from "axios";
+import { Picker } from "@react-native-picker/picker";
 
 export default function AddAddress() {
   const navigation = useNavigation();
@@ -13,13 +23,34 @@ export default function AddAddress() {
   const [building, setBuilding] = useState("Burj Khalifa");
   const [villa, setVilla] = useState("84");
   const [street, setStreet] = useState("Souk Al Bahar Bridge");
-  const [area, setArea] = useState("Downtown Dubai ");
+  const [area, setArea] = useState("");
   const [landmark, setLandmark] = useState("Mazaya Center");
   const [city, setCity] = useState("Dubai");
   const [isMapModalVisible, setMapModalVisible] = useState(false);
   const [selectedLocation, setSelectedLocation] = useState(null);
   const [error, setError] = useState("");
+  const [zones, setZones] = useState("");
+  const [loading, setLoading] = useState(false);
 
+  useEffect(() => {
+    getStaffZone();
+  }, []);
+
+  const getStaffZone = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.get(`${getStaffZoneUrl}`);
+      if (response.status === 200) {
+        let data = response.data;
+        setZones(data.staffZones);
+        setLoading(false);
+      } else {
+        setError("Please try again.");
+      }
+    } catch (error) {
+      setError("An error occurred while fetching data.");
+    }
+  };
   const handleSaveAddress = () => {
     setError("");
     if (
@@ -48,7 +79,19 @@ export default function AddAddress() {
     // Close the map modal
     // setMapModalVisible(false);
   };
-
+  if (loading) {
+    return (
+      <View
+        style={{
+          flex: 1,
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <ActivityIndicator size="large" color="#0000ff" />
+      </View>
+    );
+  }
   return (
     <View style={{ flex: 1 }}>
       {error && (
@@ -75,12 +118,6 @@ export default function AddAddress() {
         onChangeText={(txt) => setStreet(txt)}
       />
       <CustomTextInput
-        placeholder={"Enter Area"}
-        icon={require("../images/area.png")}
-        value={area}
-        onChangeText={(txt) => setArea(txt)}
-      />
-      <CustomTextInput
         placeholder={"Enter Landmark"}
         icon={require("../images/landmark.png")}
         value={landmark}
@@ -92,6 +129,33 @@ export default function AddAddress() {
         value={city}
         onChangeText={(txt) => setCity(txt)}
       />
+      <View
+        style={{
+          height: 50,
+          width: "85%",
+          alignSelf: "center",
+          borderWidth: 0.5,
+          margin: 20,
+          borderColor: "#8e8e8e",
+          borderRadius:10
+        }}
+      >
+        {zones && (
+          <Picker
+          selectedValue={area || ""}
+          onValueChange={(itemValue, itemIndex) => {
+            setArea(itemValue);
+          }}
+        >
+          <Picker.Item label="Select Area" value="" />
+          {zones.map((zone, index) => (
+              <Picker.Item key={index.toString()} label={zone} value={zone}/>
+            ))}
+        </Picker>
+        )}
+        
+      </View>
+
       <CommonButton
         title={"Save"}
         bgColor={"#000"}

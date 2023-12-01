@@ -162,7 +162,10 @@ export default function Checkout() {
 
       if (response.status === 200) {
         dispatch(clearCart());
-        navigation.navigate("OrderSuccess");
+        navigation.reset({
+            index: 0,
+            routes: [{ name: 'OrderSuccess' }],
+          });
       } else if (response.status === 201) {
         setOrderError(response.data.msg);
       } else {

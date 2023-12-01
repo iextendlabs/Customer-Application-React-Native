@@ -10,8 +10,8 @@ import { useEffect } from "react";
 
 const Login = () => {
   const navigation = useNavigation();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("admin@gmail.com");
+  const [password, setPassword] = useState("test");
   const [badEmail, setBadEmail] = useState(false);
   const [badPassword, setBadPassword] = useState(false);
   const [error, setError] = useState("");
