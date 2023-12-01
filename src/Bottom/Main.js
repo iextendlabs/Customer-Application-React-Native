@@ -7,6 +7,7 @@ import {
   FlatList,
   TouchableOpacity,
   ActivityIndicator,
+  ScrollView,
 } from "react-native";
 import axios from "axios";
 import Header from "../Common/Header";
@@ -20,6 +21,7 @@ export default function Main() {
   const [sliderImages, setSliderImages] = useState([]);
   const [categories, setCategories] = useState([]);
   const [services, setServices] = useState([]);
+  const [selectedServices, setSelectedServices] = useState([]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -62,6 +64,7 @@ export default function Main() {
         setSliderImages(data.images);
         setCategories(data.categories);
         setServices(data.services);
+        setSelectedServices(data.services.slice(0, 10));
         setLoading(false);
       } else {
         setError("Please try again.");
@@ -72,94 +75,106 @@ export default function Main() {
     }
   };
 
+  const filterServices = (selectedCategory) => {
+    const filteredServices = services.filter(
+      (service) => parseFloat(service.category_id) == selectedCategory.id
+    );
+    setSelectedServices(filteredServices);
+  };
+  
+  if (loading) {
+    return (
+      <View
+        style={{
+          flex: 1,
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <ActivityIndicator size="large" color="#0000ff" />
+      </View>
+    );
+  }
   return (
     <View style={{ flex: 1 }}>
       <Header title={"Lipslay"} />
-      {loading && (
-        <View
+      <ScrollView>
+        <View>
+          <FlatList
+            data={sliderImages}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            keyExtractor={(item, index) => index.toString()} // Added keyExtractor
+            renderItem={({ item }) => (
+              <Image
+                source={{
+                  uri: BaseUrl + "slider-images/" + item,
+                }}
+                style={{
+                  width: 340,
+                  height: 200,
+                  borderRadius: 10,
+                  alignSelf: "center",
+                  margin: 9,
+                }}
+              />
+            )}
+          />
+        </View>
+        <View style={{ marginTop: 10 }}>
+          <FlatList
+            data={categories}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            keyExtractor={(item, index) => index.toString()} // Added keyExtractor
+            renderItem={({ item }) => {
+              return (
+                <TouchableOpacity
+                  style={{
+                    padding: 10,
+                    borderWidth: 1,
+                    marginLeft: 5,
+                    borderRadius: 10,
+                  }}
+                  onPress={() => {
+                    filterServices(item);
+                  }}
+                >
+                  <Text style={{ color: "#000" }}>{item.title}</Text>
+                </TouchableOpacity>
+              );
+            }}
+          />
+        </View>
+        <Text
           style={{
-            flex: 1,
-            justifyContent: "center",
-            alignItems: "center",
-            marginTop: 20,
+            marginTop: 10,
+            marginLeft: 20,
+            color: "#000",
+            fontSize: 16,
+            fontWeight: "600",
           }}
         >
-          <ActivityIndicator size="large" color="#0000ff" />
+          Products
+        </Text>
+        <View style={{ marginTop: 10, marginBottom: 70 }}>
+          <FlatList
+            data={selectedServices}
+            showsVerticalScrollIndicator={false} // Remove horizontal prop
+            numColumns={2}
+            keyExtractor={(item, index) => index.toString()} // Added keyExtractor
+            renderItem={({ item }) => {
+              return (
+                <ProductItem
+                  item={item}
+                  onAddToCart={onAddToCart}
+                  onAddToWishList={onAddToWishList}
+                />
+              );
+            }}
+          />
         </View>
-      )}
-      <View>
-        <FlatList
-          data={sliderImages}
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          keyExtractor={(item, index) => index.toString()} // Added keyExtractor
-          renderItem={({ item }) => (
-            <Image
-              source={{
-                uri: BaseUrl + "slider-images/" + item,
-              }}
-              style={{
-                width: 400,
-                height: 200,
-                borderRadius: 10,
-                alignSelf: "center",
-                margin: 9,
-              }}
-            />
-          )}
-          numColumns={1}
-        />
-      </View>
-      <View style={{ marginTop: 10 }}>
-        <FlatList
-          data={categories}
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          keyExtractor={(item, index) => index.toString()} // Added keyExtractor
-          renderItem={({ item }) => {
-            return (
-              <TouchableOpacity
-                style={{
-                  padding: 10,
-                  borderWidth: 1,
-                  marginRight: 10,
-                  borderRadius: 10,
-                }}
-              >
-                <Text style={{ color: "#000" }}>{item.title}</Text>
-              </TouchableOpacity>
-            );
-          }}
-        />
-      </View>
-      <Text
-        style={{
-          marginTop: 10,
-          marginLeft: 20,
-          color: "#000",
-          fontSize: 16,
-          fontWeight: "600",
-        }}
-      >
-        Products
-      </Text>
-      <View style={{ marginTop: 10, marginBottom: 70 }}>
-        <FlatList
-          data={services}
-          showsVerticalScrollIndicator={false} // Remove horizontal prop
-          numColumns={2}
-          keyExtractor={(item, index) => index.toString()} // Added keyExtractor
-          renderItem={({ item }) => {
-            return (
-              <ProductItem
-                item={item}
-                onAddToCart={onAddToCart}
-                onAddToWishList={onAddToWishList}
-              />
-            );
-          }}
-        />
-      </View>
+      </ScrollView>
     </View>
   );
 }

@@ -6,12 +6,12 @@ export default function ProductItem({ item, onAddToCart, onAddToWishList }) {
   return (
     <View
       style={{
-        width: 175,
-        height: 175,
+        width: "47%",
+        height: 170,
         borderRadius: 10,
         elevation: 5,
         backgroundColor: "#fff",
-        marginLeft: 10,
+        marginLeft: 7,
         marginBottom: 10,
       }}
     >

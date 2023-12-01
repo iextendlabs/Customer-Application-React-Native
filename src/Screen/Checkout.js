@@ -174,19 +174,6 @@ export default function Checkout() {
     setLoading(false);
   };
 
-  if (loading) {
-    return (
-      <View
-        style={{
-          flex: 1,
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <ActivityIndicator size="large" color="#0000ff" />
-      </View>
-    );
-  }
   const renderServices = () => (
     <View>
       <FlatList
@@ -721,7 +708,19 @@ export default function Checkout() {
       </View>
     </View>
   );
-
+  if (loading) {
+    return (
+      <View
+        style={{
+          flex: 1,
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <ActivityIndicator size="large" color="#0000ff" />
+      </View>
+    );
+  }
   return (
     <ScrollView style={{ flex: 1 }}>
       <View style={{ flex: 1 }}>
