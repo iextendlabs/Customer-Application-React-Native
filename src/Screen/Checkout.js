@@ -130,7 +130,7 @@ export default function Checkout() {
     if (item.staff.charges) {
       staff_charges = parseFloat(item.staff.charges);
     }
-    setAvailableStaff([]);
+    // setAvailableStaff([]);
     setServicesTotal(getServicesTotal());
     setOrderTotal(
       getServicesTotal() +
@@ -163,9 +163,9 @@ export default function Checkout() {
       if (response.status === 200) {
         dispatch(clearCart());
         navigation.reset({
-            index: 0,
-            routes: [{ name: 'OrderSuccess' }],
-          });
+          index: 0,
+          routes: [{ name: "OrderSuccess" }],
+        });
       } else if (response.status === 201) {
         setOrderError(response.data.msg);
       } else {
@@ -541,62 +541,110 @@ export default function Checkout() {
       <FlatList
         data={availableStaff}
         renderItem={({ item, index }) => (
-          <View
-            style={{
-              width: "100%",
-              height: 70,
-              flexDirection: "row",
-              marginTop: 10,
-              justifyContent: "space-between",
-            }}
-          >
-            <View style={{ flexDirection: "row" }}>
-              <Image
-                source={{
-                  uri: `${BaseUrl}staff-images/${item.staff.image}`,
-                }}
-                style={{
-                  width: 70,
-                  height: 70,
-                  marginLeft: 10,
-                }}
-              />
-              <View style={{ padding: 10 }}>
-                <Text
+          <>
+            {selectedStaff ? (
+              item.id === selectedStaffId && (
+                <View
                   style={{
-                    fontSize: 15,
-                    fontWeight: "700",
+                    width: "100%",
+                    height: 70,
+                    flexDirection: "row",
+                    marginTop: 10,
+                    justifyContent: "space-between",
                   }}
                 >
-                  {item.name}
-                </Text>
-                {item.staff.charges && (
-                  <Text
-                    style={{
-                      marginTop: 15,
-                      fontSize: 12,
+                  <View style={{ flexDirection: "row" }}>
+                    <Image
+                      source={{
+                        uri: `${BaseUrl}staff-images/${item.staff.image}`,
+                      }}
+                      style={{
+                        width: 70,
+                        height: 70,
+                        marginLeft: 10,
+                      }}
+                    />
+                    <View style={{ padding: 10 }}>
+                      <Text
+                        style={{
+                          fontSize: 15,
+                          fontWeight: "700",
+                        }}
+                      >
+                        {item.name}
+                      </Text>
+                      {item.staff.charges && (
+                        <Text
+                          style={{
+                            marginTop: 15,
+                            fontSize: 12,
+                          }}
+                        >
+                          Extra Charges: AED {item.staff.charges}
+                        </Text>
+                      )}
+                    </View>
+                  </View>
+                </View>
+              )
+            ) : (
+              <View
+                style={{
+                  width: "100%",
+                  height: 70,
+                  flexDirection: "row",
+                  marginTop: 10,
+                  justifyContent: "space-between",
+                }}
+              >
+                <View style={{ flexDirection: "row" }}>
+                  <Image
+                    source={{
+                      uri: `${BaseUrl}staff-images/${item.staff.image}`,
                     }}
-                  >
-                    Extra Charges: AED
-                    {item.staff.charges}
-                  </Text>
-                )}
+                    style={{
+                      width: 70,
+                      height: 70,
+                      marginLeft: 10,
+                    }}
+                  />
+                  <View style={{ padding: 10 }}>
+                    <Text
+                      style={{
+                        fontSize: 15,
+                        fontWeight: "700",
+                      }}
+                    >
+                      {item.name}
+                    </Text>
+                    {item.staff.charges && (
+                      <Text
+                        style={{
+                          marginTop: 15,
+                          fontSize: 12,
+                        }}
+                      >
+                        Extra Charges: AED {item.staff.charges}
+                      </Text>
+                    )}
+                  </View>
+                </View>
+                <TouchableOpacity
+                  style={{
+                    borderWidth: 0.2,
+                    borderRadius: 4,
+                    padding: 7,
+                    marginRight: 20,
+                    alignSelf: "center",
+                    justifyContent: "center",
+                  }}
+                  onPress={() => selectStaff(item)}
+                >
+                  <Text>Select</Text>
+                </TouchableOpacity>
               </View>
-            </View>
-            <TouchableOpacity
-              style={{
-                borderWidth: 0.2,
-                borderRadius: 4,
-                padding: 7,
-                marginRight: 20,
-                alignSelf: "center",
-                justifyContent: "center",
-              }}
-              onPress={() => selectStaff(item)}
-            >
-              <Text>Select</Text>
-            </TouchableOpacity>
-          </View>
+            )}
+          </>
         )}
       />
     </View>

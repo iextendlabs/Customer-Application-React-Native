@@ -118,21 +118,21 @@ export default function PersonalInformation() {
         icon={require("../images/mail.png")}
         value={email}
         onChangeText={(txt) => setEmail(txt)}
-        keyboardType="email-address"
+        keyboardType={"email-address"}
       />
       <CustomTextInput
         placeholder={"Enter Phone Number"}
         icon={require("../images/phone.png")}
         value={number}
         onChangeText={(txt) => setNumber(txt)}
-        keyboardType="numeric"
+        keyboardType={"numeric"}
       />
       <CustomTextInput
         placeholder={"Enter Whatsapp Number"}
         icon={require("../images/whatsapp.png")}
         value={whatsapp}
         onChangeText={(txt) => setWhatsapp(txt)}
-        keyboardType="numeric"
+        keyboardType={"numeric"}
       />
       <View style={{ flexDirection: "row", marginLeft: 40, marginTop: 30 }}>
         <Text style={{ marginRight: 20, marginTop: 5 }}>Gender:</Text>

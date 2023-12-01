@@ -1,7 +1,14 @@
 import { View, Text, Image, TextInput } from "react-native";
 import React from "react";
 
-const CustomTextInput = ({ value, onChangeText, placeholder, icon, type }) => {
+const CustomTextInput = ({
+  value,
+  onChangeText,
+  placeholder,
+  icon,
+  type,
+  keyboardType,
+}) => {
   return (
     <View
       style={{
@@ -25,7 +32,8 @@ const CustomTextInput = ({ value, onChangeText, placeholder, icon, type }) => {
         }}
         placeholder={placeholder}
         secureTextEntry={type ? true : false}
-        style={{ marginLeft: 10, width: 220, }}
+        style={{ marginLeft: 10, width: 220 }}
+        keyboardType={keyboardType ? keyboardType : "default"}
       />
     </View>
   );
