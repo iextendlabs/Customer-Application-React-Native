@@ -15,7 +15,6 @@ import { appIndex, BaseUrl } from "../Config/Api";
 import ProductItem from "../Common/ProductItem";
 import { useDispatch, useSelector } from "react-redux";
 import { addItemToCart, addItemToWishlist } from "../redux/actions/Actions";
-
 export default function Main() {
   const dispatch = useDispatch();
   const [sliderImages, setSliderImages] = useState([]);
@@ -95,9 +94,38 @@ export default function Main() {
       </View>
     );
   }
+
+  const imagesarr = ['../images/category/Makup.png','../images/category/Manicure.png','../images/category/Massage.png','../images/category/Nails-icon.png','../images/category/Bleach.png','../images/category/Facial.png','../images/category/Hair.png','../images/category/Henna.png'];
+
+  const CategoryItem = ({ item, onPress }) => (
+    <TouchableOpacity
+      style={{
+        flex: 1,
+        alignItems: 'center',
+        margin: 8,
+      }}
+      onPress={() => onPress(item)}
+    >
+      <Image
+        source= {require('../images/category/Makup.png')}
+        style={{
+          width: 80,
+          height: 80,
+          borderRadius: 40, // Half of the width and height to make it a circle
+        }}
+      />
+      <Text style={{ marginTop: 8, textAlign: 'center' }}>{item.title}</Text>
+    </TouchableOpacity>
+  );
+  const renderCategoryItem = ({ item }) => <CategoryItem item={item} onPress={handleCategoryPress} />;
+  const handleCategoryPress = (category) => {
+    // Handle category press as needed
+    console.log('Category pressed:', category.title);
+  };
   return (
-    <View style={{ flex: 1 }}>
-      <Header title={"Lipslay"} />
+    <View style={{ flex: 1, backgroundColor: '#FFCACC' }}>
+       
+      <Header title={"LipSlay Home Saloon"} />
       <ScrollView>
         <View>
           <FlatList
@@ -121,29 +149,12 @@ export default function Main() {
             )}
           />
         </View>
-        <View style={{ marginTop: 10 }}>
+        <View style={{ flex: 1, padding: 16 }}>
           <FlatList
             data={categories}
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            keyExtractor={(item, index) => index.toString()} // Added keyExtractor
-            renderItem={({ item }) => {
-              return (
-                <TouchableOpacity
-                  style={{
-                    padding: 10,
-                    borderWidth: 1,
-                    marginLeft: 5,
-                    borderRadius: 10,
-                  }}
-                  onPress={() => {
-                    filterServices(item);
-                  }}
-                >
-                  <Text style={{ color: "#000" }}>{item.title}</Text>
-                </TouchableOpacity>
-              );
-            }}
+            numColumns={3}
+            keyExtractor={(item) => item.id}
+            renderItem={renderCategoryItem}
           />
         </View>
         <Text
