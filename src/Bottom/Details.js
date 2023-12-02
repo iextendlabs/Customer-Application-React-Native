@@ -17,7 +17,7 @@ import { addItemToCart, addItemToWishlist } from "../redux/actions/Actions";
 import { useDispatch, useSelector } from "react-redux";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
-
+import HTML from 'react-native-render-html';
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -47,6 +47,13 @@ const styles = StyleSheet.create({
     color: '#FFF',
     fontSize: 18,
     fontWeight: 'bold',
+  },
+  wishButton: {
+    backgroundColor: '#ff0437',
+    padding: 10,
+    borderRadius: 5,
+    alignItems: 'center',
+    marginBottom: 20,
   },
   description: {
     fontSize: 16,
@@ -151,11 +158,11 @@ const handleAddToWish = () => onAddToWishList(service);
         <TouchableOpacity style={styles.addToCartButton} onPress={handleAddToCart}>
           <Text style={styles.addToCartButtonText}>Add to Cart</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.addToCartButton} onPress={handleAddToWish}>
+        <TouchableOpacity style={styles.wishButton} onPress={handleAddToWish}>
           <Text style={styles.addToCartButtonText}>Save to Wishlist</Text>
         </TouchableOpacity>
 
-        <Text style={styles.description}>{description}</Text>
+        <HTML source={{ html: description }} />
       </ScrollView>
 
    

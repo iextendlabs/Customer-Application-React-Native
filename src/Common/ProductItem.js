@@ -10,12 +10,10 @@ export default function ProductItem({ item }) {
     <TouchableOpacity
       style={{
         width: "47%",
-        height: 170,
-        borderRadius: 10,
+        height: 190,
         elevation: 5,
-        backgroundColor: "#fff",
         marginLeft: 7,
-        marginBottom: 10,
+        paddingBottom: 10,
       }}
       onPress={() => {
         navigation.navigate("Details", {
@@ -23,22 +21,26 @@ export default function ProductItem({ item }) {
         });
       }}
     >
+      <Text
+        style={{
+          backgroundColor: '#000',
+          color: '#FFF',fontSize: 15, fontWeight: 600, height: 50,textAlign: 'center'
+        }}
+      >
+        {item.name.substring(0, 40)}
+      </Text>
       <Image
         source={{
           uri: BaseUrl + "service-images/" + item.image,
         }}
         style={{
           width: "100%",
-          height: "50%",
-          borderTopLeftRadius: 10,
-          borderTopRightRadius: 10,
+          height: "60%",
+          borderBottomLeftRadius: 10,
+          borderBottomRightRadius: 10,
         }}
       />
-      <Text
-        style={{ marginLeft: 10, marginTop: 10, fontSize: 15, fontWeight: 600 }}
-      >
-        {item.name.substring(0, 20)}...
-      </Text>
+
       <View
         style={{
           flexDirection: "row",
