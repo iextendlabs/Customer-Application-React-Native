@@ -81,7 +81,7 @@ const Signup = () => {
         const headers = {
           Authorization: `Bearer ${accessToken}`,
         };
-        navigation.navigate("Home");
+        navigation.navigate("Main");
       } else if (response.status === 201) {
         setError(response.data.errors.email);
       } else {

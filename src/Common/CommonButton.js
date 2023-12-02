@@ -13,7 +13,7 @@ const CommenButton = ({onPress, title, bgColor, textColor}) => {
         width:'85%',
         borderRadius:10,
         alignSelf:'center',
-        marginTop:50.
+        marginTop:50
       }}
       onPress={()=>{
         onPress();

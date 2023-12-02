@@ -6,6 +6,7 @@ import { removeFromWishlist, addItemToCart } from "../redux/actions/Actions";
 import Header from "../Common/Header";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
+import Footer from "../Common/Footer";
 
 export default function Wishlist() {
   const navigation = useNavigation();
@@ -64,6 +65,7 @@ export default function Wishlist() {
       <Header title={"Wishlist"} />
       {wishlistData.length !== 0 ? (
         <FlatList
+        style={{marginBottom:80}}
           data={wishlistData}
           renderItem={({ item, index }) => (
             <CartItem
@@ -91,6 +93,7 @@ export default function Wishlist() {
           </Text>
         </View>
       )}
+      <Footer/>
     </View>
   );
 }

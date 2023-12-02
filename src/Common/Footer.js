@@ -5,87 +5,25 @@ import Main from "../Bottom/Main";
 import Profile from "../Bottom/Profile";
 import Search from "../Bottom/Search";
 import Wishlist from "../Bottom/Wishlist";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useNavigation } from "@react-navigation/native";
-import {
-  addItemToCart,
-  addItemToWishlist,
-  addAddress,
-  addPersonalInformation,
-} from "../redux/actions/Actions";
-export default function Home() {
-  const [selectedTab, setSelectedTab] = useState(0);
+import { useNavigation,useRoute  } from "@react-navigation/native";
+
+export default function Footer() {
   const data = useSelector((state) => state);
   const navigation = useNavigation();
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const dispatch = useDispatch();
-
-  useEffect(() => {
-    // Check authentication when the Profile component is selected
-    if (selectedTab === 4) {
-      checkAuthentication();
-    }
-  }, [selectedTab]);
-
-  useEffect(() => {
-    updateRedux();
-  }, []);
-
-  const updateRedux = async () => {
-    try {
-      const cartDataJson = await AsyncStorage.getItem("@cartData");
-      const cartData = JSON.parse(cartDataJson) || [];
-      cartData.forEach((item) => {
-        dispatch(addItemToCart(item));
-      });
-
-      const wishlistDataJson = await AsyncStorage.getItem("@wishlistData");
-      const wishlistData = JSON.parse(wishlistDataJson) || [];
-      wishlistData.forEach((item) => {
-        dispatch(addItemToWishlist(item));
-      });
-
-      const personalInfoJson = await AsyncStorage.getItem(
-        "@personalInformation"
-      );
-      const personalInfo = JSON.parse(personalInfoJson);
-      if (personalInfo) {
-        dispatch(addPersonalInformation(personalInfo));
-      }
-
-      const addressDataJson = await AsyncStorage.getItem("@addressData");
-      const addressData = JSON.parse(addressDataJson) || [];
-      addressData.forEach((item) => {
-        dispatch(addAddress(item));
-      });
-    } catch (error) {
-      console.error("Error updating Redux state:", error);
-    }
-  };
-
+  const route = useRoute();
   const checkAuthentication = async () => {
     const user = await AsyncStorage.getItem("@user_id");
     if (user === "" || user === null) {
       navigation.navigate("Login");
     } else {
-      setIsAuthenticated(true);
+      navigation.navigate("Profile");
     }
   };
 
   return (
     <View style={{ flex: 1 }}>
-      {selectedTab == 0 ? (
-        <Main />
-      ) : selectedTab == 1 ? (
-        <Search />
-      ) : selectedTab == 2 ? (
-        <Cart />
-      ) : selectedTab == 3 ? (
-        <Wishlist />
-      ) : (
-        isAuthenticated && selectedTab == 4 && <Profile />
-      )}
       <View
         style={{
           width: "100%",
@@ -105,7 +43,7 @@ export default function Home() {
             alignItems: "center",
           }}
           onPress={() => {
-            setSelectedTab(0);
+            navigation.navigate("Main");
           }}
         >
           <Image
@@ -113,7 +51,7 @@ export default function Home() {
             style={{
               width: 24,
               height: 24,
-              tintColor: selectedTab == 0 ? "#000" : "#8e8e8e",
+              tintColor: route.name == 'Main' ? "#000" : "#8e8e8e",
             }}
           />
         </TouchableOpacity>
@@ -125,7 +63,7 @@ export default function Home() {
             alignItems: "center",
           }}
           onPress={() => {
-            setSelectedTab(1);
+            navigation.navigate("Search");
           }}
         >
           <Image
@@ -133,7 +71,7 @@ export default function Home() {
             style={{
               width: 24,
               height: 24,
-              tintColor: selectedTab == 1 ? "#000" : "#8e8e8e",
+              tintColor: route.name == 'Search' ? "#000" : "#8e8e8e",
             }}
           />
         </TouchableOpacity>
@@ -149,13 +87,13 @@ export default function Home() {
             style={{
               width: 44,
               height: 44,
-              backgroundColor: selectedTab == 2 ? "green" : "#000",
+              backgroundColor: route.name == 'Cart' ? "green" : "#000",
               borderRadius: 22,
               justifyContent: "center",
               alignItems: "center",
             }}
             onPress={() => {
-              setSelectedTab(2);
+              navigation.navigate("Cart");
             }}
           >
             <Image
@@ -193,7 +131,7 @@ export default function Home() {
             alignItems: "center",
           }}
           onPress={() => {
-            setSelectedTab(3);
+            navigation.navigate("Wishlist");
           }}
         >
           <Image
@@ -201,7 +139,7 @@ export default function Home() {
             style={{
               width: 24,
               height: 24,
-              tintColor: selectedTab == 3 ? "#000" : "#8e8e8e",
+              tintColor: route.name == 'Wishlist' ? "#000" : "#8e8e8e",
             }}
           />
           <View
@@ -230,7 +168,7 @@ export default function Home() {
             alignItems: "center",
           }}
           onPress={() => {
-            setSelectedTab(4);
+            checkAuthentication();
           }}
         >
           <Image
@@ -238,7 +176,7 @@ export default function Home() {
             style={{
               width: 24,
               height: 24,
-              tintColor: selectedTab == 4 ? "#000" : "#8e8e8e",
+              tintColor: route.name == 'Profile' ? "#000" : "#8e8e8e",
             }}
           />
         </TouchableOpacity>

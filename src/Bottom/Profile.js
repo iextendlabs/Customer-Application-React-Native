@@ -11,6 +11,7 @@ import {
   clearWishlist,
 } from "../redux/actions/Actions";
 import { useSelector, useDispatch } from "react-redux";
+import Footer from "../Common/Footer";
 
 export default function Profile() {
   const dispatch = useDispatch();
@@ -35,7 +36,10 @@ export default function Profile() {
       // dispatch(clearWishlist());
       // dispatch(clearAddress());
       // dispatch(clearPersonalInformation());
-      navigation.navigate('Login');
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'Login' }],
+      });
     } catch (error) {
       console.log("Error occurred during logout:", error);
     }
@@ -105,6 +109,7 @@ export default function Profile() {
       >
         <Text>My Order</Text>
       </TouchableOpacity>
+      <Footer/>
     </View>
   );
 }

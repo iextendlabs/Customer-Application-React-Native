@@ -1,11 +1,10 @@
 import { StyleSheet, Text, View } from "react-native";
-import React from "react";
+import React, { useEffect } from "react";
 import { createStackNavigator } from "@react-navigation/stack";
 import { NavigationContainer } from "@react-navigation/native";
 import Splash from "./Screen/Splash";
 import Login from "./Screen/Login";
 import Signup from "./Screen/Signup";
-import Home from "./Screen/Home";
 import Cart from "./Bottom/Cart";
 import Main from "./Bottom/Main";
 import Profile from "./Bottom/Profile";
@@ -17,9 +16,67 @@ import Checkout from "./Screen/Checkout";
 import PersonalInformation from "./Screen/PersonalInformation";
 import OrderSuccess from "./Screen/OrderSuccess";
 import MyOrders from "./Screen/MyOrders";
+import RescheduleOrder from "./Screen/RescheduleOrder";
 const Stack = createStackNavigator();
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useSelector, useDispatch } from "react-redux";
+import {
+  addItemToCart,
+  addItemToWishlist,
+  addAddress,
+  addPersonalInformation,
+} from "./redux/actions/Actions";
 
 export default function AppNavigator() {
+  const cartReduxData = useSelector((state) => state.cart);
+  const wishlistReduxData = useSelector((state) => state.wishlist);
+
+  const dispatch = useDispatch();
+  useEffect(() => {
+    updateRedux();
+  }, []);
+
+  const updateRedux = async () => {
+    try {
+      const cartDataJson = await AsyncStorage.getItem("@cartData");
+      const cartData = JSON.parse(cartDataJson) || [];
+      cartData.forEach((item) => {
+        const isItemInCart = cartReduxData.some(
+          (cartItem) => cartItem.id === item.id
+        );
+        if (!isItemInCart) {
+          dispatch(addItemToCart(item));
+        }
+      });
+
+      const wishlistDataJson = await AsyncStorage.getItem("@wishlistData");
+      const wishlistData = JSON.parse(wishlistDataJson) || [];
+      wishlistData.forEach((item) => {
+        const isItemInWishlist = wishlistReduxData.some(
+          (wishlistItem) => wishlistItem.id === item.id
+        );
+        if (!isItemInWishlist) {
+          dispatch(addItemToWishlist(item));
+        }
+      });
+
+      const personalInfoJson = await AsyncStorage.getItem(
+        "@personalInformation"
+      );
+      const personalInfo = JSON.parse(personalInfoJson);
+      if (personalInfo) {
+        dispatch(addPersonalInformation(personalInfo));
+      }
+
+      const addressDataJson = await AsyncStorage.getItem("@addressData");
+      const addressData = JSON.parse(addressDataJson) || [];
+      addressData.forEach((item) => {
+        dispatch(addAddress(item));
+      });
+    } catch (error) {
+      console.error("Error updating Redux state:", error);
+    }
+  };
   return (
     <NavigationContainer>
       <Stack.Navigator>
@@ -37,11 +94,6 @@ export default function AppNavigator() {
           options={{ headerShown: false }}
           name="Signup"
           component={Signup}
-        />
-        <Stack.Screen
-          options={{ headerShown: false }}
-          name="Home"
-          component={Home}
         />
         <Stack.Screen
           options={{ headerShown: false }}
@@ -93,6 +145,11 @@ export default function AppNavigator() {
           options={{ title: "My Orders" }}
           name="MyOrders"
           component={MyOrders}
+        />
+        <Stack.Screen
+          options={{ title: "Reschedule Orders" }}
+          name="RescheduleOrder"
+          component={RescheduleOrder}
         />
       </Stack.Navigator>
     </NavigationContainer>

@@ -1,4 +1,11 @@
-import { FlatList, StyleSheet, Text, View } from "react-native";
+import {
+  FlatList,
+  StyleSheet,
+  Text,
+  View,
+  TouchableOpacity,
+  ScrollView,
+} from "react-native";
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
 import CartItem from "../Common/CartItem";
@@ -7,6 +14,7 @@ import Header from "../Common/Header";
 import CommonButton from "../Common/CommonButton";
 import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import Footer from "../Common/Footer";
 
 export default function Cart() {
   const navigation = useNavigation();
@@ -14,12 +22,14 @@ export default function Cart() {
   const cartData = useSelector((state) => state.cart);
   const wishlistData = useSelector((state) => state.wishlist);
 
-  const removeItemFromCart = async (item,index) => {
+  const removeItemFromCart = async (item, index) => {
     try {
       const jsonString = await AsyncStorage.getItem("@cartData");
       const cartData = JSON.parse(jsonString) || [];
-      
-      const updatedCartData = cartData.filter((cartItem) => cartItem.id !== item.id);
+
+      const updatedCartData = cartData.filter(
+        (cartItem) => cartItem.id !== item.id
+      );
 
       await AsyncStorage.setItem("@cartData", JSON.stringify(updatedCartData));
 
@@ -54,7 +64,7 @@ export default function Cart() {
       console.log("Item is already in the Wishlist");
     }
   };
-  
+
   const saveToAsyncStorage = async (key, data) => {
     try {
       await AsyncStorage.setItem(key, JSON.stringify(data));
@@ -65,43 +75,60 @@ export default function Cart() {
   return (
     <View style={{ flex: 1 }}>
       <Header title={"Shopping Cart"} />
-      {cartData.length !== 0 ? (
-        <FlatList
-          data={cartData}
-          renderItem={({ item,index }) => (
-            <CartItem
-              item={item}
-              onRemoveFromCart={() => removeItemFromCart(item,index)}
-              onAddToWishlist={() => onAddToWishList(item)}
-            />
-          )}
-        />
-      ) : (
-        <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-          <Text
-            style={{
-              alignItems: "center",
-              fontWeight: "600",
-              marginTop: 20,
-              fontSize: 20,
-              color: "#000",
-            }}
-          >
-            No Product in Your Shopping Cart!
-          </Text>
-        </View>
-      )}
-
-      {cartData.length !== 0 && (
-        <View style={{ marginBottom: 80 }}>
-          <CommonButton
-            title={"Checkout"}
-            bgColor={"green"}
-            textColor={"#fff"}
-            onPress={() => checkAuthentication()}
+      <ScrollView>
+        {cartData.length !== 0 ? (
+          <FlatList
+            data={cartData}
+            renderItem={({ item, index }) => (
+              <CartItem
+                item={item}
+                onRemoveFromCart={() => removeItemFromCart(item, index)}
+                onAddToWishlist={() => onAddToWishList(item)}
+              />
+            )}
           />
-        </View>
-      )}
+        ) : (
+          <View
+            style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+          >
+            <Text
+              style={{
+                alignItems: "center",
+                fontWeight: "600",
+                marginTop: 20,
+                fontSize: 20,
+                color: "#000",
+              }}
+            >
+              No Product in Your Shopping Cart!
+            </Text>
+          </View>
+        )}
+
+        {cartData.length !== 0 && (
+          <View>
+            <TouchableOpacity
+              style={{
+                backgroundColor: "green",
+                justifyContent: "center",
+                alignItems: "center",
+                height: 50,
+                width: "85%",
+                borderRadius: 10,
+                alignSelf: "center",
+                marginBottom: 80,
+              }}
+              onPress={() => {
+                checkAuthentication();
+              }}
+            >
+              <Text style={{ color: "#fff" }}>Checkout</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+      </ScrollView>
+
+      <Footer />
     </View>
   );
 }
