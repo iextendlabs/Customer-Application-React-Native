@@ -96,13 +96,6 @@ export default function Main() {
     }
   };
 
-  const filterServices = (selectedCategory) => {
-    const filteredServices = services.filter(
-      (service) => parseFloat(service.category_id) === selectedCategory.id
-    );
-    setSelectedServices(filteredServices);
-  };
-
   if (loading) {
     return (
       <View
@@ -158,7 +151,9 @@ export default function Main() {
                   borderRadius: 10,
                 }}
                 onPress={() => {
-                  filterServices(item);
+                  navigation.navigate("Search", {
+                    category: item,
+                  });
                 }}
               >
                 <Text style={{ color: "#000" }}>{item.title}</Text>

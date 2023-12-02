@@ -43,7 +43,6 @@ export default function PersonalInformation() {
     try {
       const storedName = await AsyncStorage.getItem("@user_name");
       const storedEmail = await AsyncStorage.getItem("@user_email");
-    console.log(personalInformationData);
 
       if (
         !personalInformationData ||
