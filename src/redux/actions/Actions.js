@@ -3,7 +3,10 @@ import {
   ADD_PERSONAL_INFORMATION,
   ADD_TO_CART,
   ADD_TO_WISHLIST,
+  CLEAR_ADDRESS,
   CLEAR_CART,
+  CLEAR_PERSONAL_INFORMATION,
+  CLEAR_WISHLIST,
   DELETE_ADDRESS,
   DELETE_PERSONAL_INFORMATION,
   REMOVE_FROM_CART,
@@ -34,6 +37,10 @@ export const removeFromWishlist = (index) => ({
   payload: index,
 });
 
+export const clearWishlist = () => ({
+  type: CLEAR_WISHLIST
+});
+
 export const addAddress = (data) => ({
   type: ADD_ADDRESS,
   payload: data,
@@ -44,6 +51,10 @@ export const deleteAddress = (index) => ({
   payload: index,
 });
 
+export const clearAddress = () => ({
+  type: CLEAR_ADDRESS
+});
+
 export const addPersonalInformation = (data) => ({
   type: ADD_PERSONAL_INFORMATION,
   payload: data,
@@ -52,4 +63,8 @@ export const addPersonalInformation = (data) => ({
 export const deletePersonalInformation = (index) => ({
   type: DELETE_PERSONAL_INFORMATION,
   payload: index,
+});
+
+export const clearPersonalInformation = () => ({
+  type: CLEAR_PERSONAL_INFORMATION
 });

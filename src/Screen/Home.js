@@ -1,22 +1,36 @@
-import {
-  StyleSheet,
-  Text,
-  View,
-  TouchableOpacity,
-  Image,
-} from "react-native";
-import React, { useState } from "react";
+import { StyleSheet, Text, View, TouchableOpacity, Image } from "react-native";
+import React, { useEffect, useState } from "react";
 import Cart from "../Bottom/Cart";
 import Main from "../Bottom/Main";
 import Profile from "../Bottom/Profile";
 import Search from "../Bottom/Search";
 import Wishlist from "../Bottom/Wishlist";
 import { useSelector } from "react-redux";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useNavigation } from "@react-navigation/native";
 
 export default function Home() {
   const [selectedTab, setSelectedTab] = useState(0);
   const data = useSelector((state) => state);
- 
+  const navigation = useNavigation();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    // Check authentication when the Profile component is selected
+    if (selectedTab === 4) {
+      checkAuthentication();
+    }
+  }, [selectedTab]);
+
+  const checkAuthentication = async () => {
+    const user = await AsyncStorage.getItem("@user_id");
+    if (user === "" || user === null) {
+      navigation.navigate("Login");
+    } else {
+      setIsAuthenticated(true);
+    }
+  };
+
   return (
     <View style={{ flex: 1 }}>
       {selectedTab == 0 ? (
@@ -27,7 +41,7 @@ export default function Home() {
         <Cart />
       ) : selectedTab == 3 ? (
         <Wishlist />
-      ) : (
+      ) :  isAuthenticated && selectedTab == 4 && (
         <Profile />
       )}
       <View
@@ -123,7 +137,9 @@ export default function Home() {
                 right: 5,
               }}
             >
-              <Text style={{ color: "#fff", fontWeight: "600" }}>{data.cart.length}</Text>
+              <Text style={{ color: "#fff", fontWeight: "600" }}>
+                {data.cart.length}
+              </Text>
             </View>
           </TouchableOpacity>
         </View>
@@ -159,7 +175,9 @@ export default function Home() {
               right: 20,
             }}
           >
-            <Text style={{ color: "#fff", fontWeight: "600" }}>{data.wishlist.length}</Text>
+            <Text style={{ color: "#fff", fontWeight: "600" }}>
+              {data.wishlist.length}
+            </Text>
           </View>
         </TouchableOpacity>
         <TouchableOpacity

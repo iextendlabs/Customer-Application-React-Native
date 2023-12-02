@@ -1,4 +1,8 @@
-import { ADD_TO_WISHLIST, REMOVE_FROM_WISHLIST } from "../ActionTypes";
+import {
+  ADD_TO_WISHLIST,
+  CLEAR_PERSONAL_INFORMATION,
+  REMOVE_FROM_WISHLIST,
+} from "../ActionTypes";
 
 const wishlistReducers = (state = [], action) => {
   switch (action.type) {
@@ -9,6 +13,8 @@ const wishlistReducers = (state = [], action) => {
         (item, index) => index !== action.payload
       );
       return deletedArray;
+    case CLEAR_PERSONAL_INFORMATION:
+      return [];
     default:
       return state;
   }

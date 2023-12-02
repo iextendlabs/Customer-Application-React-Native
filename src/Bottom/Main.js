@@ -15,8 +15,11 @@ import { appIndex, BaseUrl } from "../Config/Api";
 import ProductItem from "../Common/ProductItem";
 import { useDispatch, useSelector } from "react-redux";
 import { addItemToCart, addItemToWishlist } from "../redux/actions/Actions";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useNavigation } from "@react-navigation/native";
 
 export default function Main() {
+  const navigation = useNavigation();
   const dispatch = useDispatch();
   const [sliderImages, setSliderImages] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -31,13 +34,18 @@ export default function Main() {
 
   const cartData = useSelector((state) => state.cart);
 
-  const onAddToCart = (item) => {
-    const isItemInCart = cartData.some((cartItem) => cartItem.id === item.id);
-
-    if (!isItemInCart) {
-      dispatch(addItemToCart(item));
+  const onAddToCart = async (item) => {
+    const user = await AsyncStorage.getItem("@user_id");
+    if (user === "" || user === null) {
+      navigation.navigate("Login");
     } else {
-      console.log("Item is already in the cart");
+      const isItemInCart = cartData.some((cartItem) => cartItem.id === item.id);
+
+      if (!isItemInCart) {
+        dispatch(addItemToCart(item));
+      } else {
+        console.log("Item is already in the cart");
+      }
     }
   };
 
@@ -81,7 +89,7 @@ export default function Main() {
     );
     setSelectedServices(filteredServices);
   };
-  
+
   if (loading) {
     return (
       <View

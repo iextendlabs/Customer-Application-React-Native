@@ -4,23 +4,25 @@ import Header from "../Common/Header";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
+import {
+  clearCart,
+  clearAddress,
+  clearPersonalInformation,
+  clearWishlist,
+} from "../redux/actions/Actions";
+import { useSelector, useDispatch } from "react-redux";
 
 export default function Profile() {
+  const dispatch = useDispatch();
   const [name, setName] = useState();
   const [email, setEmail] = useState();
   const navigation = useNavigation();
   useEffect(() => {
-    checkAuthentication();
+    getData();
   }, []);
-
-  const checkAuthentication = async () => {
-    const user = await AsyncStorage.getItem("@user_id");
-    if (user === "" || user === null) {
-      navigation.navigate("Login");
-    } else {
-      setName(await AsyncStorage.getItem("@user_name"));
-      setEmail(await AsyncStorage.getItem("@user_email"));
-    }
+  const getData = async () => {
+    setName(await AsyncStorage.getItem("@user_name"));
+    setEmail(await AsyncStorage.getItem("@user_email"));
   };
 
   const logout = async () => {
@@ -29,10 +31,11 @@ export default function Profile() {
       await AsyncStorage.removeItem("@access_token");
       await AsyncStorage.removeItem("@user_name");
       await AsyncStorage.removeItem("@user_email");
-      navigation.reset({
-        index: 0,
-        routes: [{ name: "Splash" }],
-      });
+      // dispatch(clearCart());
+      // dispatch(clearWishlist());
+      // dispatch(clearAddress());
+      // dispatch(clearPersonalInformation());
+      navigation.navigate('Login');
     } catch (error) {
       console.log("Error occurred during logout:", error);
     }

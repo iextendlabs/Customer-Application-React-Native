@@ -55,7 +55,21 @@ export default function MyOrders() {
   return (
     <View style={{ flex: 1, padding: 5 }}>
       {orders.length === 0 ? (
-        <Text>No orders available</Text>
+        <View
+          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+        >
+          <Text
+            style={{
+              alignItems: "center",
+              fontWeight: 600,
+              marginTop: 20,
+              fontSize: 20,
+              color: "#000",
+            }}
+          >
+            No Orders Available
+          </Text>
+        </View>
       ) : (
         <FlatList
           data={orders}
@@ -83,6 +97,24 @@ export default function MyOrders() {
                 <Text>Staff: {item.staff_name}</Text>
                 <Text>Time Slot: {item.time_slot_value}</Text>
               </View>
+              {/* <TouchableOpacity
+                style={{
+                  flex: 1,
+                  borderWidth: 0.2,
+                  borderRadius: 4,
+                  padding: 7,
+                  marginRight: 20,
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+                onPress={() => {
+                  navigation.navigate("RescheduleOrder", {
+                    order_id: item.id,
+                  });
+                }}
+              >
+                <Text>Reschedule</Text>
+              </TouchableOpacity> */}
             </View>
           )}
         />

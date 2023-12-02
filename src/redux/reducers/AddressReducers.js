@@ -1,7 +1,4 @@
-import {
-  ADD_ADDRESS,
-  DELETE_ADDRESS
-} from "../ActionTypes";
+import { ADD_ADDRESS, CLEAR_ADDRESS, DELETE_ADDRESS } from "../ActionTypes";
 
 const addressReducers = (state = [], action) => {
   switch (action.type) {
@@ -12,6 +9,8 @@ const addressReducers = (state = [], action) => {
         (item, index) => index !== action.payload
       );
       return deletedArray;
+    case CLEAR_ADDRESS:
+      return [];
     default:
       return state;
   }

@@ -1,6 +1,7 @@
 import {
   ADD_PERSONAL_INFORMATION,
-  DELETE_PERSONAL_INFORMATION
+  CLEAR_PERSONAL_INFORMATION,
+  DELETE_PERSONAL_INFORMATION,
 } from "../ActionTypes";
 
 const personalInformationReducers = (state = [], action) => {
@@ -12,6 +13,8 @@ const personalInformationReducers = (state = [], action) => {
         (item, index) => index !== action.payload
       );
       return deletedArray;
+    case CLEAR_PERSONAL_INFORMATION:
+      return [];
     default:
       return state;
   }
