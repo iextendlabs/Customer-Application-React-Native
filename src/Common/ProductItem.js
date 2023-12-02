@@ -1,10 +1,13 @@
 import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
 import React from "react";
 import { BaseUrl } from "../Config/Api";
+import { useNavigation } from "@react-navigation/native";
 
-export default function ProductItem({ item, onAddToCart, onAddToWishList }) {
+export default function ProductItem({ item }) {
+  const navigation = useNavigation();
+
   return (
-    <View
+    <TouchableOpacity
       style={{
         width: "47%",
         height: 170,
@@ -13,6 +16,11 @@ export default function ProductItem({ item, onAddToCart, onAddToWishList }) {
         backgroundColor: "#fff",
         marginLeft: 7,
         marginBottom: 10,
+      }}
+      onPress={() => {
+        navigation.navigate("Details", {
+          service: item,
+        });
       }}
     >
       <Image
@@ -38,46 +46,13 @@ export default function ProductItem({ item, onAddToCart, onAddToWishList }) {
           paddingLeft: 10,
           paddingRight: 10,
           marginTop: 10,
-          alignItem: "center",
+          alignItems: "center",
         }}
       >
         <Text style={{ fontSize: 15, fontWeight: "600" }}>AED{item.price}</Text>
-        <TouchableOpacity
-          style={{
-            borderWidth: 1,
-            borderRadius: 10,
-            padding: 4,
-          }}
-          onPress={()=>{
-            onAddToCart(item);
-          }}
-        >
-          <Text>Add to Cart</Text>
-        </TouchableOpacity>
+        <Text>{item.duration}</Text>
       </View>
-      <TouchableOpacity
-        style={{
-          width: 30,
-          height: 30,
-          backgroundColor: "#fff",
-          borderRadius: 20,
-          elevation: 5,
-          position: "absolute",
-          top: 10,
-          right: 10,
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-        onPress={()=>{
-          onAddToWishList(item);
-        }}
-      >
-        <Image
-          source={require("../images/heart.png")}
-          style={{ width: 18, height: 18 }}
-        />
-      </TouchableOpacity>
-    </View>
+    </TouchableOpacity>
   );
 }
 

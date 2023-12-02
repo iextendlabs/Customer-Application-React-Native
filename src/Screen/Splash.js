@@ -1,18 +1,7 @@
 import { View, Text, Image } from "react-native";
-import React, { useEffect } from "react";
-import { useNavigation } from "@react-navigation/native";
+import React from "react";
 
 const Splash = () => {
-  const navigation = useNavigation();
-  useEffect(() => {
-    setTimeout(() => {
-      navigation.reset({
-        index: 0,
-        routes: [{ name: 'Main' }],
-      });
-    }, 1000);
-  }, []);
-
   return (
     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
       <Image

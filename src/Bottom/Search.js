@@ -11,8 +11,6 @@ import React from "react";
 import Footer from "../Common/Footer";
 import Header from "../Common/Header";
 import { useRoute } from "@react-navigation/native";
-import axios from "axios";
-import { filterServicesUrl, BaseUrl } from "../Config/Api";
 import { useEffect, useState } from "react";
 import ProductItem from "../Common/ProductItem";
 import { useSelector, useDispatch } from "react-redux";
@@ -20,25 +18,27 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
 import { addItemToCart, addItemToWishlist } from "../redux/actions/Actions";
 import CustomTextInput from "../Common/CustomTextInput";
-import CommonButton from "../Common/CommonButton";
 
 export default function Search() {
+  const data = useSelector((state) => state);
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const route = useRoute();
   const [loading, setLoading] = useState(false);
   const [services, setServices] = useState([]);
   const [error, setError] = useState("");
-  const [searchedText, setSearchedText] = useState("");
   const [search, setSearch] = useState("");
+  const [category, setCategory] = useState("");
 
   useEffect(() => {
     if (route.params && route.params.category) {
-      let category = route.params.category;
-      setSearchedText(category.title);
-      getServicesByCategory(category.id);
+      setCategory(route.params.category.id);
+      getServicesByCategory(route.params.category.id);
     }
   }, [route.params?.category]);
+  useEffect(() => {
+    filter();
+  }, [search]);
 
   const cartData = useSelector((state) => state.cart);
   const wishlistData = useSelector((state) => state.wishlist);
@@ -81,38 +81,17 @@ export default function Search() {
     }
   };
 
-  const getServicesByCategory = async (category_id) => {
-    setLoading(true);
-    try {
-      const response = await axios.get(
-        `${filterServicesUrl}category_id=${category_id}`
-      );
-      if (response.status === 200) {
-        let data = response.data;
-        setServices(data.services);
-        setLoading(false);
-      } else {
-        setError("Please try again.");
-      }
-    } catch (error) {
-      setError("An error occurred while fetching data.");
-    }
+  const getServicesByCategory = (category_id) => {
+    const filtered = data.services[0].filter((item) => item.category_id === category_id.toString());
+    setServices(filtered);
+    console.log('seting up serv'+filtered.length + 'for category' +category);
   };
 
-  const filter = async () => {
-    setSearchedText(search);
-    setLoading(true);
-    try {
-      const response = await axios.get(`${filterServicesUrl}filter=${search}`);
-      if (response.status === 200) {
-        let data = response.data;
-        setServices(data.services);
-        setLoading(false);
-      } else {
-        setError("Please try again.");
-      }
-    } catch (error) {
-      setError("An error occurred while fetching data.");
+  const filter = () => {
+    if (search) {
+      setServices(data.services[0].filter((item) =>  item.name.toLocaleLowerCase().includes(search.toLocaleLowerCase())));
+    } else if (category) {
+      getServicesByCategory(category)
     }
   };
   if (loading) {
@@ -129,9 +108,9 @@ export default function Search() {
     );
   }
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1 , backgroundColor: '#FFCACC' }}>
       <Header title={"Search"} />
-      <ScrollView>
+      <ScrollView style={{backgroundColor: ''}}>
         <CustomTextInput
           placeholder={"Search Services"}
           icon={require("../images/search.png")}
@@ -140,42 +119,8 @@ export default function Search() {
             setSearch(txt);
           }}
         />
-        <TouchableOpacity
-          style={{
-            backgroundColor: "#0d6efd",
-            justifyContent: "center",
-            alignItems: "center",
-            height: 40,
-            width: "30%",
-            borderRadius: 10,
-            alignSelf: "flex-end",
-            marginTop: 10,
-            marginRight: 30,
-          }}
-          onPress={() => {
-            filter();
-          }}
-        >
-          <Text style={{ color: "#fff" }}>Search</Text>
-        </TouchableOpacity>
         {services.length > 0 ? (
           <View style={{ marginTop: 10, marginBottom: 70 }}>
-            {searchedText && (
-              <Text
-                style={{
-                  marginTop: 10,
-                  marginLeft: 20,
-                  color: "#000",
-                  fontSize: 18,
-                  fontWeight: "600",
-                  alignSelf: "center",
-                  fontWeight: "700",
-                }}
-              >
-                Services related {searchedText}
-              </Text>
-            )}
-
             <FlatList
               data={services}
               showsVerticalScrollIndicator={false}
@@ -201,7 +146,7 @@ export default function Search() {
               alignSelf: "center",
             }}
           >
-            Their is No Services related {searchedText}.
+            Their is No Services related {search}.
           </Text>
         )}
       </ScrollView>

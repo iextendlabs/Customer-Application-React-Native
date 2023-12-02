@@ -1,10 +1,5 @@
 import { StyleSheet, Text, View, TouchableOpacity, Image } from "react-native";
-import React, { useEffect, useState } from "react";
-import Cart from "../Bottom/Cart";
-import Main from "../Bottom/Main";
-import Profile from "../Bottom/Profile";
-import Search from "../Bottom/Search";
-import Wishlist from "../Bottom/Wishlist";
+import React from "react";
 import { useSelector } from "react-redux";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation,useRoute  } from "@react-navigation/native";
@@ -28,7 +23,7 @@ export default function Footer() {
         style={{
           width: "100%",
           height: 70,
-          backgroundColor: "#fff",
+          backgroundColor: "#FFCACC",
           position: "absolute",
           bottom: 0,
           flexDirection: "row",

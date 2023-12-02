@@ -15,13 +15,10 @@ import Footer from "../Common/Footer";
 import { appIndex, BaseUrl } from "../Config/Api";
 import ProductItem from "../Common/ProductItem";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  addItemToCart,
-  addItemToWishlist,
-} from "../redux/actions/Actions";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
-
+import Splash from '../Screen/Splash';
+import { updateServices } from "../redux/actions/Actions";
 export default function Main() {
   const navigation = useNavigation();
   const dispatch = useDispatch();
@@ -36,38 +33,6 @@ export default function Main() {
     getData();
   }, []);
 
-  const cartData = useSelector((state) => state.cart);
-  const wishlistData = useSelector((state) => state.wishlist);
-
-  const onAddToCart = async (item) => {
-    const user = await AsyncStorage.getItem("@user_id");
-
-    if (user === "" || user === null) {
-      navigation.navigate("Login");
-    } else {
-      const isItemInCart = cartData.some((cartItem) => cartItem.id === item.id);
-
-      if (!isItemInCart) {
-        dispatch(addItemToCart(item));
-        saveToAsyncStorage("@cartData", [...cartData, item]);
-      } else {
-        console.log("Item is already in the cart");
-      }
-    }
-  };
-
-  const onAddToWishList = async (item) => {
-    const isItemInWishlist = wishlistData.some(
-      (wishlistItem) => wishlistItem.id === item.id
-    );
-
-    if (!isItemInWishlist) {
-      dispatch(addItemToWishlist(item));
-      saveToAsyncStorage("@wishlistData", [...wishlistData, item]);
-    } else {
-      console.log("Item is already in the Wishlist");
-    }
-  };
 
   const saveToAsyncStorage = async (key, data) => {
     try {
@@ -88,6 +53,7 @@ export default function Main() {
         setServices(data.services);
         setSelectedServices(data.services.slice(0, 10));
         setLoading(false);
+        dispatch(updateServices(data.services));
       } else {
         setError("Please try again.");
       }
@@ -97,22 +63,38 @@ export default function Main() {
   };
 
   if (loading) {
-    return (
-      <View
-        style={{
-          flex: 1,
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <ActivityIndicator size="large" color="#0000ff" />
-      </View>
-    );
+    return Splash();
   }
 
+  const CategoryItem = ({ item, onPress }) => (
+    <TouchableOpacity
+      style={{
+        flex: 1,
+        alignItems: 'center',
+        margin: 8,
+      }}
+      onPress={() => {
+        navigation.navigate("Search", {
+          category: item,
+        });
+      }}
+    >
+      <Image
+        source= {require('../images/category/Makup.png')}
+        style={{
+          width: 80,
+          height: 80,
+          borderRadius: 40, // Half of the width and height to make it a circle
+        }}
+      />
+      <Text style={{ marginTop: 8, textAlign: 'center' }}>{item.title}</Text>
+    </TouchableOpacity>
+  );
+  const renderCategoryItem = ({ item }) => <CategoryItem item={item} />;
   return (
-    <View style={{ flex: 1 }}>
-      <Header title={"Lipslay"} />
+    <View style={{ flex: 1, backgroundColor: '#FFCACC' }}>
+       
+      <Header title={"LipSlay Home Saloon"} />
       <ScrollView>
         <View>
           <FlatList
@@ -136,29 +118,12 @@ export default function Main() {
             )}
           />
         </View>
-        <View style={{ marginTop: 10 }}>
+        <View style={{ flex: 1, padding: 16 }}>
           <FlatList
             data={categories}
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            keyExtractor={(item, index) => index.toString()}
-            renderItem={({ item }) => (
-              <TouchableOpacity
-                style={{
-                  padding: 10,
-                  borderWidth: 1,
-                  marginLeft: 5,
-                  borderRadius: 10,
-                }}
-                onPress={() => {
-                  navigation.navigate("Search", {
-                    category: item,
-                  });
-                }}
-              >
-                <Text style={{ color: "#000" }}>{item.title}</Text>
-              </TouchableOpacity>
-            )}
+            numColumns={3}
+            keyExtractor={(item) => item.id}
+            renderItem={renderCategoryItem}
           />
         </View>
         <Text
@@ -181,8 +146,6 @@ export default function Main() {
             renderItem={({ item }) => (
               <ProductItem
                 item={item}
-                onAddToCart={onAddToCart}
-                onAddToWishList={onAddToWishList}
               />
             )}
           />

@@ -11,7 +11,13 @@ import {
   DELETE_PERSONAL_INFORMATION,
   REMOVE_FROM_CART,
   REMOVE_FROM_WISHLIST,
+  UPDATE_SERVICES
 } from "../ActionTypes";
+
+export const updateServices = (data) => ({
+  type: UPDATE_SERVICES,
+  payload: data,
+});
 
 export const addItemToCart = (data) => ({
   type: ADD_TO_CART,

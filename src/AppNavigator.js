@@ -2,7 +2,6 @@ import { StyleSheet, Text, View } from "react-native";
 import React, { useEffect } from "react";
 import { createStackNavigator } from "@react-navigation/stack";
 import { NavigationContainer } from "@react-navigation/native";
-import Splash from "./Screen/Splash";
 import Login from "./Screen/Login";
 import Signup from "./Screen/Signup";
 import Cart from "./Bottom/Cart";
@@ -26,6 +25,7 @@ import {
   addAddress,
   addPersonalInformation,
 } from "./redux/actions/Actions";
+import Details from "./Bottom/Details";
 
 export default function AppNavigator() {
   const cartReduxData = useSelector((state) => state.cart);
@@ -82,8 +82,8 @@ export default function AppNavigator() {
       <Stack.Navigator>
         <Stack.Screen
           options={{ headerShown: false }}
-          name="Splash"
-          component={Splash}
+          name="Main"
+          component={Main}
         />
         <Stack.Screen
           options={{ headerShown: false }}
@@ -97,8 +97,8 @@ export default function AppNavigator() {
         />
         <Stack.Screen
           options={{ headerShown: false }}
-          name="Main"
-          component={Main}
+          name="Details"
+          component={Details}
         />
         <Stack.Screen
           options={{ headerShown: false }}
