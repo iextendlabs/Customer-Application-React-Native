@@ -5,15 +5,21 @@ import Main from "../Bottom/Main";
 import Profile from "../Bottom/Profile";
 import Search from "../Bottom/Search";
 import Wishlist from "../Bottom/Wishlist";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
-
+import {
+  addItemToCart,
+  addItemToWishlist,
+  addAddress,
+  addPersonalInformation,
+} from "../redux/actions/Actions";
 export default function Home() {
   const [selectedTab, setSelectedTab] = useState(0);
   const data = useSelector((state) => state);
   const navigation = useNavigation();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     // Check authentication when the Profile component is selected
@@ -21,6 +27,42 @@ export default function Home() {
       checkAuthentication();
     }
   }, [selectedTab]);
+
+  useEffect(() => {
+    updateRedux();
+  }, []);
+
+  const updateRedux = async () => {
+    try {
+      const cartDataJson = await AsyncStorage.getItem("@cartData");
+      const cartData = JSON.parse(cartDataJson) || [];
+      cartData.forEach((item) => {
+        dispatch(addItemToCart(item));
+      });
+
+      const wishlistDataJson = await AsyncStorage.getItem("@wishlistData");
+      const wishlistData = JSON.parse(wishlistDataJson) || [];
+      wishlistData.forEach((item) => {
+        dispatch(addItemToWishlist(item));
+      });
+
+      const personalInfoJson = await AsyncStorage.getItem(
+        "@personalInformation"
+      );
+      const personalInfo = JSON.parse(personalInfoJson);
+      if (personalInfo) {
+        dispatch(addPersonalInformation(personalInfo));
+      }
+
+      const addressDataJson = await AsyncStorage.getItem("@addressData");
+      const addressData = JSON.parse(addressDataJson) || [];
+      addressData.forEach((item) => {
+        dispatch(addAddress(item));
+      });
+    } catch (error) {
+      console.error("Error updating Redux state:", error);
+    }
+  };
 
   const checkAuthentication = async () => {
     const user = await AsyncStorage.getItem("@user_id");
@@ -41,8 +83,8 @@ export default function Home() {
         <Cart />
       ) : selectedTab == 3 ? (
         <Wishlist />
-      ) :  isAuthenticated && selectedTab == 4 && (
-        <Profile />
+      ) : (
+        isAuthenticated && selectedTab == 4 && <Profile />
       )}
       <View
         style={{

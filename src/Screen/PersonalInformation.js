@@ -2,17 +2,17 @@ import React, { useEffect, useState } from "react";
 import { Text, View, TouchableOpacity, Image, StyleSheet } from "react-native";
 import CustomTextInput from "../Common/CustomTextInput";
 import CommonButton from "../Common/CommonButton";
+import { useNavigation } from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useDispatch, useSelector } from "react-redux";
 import {
   addPersonalInformation,
   deletePersonalInformation,
 } from "../redux/actions/Actions";
-import { useNavigation } from "@react-navigation/native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function PersonalInformation() {
-  const navigation = useNavigation();
   const dispatch = useDispatch();
+  const navigation = useNavigation();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [number, setNumber] = useState("");
@@ -43,6 +43,8 @@ export default function PersonalInformation() {
     try {
       const storedName = await AsyncStorage.getItem("@user_name");
       const storedEmail = await AsyncStorage.getItem("@user_email");
+    console.log(personalInformationData);
+
       if (
         !personalInformationData ||
         (personalInformationData && personalInformationData.length === 0)
@@ -60,7 +62,7 @@ export default function PersonalInformation() {
     return emailRegex.test(email);
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     setError("");
     if (
       name.trim() !== "" &&
@@ -69,8 +71,7 @@ export default function PersonalInformation() {
       whatsapp.trim() !== "" &&
       selectedGender.trim() !== ""
     ) {
-
-      if(selectedGender.trim() == "Male"){
+      if (selectedGender.trim() == "Male") {
         setError("Sorry, No Male Services Listed in Our App.");
         return;
       }
@@ -86,6 +87,13 @@ export default function PersonalInformation() {
         whatsapp: whatsapp,
         gender: selectedGender,
       };
+
+      await AsyncStorage.removeItem("@personalInformation");
+
+      await AsyncStorage.setItem(
+        "@personalInformation",
+        JSON.stringify(personalInfo)
+      );
 
       if (personalInformationData && personalInformationData.length > 0) {
         dispatch(deletePersonalInformation(0));
@@ -164,7 +172,7 @@ export default function PersonalInformation() {
         </TouchableOpacity>
       </View>
       <CommonButton
-        title={personalInformationData.length > 0 ? "Update" : "Save"}
+        title={"Save"}
         bgColor="#000"
         textColor="#fff"
         onPress={() => handleSave()}
@@ -179,7 +187,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   selectedGender: {
-    backgroundColor: "#ADD8E6", // Change this color to your highlight color
+    backgroundColor: "#ADD8E6",
     borderRadius: 5,
     padding: 5,
   },

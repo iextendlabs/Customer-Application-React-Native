@@ -3,12 +3,27 @@ import React from "react";
 import { useNavigation } from "@react-navigation/native";
 import { useDispatch, useSelector } from "react-redux";
 import { deleteAddress } from "../redux/actions/Actions";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const MyAddress = () => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
   const addressData = useSelector((state) => state.address);
 
+  const handleDeleteAddress = async (index) => {
+    try {
+      const updatedAddressData = [...addressData];
+      updatedAddressData.splice(index, 1);
+
+      await AsyncStorage.setItem(
+        "@addressData",
+        JSON.stringify(updatedAddressData)
+      );
+      dispatch(deleteAddress(index));
+    } catch (error) {
+      console.error("Error removing address:", error);
+    }
+  };
   return (
     <View style={{ flex: 1 }}>
       <TouchableOpacity
@@ -60,7 +75,7 @@ const MyAddress = () => {
                     justifyContent: "center",
                   }}
                   onPress={() => {
-                    dispatch(deleteAddress(index));
+                    handleDeleteAddress(index);
                   }}
                 >
                   <Text>Delete Address</Text>

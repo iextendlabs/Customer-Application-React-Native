@@ -14,7 +14,10 @@ import Header from "../Common/Header";
 import { appIndex, BaseUrl } from "../Config/Api";
 import ProductItem from "../Common/ProductItem";
 import { useDispatch, useSelector } from "react-redux";
-import { addItemToCart, addItemToWishlist } from "../redux/actions/Actions";
+import {
+  addItemToCart,
+  addItemToWishlist,
+} from "../redux/actions/Actions";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
 
@@ -33,9 +36,11 @@ export default function Main() {
   }, []);
 
   const cartData = useSelector((state) => state.cart);
+  const wishlistData = useSelector((state) => state.wishlist);
 
   const onAddToCart = async (item) => {
     const user = await AsyncStorage.getItem("@user_id");
+
     if (user === "" || user === null) {
       navigation.navigate("Login");
     } else {
@@ -43,23 +48,31 @@ export default function Main() {
 
       if (!isItemInCart) {
         dispatch(addItemToCart(item));
+        saveToAsyncStorage("@cartData", [...cartData, item]);
       } else {
         console.log("Item is already in the cart");
       }
     }
   };
 
-  const wishlistData = useSelector((state) => state.wishlist);
-
-  const onAddToWishList = (item) => {
+  const onAddToWishList = async (item) => {
     const isItemInWishlist = wishlistData.some(
       (wishlistItem) => wishlistItem.id === item.id
     );
 
     if (!isItemInWishlist) {
       dispatch(addItemToWishlist(item));
+      saveToAsyncStorage("@wishlistData", [...wishlistData, item]);
     } else {
       console.log("Item is already in the Wishlist");
+    }
+  };
+
+  const saveToAsyncStorage = async (key, data) => {
+    try {
+      await AsyncStorage.setItem(key, JSON.stringify(data));
+    } catch (error) {
+      console.error(`Error saving to ${key}:`, error);
     }
   };
 
@@ -78,14 +91,13 @@ export default function Main() {
         setError("Please try again.");
       }
     } catch (error) {
-      // Handle error
       setError("An error occurred while fetching data.");
     }
   };
 
   const filterServices = (selectedCategory) => {
     const filteredServices = services.filter(
-      (service) => parseFloat(service.category_id) == selectedCategory.id
+      (service) => parseFloat(service.category_id) === selectedCategory.id
     );
     setSelectedServices(filteredServices);
   };
@@ -103,6 +115,7 @@ export default function Main() {
       </View>
     );
   }
+
   return (
     <View style={{ flex: 1 }}>
       <Header title={"Lipslay"} />
@@ -112,7 +125,7 @@ export default function Main() {
             data={sliderImages}
             horizontal
             showsHorizontalScrollIndicator={false}
-            keyExtractor={(item, index) => index.toString()} // Added keyExtractor
+            keyExtractor={(item, index) => index.toString()}
             renderItem={({ item }) => (
               <Image
                 source={{
@@ -134,24 +147,22 @@ export default function Main() {
             data={categories}
             horizontal
             showsHorizontalScrollIndicator={false}
-            keyExtractor={(item, index) => index.toString()} // Added keyExtractor
-            renderItem={({ item }) => {
-              return (
-                <TouchableOpacity
-                  style={{
-                    padding: 10,
-                    borderWidth: 1,
-                    marginLeft: 5,
-                    borderRadius: 10,
-                  }}
-                  onPress={() => {
-                    filterServices(item);
-                  }}
-                >
-                  <Text style={{ color: "#000" }}>{item.title}</Text>
-                </TouchableOpacity>
-              );
-            }}
+            keyExtractor={(item, index) => index.toString()}
+            renderItem={({ item }) => (
+              <TouchableOpacity
+                style={{
+                  padding: 10,
+                  borderWidth: 1,
+                  marginLeft: 5,
+                  borderRadius: 10,
+                }}
+                onPress={() => {
+                  filterServices(item);
+                }}
+              >
+                <Text style={{ color: "#000" }}>{item.title}</Text>
+              </TouchableOpacity>
+            )}
           />
         </View>
         <Text
@@ -168,18 +179,16 @@ export default function Main() {
         <View style={{ marginTop: 10, marginBottom: 70 }}>
           <FlatList
             data={selectedServices}
-            showsVerticalScrollIndicator={false} // Remove horizontal prop
+            showsVerticalScrollIndicator={false}
             numColumns={2}
-            keyExtractor={(item, index) => index.toString()} // Added keyExtractor
-            renderItem={({ item }) => {
-              return (
-                <ProductItem
-                  item={item}
-                  onAddToCart={onAddToCart}
-                  onAddToWishList={onAddToWishList}
-                />
-              );
-            }}
+            keyExtractor={(item, index) => index.toString()}
+            renderItem={({ item }) => (
+              <ProductItem
+                item={item}
+                onAddToCart={onAddToCart}
+                onAddToWishList={onAddToWishList}
+              />
+            )}
           />
         </View>
       </ScrollView>

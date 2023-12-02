@@ -17,16 +17,15 @@ import axios from "axios";
 import { Picker } from "@react-native-picker/picker";
 import CommonButton from "../Common/CommonButton";
 import { clearCart } from "../redux/actions/Actions";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function Checkout() {
   const dispatch = useDispatch();
   const navigation = useNavigation();
-  const cartData = useSelector((state) => state.cart);
-  const personalInformationData = useSelector(
-    (state) => state.personalInformation
-  );
+  const [cartData, setCartData] = useState([]);
+  const [personalInformationData, setPersonalInformation] = useState([]);
+  const [addressData, setAddressData] = useState([]);
   const cartDataIds = cartData.map((item) => item.id);
-  const addressData = useSelector((state) => state.address);
   const [selectedAddress, setSelectedAddress] = useState(null);
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedBuilding, setSelectedBuilding] = useState(null);
@@ -56,16 +55,31 @@ export default function Checkout() {
   const [orderTotal, setOrderTotal] = useState(null);
 
   useEffect(() => {
-    // If personalInformationData is available, set values from it
-    if (personalInformationData && personalInformationData.length > 0) {
-      const info = personalInformationData[0];
-      setName(info.name || null);
-      setEmail(info.email || null);
-      setNumber(info.number || null);
-      setWhatsapp(info.whatsapp || null);
-      setGender(info.gender || null);
+    getData();
+  }, []);
+  const getData = async () => {
+    try {
+      const cartJsonString = await AsyncStorage.getItem("@cartData");
+      const parsedCartData = JSON.parse(cartJsonString) || [];
+      setCartData(parsedCartData);
+
+      const infoJsonString = await AsyncStorage.getItem("@personalInformation");
+      const parsedInfoData = JSON.parse(infoJsonString) || [];
+      setPersonalInformation(parsedInfoData);
+      setName(parsedInfoData.name || null);
+      setEmail(parsedInfoData.email || null);
+      setNumber(parsedInfoData.number || null);
+      setWhatsapp(parsedInfoData.whatsapp || null);
+      setGender(parsedInfoData.gender || null);
+
+      const addressJsonString = await AsyncStorage.getItem("@addressData");
+      const parsedAddressData = JSON.parse(addressJsonString) || [];
+      setAddressData(parsedAddressData);
+
+    } catch (error) {
+      console.error("Error fetching cart data:", error);
     }
-  }, [personalInformationData]);
+  };
   const getServicesTotal = () => {
     return cartData.reduce((total, item) => total + parseFloat(item.price), 0);
   };

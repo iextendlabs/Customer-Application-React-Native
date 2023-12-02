@@ -1,23 +1,61 @@
-import { FlatList, StyleSheet, Text, View } from "react-native";
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import { FlatList, StyleSheet, Text, View } from "react-native";
 import CartItem from "../Common/CartItem";
 import { removeFromWishlist, addItemToCart } from "../redux/actions/Actions";
 import Header from "../Common/Header";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useNavigation } from "@react-navigation/native";
 
 export default function Wishlist() {
+  const navigation = useNavigation();
   const dispatch = useDispatch();
   const wishlistData = useSelector((state) => state.wishlist);
 
+  const removeItemFromWishlist = async (item, index) => {
+    try {
+      const jsonString = await AsyncStorage.getItem("@wishlistData");
+      const wishlistData = JSON.parse(jsonString) || [];
+
+      const updatedWishlistData = wishlistData.filter(
+        (wishlistItem) => wishlistItem.id !== item.id
+      );
+
+      await AsyncStorage.setItem(
+        "@wishlistData",
+        JSON.stringify(updatedWishlistData)
+      );
+
+      dispatch(removeFromWishlist(index));
+    } catch (error) {
+      console.error("Error removing item from wishlist:", error);
+    }
+  };
+
   const cartData = useSelector((state) => state.cart);
 
-  const onAddToCart = (item) => {
-    const isItemInCart = cartData.some((cartItem) => cartItem.id === item.id);
+  const onAddToCart = async (item) => {
+    const user = await AsyncStorage.getItem("@user_id");
 
-    if (!isItemInCart) {
-      dispatch(addItemToCart(item));
+    if (user === "" || user === null) {
+      navigation.navigate("Login");
     } else {
-      console.log("Item is already in the cart");
+      const isItemInCart = cartData.some((cartItem) => cartItem.id === item.id);
+
+      if (!isItemInCart) {
+        dispatch(addItemToCart(item));
+        saveToAsyncStorage("@cartData", [...cartData, item]);
+      } else {
+        console.log("Item is already in the cart");
+      }
+    }
+  };
+
+  const saveToAsyncStorage = async (key, data) => {
+    try {
+      await AsyncStorage.setItem(key, JSON.stringify(data));
+    } catch (error) {
+      console.error(`Error saving to ${key}:`, error);
     }
   };
 
@@ -27,18 +65,14 @@ export default function Wishlist() {
       {wishlistData.length !== 0 ? (
         <FlatList
           data={wishlistData}
-          renderItem={({ item, index }) => {
-            return (
-              <CartItem
-                item={item}
-                isWishlist={true}
-                onAddToCart={onAddToCart}
-                onRemoveFromWishlist={() => {
-                  dispatch(removeFromWishlist(index));
-                }}
-              />
-            );
-          }}
+          renderItem={({ item, index }) => (
+            <CartItem
+              item={item}
+              isWishlist={true}
+              onAddToCart={() => onAddToCart(item)}
+              onRemoveFromWishlist={() => removeItemFromWishlist(item, index)}
+            />
+          )}
         />
       ) : (
         <View
@@ -47,7 +81,7 @@ export default function Wishlist() {
           <Text
             style={{
               alignItems: "center",
-              fontWeight: 600,
+              fontWeight: "600",
               marginTop: 20,
               fontSize: 20,
               color: "#000",
