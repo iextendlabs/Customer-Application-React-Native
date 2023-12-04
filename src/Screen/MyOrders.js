@@ -2,7 +2,6 @@ import {
   StyleSheet,
   Text,
   View,
-  ActivityIndicator,
   FlatList,
   TouchableOpacity,
 } from "react-native";
@@ -11,6 +10,7 @@ import axios from "axios";
 import { getOrdersUrl } from "../Config/Api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
+import Splash from '../Screen/Splash';
 
 export default function MyOrders() {
   const navigation = useNavigation();
@@ -39,17 +39,7 @@ export default function MyOrders() {
   };
 
   if (loading) {
-    return (
-      <View
-        style={{
-          flex: 1,
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <ActivityIndicator size="large" color="#0000ff" />
-      </View>
-    );
+    return Splash();
   }
 
   return (

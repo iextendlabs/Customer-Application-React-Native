@@ -2,10 +2,8 @@ import {
   StyleSheet,
   Text,
   View,
-  ActivityIndicator,
   ScrollView,
   FlatList,
-  TouchableOpacity,
 } from "react-native";
 import React from "react";
 import Footer from "../Common/Footer";
@@ -18,6 +16,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
 import { addItemToCart, addItemToWishlist } from "../redux/actions/Actions";
 import CustomTextInput from "../Common/CustomTextInput";
+import Splash from '../Screen/Splash';
 
 export default function Search() {
   const data = useSelector((state) => state);
@@ -95,17 +94,7 @@ export default function Search() {
     }
   };
   if (loading) {
-    return (
-      <View
-        style={{
-          flex: 1,
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <ActivityIndicator size="large" color="#0000ff" />
-      </View>
-    );
+      return Splash();
   }
   return (
     <View style={{ flex: 1 , backgroundColor: '#FFCACC' }}>

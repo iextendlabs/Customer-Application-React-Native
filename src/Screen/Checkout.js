@@ -7,7 +7,6 @@ import {
   Image,
   TouchableOpacity,
   ScrollView,
-  ActivityIndicator,
 } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
 import { BaseUrl, availableTimeSlotUrl, AddOrderUrl } from "../Config/Api";
@@ -18,6 +17,7 @@ import { Picker } from "@react-native-picker/picker";
 import CommonButton from "../Common/CommonButton";
 import { clearCart } from "../redux/actions/Actions";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import Splash from '../Screen/Splash';
 
 export default function Checkout() {
   const dispatch = useDispatch();
@@ -789,17 +789,7 @@ export default function Checkout() {
     </View>
   );
   if (loading) {
-    return (
-      <View
-        style={{
-          flex: 1,
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <ActivityIndicator size="large" color="#0000ff" />
-      </View>
-    );
+    return Splash();
   }
   return (
     <ScrollView style={{ flex: 1 }}>

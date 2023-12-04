@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Text, ActivityIndicator, View } from "react-native";
+import { Text, View } from "react-native";
 import CustomTextInput from "../Common/CustomTextInput";
 import CommonButton from "../Common/CommonButton";
 import { useNavigation } from "@react-navigation/native";
@@ -9,6 +9,7 @@ import { Picker } from "@react-native-picker/picker";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useDispatch } from "react-redux";
 import { addAddress } from "../redux/actions/Actions";
+import Splash from "../Screen/Splash";
 
 export default function AddAddress() {
   const dispatch = useDispatch();
@@ -79,11 +80,7 @@ export default function AddAddress() {
   };
 
   if (loading) {
-    return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <ActivityIndicator size="large" color="#0000ff" />
-      </View>
-    );
+    return Splash();
   }
 
   return (

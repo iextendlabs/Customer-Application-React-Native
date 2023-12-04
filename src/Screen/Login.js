@@ -1,4 +1,4 @@
-import { View, Text, Image, ActivityIndicator } from "react-native";
+import { View, Text, Image } from "react-native";
 import React, { useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import CustomTextInput from "../Common/CustomTextInput";
@@ -7,6 +7,7 @@ import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { LoginUrl } from "../Config/Api";
 import axios from "axios";
 import { useEffect } from "react";
+import Splash from "../Screen/Splash";
 
 const Login = () => {
   const navigation = useNavigation();
@@ -41,7 +42,7 @@ const Login = () => {
         username: email,
         password: password,
       });
-      
+
       if (response.status === 200) {
         const userId = response.data.user.id;
         const userName = response.data.user.name;
@@ -58,7 +59,7 @@ const Login = () => {
         };
         navigation.reset({
           index: 0,
-          routes: [{ name: 'Main' }],
+          routes: [{ name: "Main" }],
         });
       } else {
         setError("Login failed. Please try again.");
@@ -69,6 +70,10 @@ const Login = () => {
     setLoading(false);
   };
 
+  if (loading) {
+    return Splash();
+  }
+  
   return (
     <View style={{ flex: 1 }}>
       <Image
@@ -92,18 +97,6 @@ const Login = () => {
         Login
       </Text>
 
-      {loading && (
-        <View
-          style={{
-            flex: 1,
-            justifyContent: "center",
-            alignItems: "center",
-            marginTop: 20,
-          }}
-        >
-          <ActivityIndicator size="large" color="#0000ff" />
-        </View>
-      )}
       {error && (
         <Text style={{ marginTop: 10, marginLeft: 40, color: "red" }}>
           {error}

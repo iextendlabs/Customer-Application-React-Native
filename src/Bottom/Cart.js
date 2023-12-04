@@ -11,7 +11,6 @@ import { useSelector, useDispatch } from "react-redux";
 import CartItem from "../Common/CartItem";
 import { removeFromCart, addItemToWishlist } from "../redux/actions/Actions";
 import Header from "../Common/Header";
-import CommonButton from "../Common/CommonButton";
 import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Footer from "../Common/Footer";

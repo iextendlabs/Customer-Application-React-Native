@@ -1,4 +1,4 @@
-import { View, Text, Image, ActivityIndicator } from "react-native";
+import { View, Text, Image } from "react-native";
 import React, { useState } from "react";
 import CustomTextInput from "../Common/CustomTextInput";
 import CommonButton from "../Common/CommonButton";
@@ -6,6 +6,7 @@ import { useNavigation } from "@react-navigation/native";
 import { SignupUrl } from "../Config/Api";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import Splash from "../Screen/Splash";
 
 const Signup = () => {
   const navigation = useNavigation();
@@ -92,20 +93,11 @@ const Signup = () => {
     }
     setLoading(false);
   };
-
+  if (loading) {
+    return Splash();
+  }
   return (
     <View style={{ flex: 1 }}>
-      {loading && (
-        <View
-          style={{
-            justifyContent: "center",
-            alignItems: "center",
-            marginTop: 30,
-          }}
-        >
-          <ActivityIndicator size="large" color="#0000ff" />
-        </View>
-      )}
       <Image
         source={require("../images/logo.png")}
         style={{

@@ -6,7 +6,6 @@ import {
   Image,
   FlatList,
   TouchableOpacity,
-  ActivityIndicator,
   ScrollView,
 } from "react-native";
 import axios from "axios";
