@@ -8,6 +8,7 @@ const getOrdersUrl = BaseUrl + "api/getOrders?";
 const getServiceUrl = BaseUrl + "api/getServiceDetails?service_id=";
 const editOrderUrl = BaseUrl + "api/editOrder?";
 const AddOrderUrl = BaseUrl + "api/addOrder";
+const UpdateOrderUrl = BaseUrl + "api/updateOrder";
 const getStaffZoneUrl = BaseUrl + "api/getZones";
 const filterServicesUrl = BaseUrl + "api/filterServices?";
 export {
@@ -20,6 +21,7 @@ export {
   getOrdersUrl,
   getStaffZoneUrl,
   editOrderUrl,
+  UpdateOrderUrl,
   filterServicesUrl,
   getServiceUrl
 };

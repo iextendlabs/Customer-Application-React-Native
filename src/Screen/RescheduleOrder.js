@@ -11,16 +11,21 @@ import {
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useRoute } from "@react-navigation/native";
-import { editOrderUrl, BaseUrl } from "../Config/Api";
+import {
+  editOrderUrl,
+  availableTimeSlotUrl,
+  UpdateOrderUrl,
+  BaseUrl,
+} from "../Config/Api";
 import { useNavigation } from "@react-navigation/native";
 import { useSelector, useDispatch } from "react-redux";
 import { Calendar } from "react-native-calendars";
 import { Picker } from "@react-native-picker/picker";
 import CommonButton from "../Common/CommonButton";
 import { clearCart } from "../redux/actions/Actions";
+
 export default function RescheduleOrder() {
   const route = useRoute();
-  console.log(route.params.order_id);
 
   const navigation = useNavigation();
   const [order, setOrder] = useState([]);
@@ -51,6 +56,7 @@ export default function RescheduleOrder() {
   const [gender, setGender] = useState(null);
   const [servicesTotal, setServicesTotal] = useState(null);
   const [orderTotal, setOrderTotal] = useState(null);
+
   useEffect(() => {
     getOrders();
   }, []);
@@ -70,8 +76,12 @@ export default function RescheduleOrder() {
         setSelectedDate(data.order.date);
         setSelectedStaffId(data.order.service_staff_id);
         setSelectedStaff(data.order.staff_name);
-        setSelectedSlotId(data.time_slot_id);
-        setSelectedSlotValue(data.time_slot_value);
+        setSelectedSlotId(data.order.time_slot_id);
+        setSelectedSlotValue(data.order.time_slot_value);
+        setServicesTotal(data.orderTotal.sub_total);
+        setOrderTotal(data.order.total_amount);
+        setSelectedArea(data.order.area);
+        setSelectedStaffCharges(data.orderTotal.staff_charges);
         setLoading(false);
       } else {
         setError("Please try again.");
@@ -80,6 +90,58 @@ export default function RescheduleOrder() {
       setError("An error occurred while fetching data.");
     }
   };
+
+  const handleDateSelect = (date) => {
+    setSelectedDate(date.dateString);
+    fetchAvailableTimeSlots(date.dateString, selectedArea);
+  };
+
+  const fetchAvailableTimeSlots = async (date, area) => {
+    setLoading(true);
+    setError(null);
+    setSelectedStaff(null);
+    setSelectedStaffId(null);
+    setSelectedStaffCharges(null);
+    setTransportCharges(null);
+    setAvailableStaff([]);
+    setAvailableSlot([]);
+    try {
+      const response = await axios.get(
+        `${availableTimeSlotUrl}area=${area}&date=${date}`
+      );
+
+      if (response.status === 200) {
+        setAvailableStaff(response.data.availableStaff);
+        setAvailableSlot(response.data.slots);
+        setTransportCharges(parseFloat(response.data.transport_charges));
+      } else if (response.status === 201) {
+        setError(response.data.msg);
+      } else {
+        setError("Something Wrong! Please try again.");
+      }
+    } catch (error) {
+      console.error("Error fetching Staff:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const selectStaff = (item) => {
+    setSelectedStaff(item.name);
+    setSelectedStaffId(item.id);
+    let staff_charges = 0; // Initialize staff_charges outside of if-else block
+
+    if (item.staff.charges) {
+      staff_charges = parseFloat(item.staff.charges);
+    }
+    setSelectedStaffCharges(staff_charges);
+    setOrderTotal(
+      parseFloat(servicesTotal) +
+        parseFloat(staff_charges) +
+        parseFloat(transportCharges)
+    );
+  };
+
   const renderDate = () => (
     <View>
       <Text
@@ -116,7 +178,6 @@ export default function RescheduleOrder() {
       <Text
         style={{
           margin: 10,
-
           fontWeight: "800",
         }}
         onPress={() => {
@@ -154,6 +215,7 @@ export default function RescheduleOrder() {
                       source={{
                         uri: `${BaseUrl}staff-images/${item.staff.image}`,
                       }}
+                      defaultSource={require("../images/logo.png")}
                       style={{
                         width: 70,
                         height: 70,
@@ -198,6 +260,7 @@ export default function RescheduleOrder() {
                     source={{
                       uri: `${BaseUrl}staff-images/${item.staff.image}`,
                     }}
+                    defaultSource={require("../images/logo.png")}
                     style={{
                       width: 70,
                       height: 70,
@@ -245,73 +308,74 @@ export default function RescheduleOrder() {
       />
     </View>
   );
+
   const renderSlot = () => (
     <View>
-      {availableSlot.length === 0 ? (
-        <Text style={{ margin: 10, color: "red" }}>
-          No Staff Availalbe for the Selected Date / Zone
-        </Text>
-      ) : (
-        <View>
-          <Text
-            style={{
-              margin: 10,
-              fontWeight: "800",
-            }}
-            onPress={() => {
-              setSelectedSlot(null);
-              setSelectedSlotValue(null);
-              setSelectedSlotId(null);
-            }}
-          >
-            Slot: {selectedSlotValue && selectedSlotValue}
-          </Text>
-          {selectedSlot === null && (
-            <View
-              style={{
-                height: 50,
-                width: "80%",
-                alignSelf: "center",
-                borderWidth: 0.5,
-                borderColor: "#8e8e8e",
-              }}
-            >
-              <Picker
-                selectedValue={
-                  selectedSlot
-                    ? selectedSlot[0] + "," + selectedSlot[1]
-                    : undefined
-                }
-                onValueChange={(itemValue, itemIndex) => {
-                  setSelectedSlot(itemValue);
-
-                  // Add a check to ensure itemValue is defined
-                  if (itemValue) {
-                    const [slotId, timeRange] = itemValue.split(",");
-                    setSelectedSlotId(slotId);
-                    setSelectedSlotValue(timeRange);
-                  }
+          {availableSlot.length === 0 ? (
+            <Text style={{ margin: 10, color: "red" }}>
+              No Staff Available for the Selected Date / Zone
+            </Text>
+          ) : (
+            <View>
+              <Text
+                style={{
+                  margin: 10,
+                  fontWeight: "800",
+                }}
+                onPress={() => {
+                  setSelectedSlot(null);
+                  setSelectedSlotValue(null);
+                  setSelectedSlotId(null);
                 }}
               >
-                <Picker.Item label="Select Time Slot" />
-                {Object.keys(availableSlot).map((slotIndex) => {
-                  // Display slots only for the selected staff
-                  if (slotIndex == selectedStaffId) {
-                    return availableSlot[slotIndex].map((slot) => (
-                      <Picker.Item
-                        key={slot[0]}
-                        label={slot[1]}
-                        value={slot[0] + "," + slot[1]} // Keep the value as a string
-                      />
-                    ));
+                Slot: {selectedSlotValue && selectedSlotValue}
+              </Text>
+              {selectedSlotValue === null && (
+              <View
+                style={{
+                  height: 50,
+                  width: "80%",
+                  alignSelf: "center",
+                  borderWidth: 0.5,
+                  borderColor: "#8e8e8e",
+                }}
+              >
+                <Picker
+                  selectedValue={
+                    selectedSlot
+                      ? selectedSlot[0] + "," + selectedSlot[1]
+                      : undefined
                   }
-                  return null;
-                })}
-              </Picker>
+                  onValueChange={(itemValue, itemIndex) => {
+                    setSelectedSlot(itemValue);
+
+                    // Add a check to ensure itemValue is defined
+                    if (itemValue) {
+                      const [slotId, timeRange] = itemValue.split(",");
+                      setSelectedSlotId(slotId);
+                      setSelectedSlotValue(timeRange);
+                    }
+                  }}
+                >
+                  <Picker.Item label="Select Time Slot" value={null} />
+                  {Object.keys(availableSlot).map((slotIndex) => {
+                    // Display slots only for the selected staff
+                    if (slotIndex == selectedStaffId) {
+                      return availableSlot[slotIndex].map((slot) => (
+                        <Picker.Item
+                          key={slot[0]}
+                          label={slot[1]}
+                          value={slot[0] + "," + slot[1]} // Keep the value as a string
+                        />
+                      ));
+                    }
+                    return null;
+                  })}
+                </Picker>
+              </View>
+              )}
             </View>
           )}
-        </View>
-      )}
     </View>
   );
 
@@ -337,9 +401,7 @@ export default function RescheduleOrder() {
           width: "80%",
         }}
       >
-        <Text style={{ padding: 10 }}>
-          Product Total: AED {getServicesTotal()}
-        </Text>
+        <Text style={{ padding: 10 }}>Product Total: AED {servicesTotal}</Text>
         <Text style={{ padding: 10 }}>
           Staff Charges: AED {selectedStaffCharge ? selectedStaffCharge : 0}
         </Text>
@@ -355,6 +417,28 @@ export default function RescheduleOrder() {
       </View>
     </View>
   );
+
+  const handleSave = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.post(UpdateOrderUrl, {
+        service_staff_id: selectedStaffId,
+        date: selectedDate,
+        id: route.params.order_id,
+        time_slot_id: selectedSlotId,
+      });
+
+      if (response.status === 200) {
+        navigation.goBack();
+      } else {
+        setError("Order failed. Please try again.");
+      }
+    } catch (error) {
+      // setError("These credentials do not match our records.");
+    }
+    setLoading(false);
+  };
+
   if (loading) {
     return (
       <View
@@ -368,6 +452,7 @@ export default function RescheduleOrder() {
       </View>
     );
   }
+
   return (
     <ScrollView style={{ flex: 1 }}>
       <View style={{ flex: 1 }}>
@@ -394,7 +479,7 @@ export default function RescheduleOrder() {
                                 </Text>
                               )}
                               <CommonButton
-                                title={"Place Order"}
+                                title={"Update Order"}
                                 bgColor={"#000"}
                                 textColor={"#fff"}
                                 onPress={() => {

@@ -92,19 +92,13 @@ export default function Details() {
     }
   };
   const onAddToCart = async (item) => {
-    const user = await AsyncStorage.getItem("@user_id");
+    const isItemInCart = cartData.some((cartItem) => cartItem.id === item.id);
 
-    if (user === "" || user === null) {
-      navigation.navigate("Login");
+    if (!isItemInCart) {
+      dispatch(addItemToCart(item));
+      saveToAsyncStorage("@cartData", [...cartData, item]);
     } else {
-      const isItemInCart = cartData.some((cartItem) => cartItem.id === item.id);
-
-      if (!isItemInCart) {
-        dispatch(addItemToCart(item));
-        saveToAsyncStorage("@cartData", [...cartData, item]);
-      } else {
-        console.log("Item is already in the cart");
-      }
+      console.log("Item is already in the cart");
     }
   };
 
@@ -157,6 +151,7 @@ export default function Details() {
             source={{
               uri: BaseUrl + "service-images/" + service.image,
             }}
+            defaultSource={require("../images/logo.png")}
             style={{
               width: "100%",
               height: 200,

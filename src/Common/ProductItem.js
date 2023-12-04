@@ -37,6 +37,7 @@ export default function ProductItem({ item }) {
         source={{
           uri: BaseUrl + "service-images/" + item.image,
         }}
+        defaultSource={require('../images/logo.png')}
         style={{
           width: "100%",
           height: "60%",

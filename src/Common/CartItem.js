@@ -19,6 +19,7 @@ export default function CartItem({ item, onRemoveFromCart, onAddToCart , onAddTo
         source={{
           uri: BaseUrl + "service-images/" + item.image,
         }}
+        defaultSource={require('../images/logo.png')}
         style={{
           width: "100%",
           height: "50%",

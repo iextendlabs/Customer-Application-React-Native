@@ -97,24 +97,26 @@ export default function MyOrders() {
                 <Text>Staff: {item.staff_name}</Text>
                 <Text>Time Slot: {item.time_slot_value}</Text>
               </View>
-              {/* <TouchableOpacity
-                style={{
-                  flex: 1,
-                  borderWidth: 0.2,
-                  borderRadius: 4,
-                  padding: 7,
-                  marginRight: 20,
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-                onPress={() => {
-                  navigation.navigate("RescheduleOrder", {
-                    order_id: item.id,
-                  });
-                }}
-              >
-                <Text>Reschedule</Text>
-              </TouchableOpacity> */}
+              {item.status === "Pending" && (
+                <TouchableOpacity
+                  style={{
+                    flex: 1,
+                    borderWidth: 0.2,
+                    borderRadius: 4,
+                    padding: 7,
+                    marginRight: 20,
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                  onPress={() => {
+                    navigation.navigate("RescheduleOrder", {
+                      order_id: item.id,
+                    });
+                  }}
+                >
+                  <Text>Reschedule</Text>
+                </TouchableOpacity>
+              )}
             </View>
           )}
         />

@@ -135,6 +135,7 @@ export default function Checkout() {
     if (item.staff.charges) {
       staff_charges = parseFloat(item.staff.charges);
     }
+    setSelectedStaffCharges(staff_charges);
     // setAvailableStaff([]);
     setServicesTotal(getServicesTotal());
     setOrderTotal(
@@ -198,6 +199,7 @@ export default function Checkout() {
           >
             <Image
               source={{ uri: `${BaseUrl}service-images/${item.image}` }}
+              defaultSource={require('../images/logo.png')}
               style={{ width: 70, height: 70, marginLeft: 10 }}
             />
             <View style={{ padding: 10 }}>
@@ -583,6 +585,7 @@ export default function Checkout() {
                       source={{
                         uri: `${BaseUrl}staff-images/${item.staff.image}`,
                       }}
+                      defaultSource={require('../images/logo.png')}
                       style={{
                         width: 70,
                         height: 70,
@@ -627,6 +630,7 @@ export default function Checkout() {
                     source={{
                       uri: `${BaseUrl}staff-images/${item.staff.image}`,
                     }}
+                    defaultSource={require('../images/logo.png')}
                     style={{
                       width: 70,
                       height: 70,

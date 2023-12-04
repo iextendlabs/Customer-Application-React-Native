@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Customer-app",
-    "slug": "Customer-app",
+    "name": "Lipslay",
+    "slug": "Lipslay",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -34,11 +34,6 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    },
-    "extra": {
-      "eas": {
-        "projectId": "fa02da39-b854-4149-8b57-e4d10ba8d72c"
-      }
     }
   }
 }
