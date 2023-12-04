@@ -34,11 +34,13 @@ export default function Profile() {
       await AsyncStorage.removeItem("@user_email");
       // dispatch(clearCart());
       // dispatch(clearWishlist());
-      // dispatch(clearAddress());
-      // dispatch(clearPersonalInformation());
+      dispatch(clearAddress());
+      dispatch(clearPersonalInformation());
+      await AsyncStorage.removeItem("@personalInformation");
+      await AsyncStorage.removeItem("@addressData");
       navigation.reset({
         index: 0,
-        routes: [{ name: 'Login' }],
+        routes: [{ name: "Login" }],
       });
     } catch (error) {
       console.log("Error occurred during logout:", error);
@@ -46,13 +48,7 @@ export default function Profile() {
   };
   return (
     <View style={{ flex: 1 }}>
-      <Header
-        title={"Profile"}
-        onPress={() => {
-          logout();
-        }}
-        isProfile={true}
-      />
+      <Header title={"Profile"} />
       <Image
         source={require("../images/profile.png")}
         style={{ width: 80, height: 80, alignSelf: "center", marginTop: 30 }}
@@ -109,7 +105,18 @@ export default function Profile() {
       >
         <Text>My Order</Text>
       </TouchableOpacity>
-      <Footer/>
+      <TouchableOpacity
+        onPress={() => {
+          logout();
+        }}
+      >
+        <Image
+          source={require("../images/logout.png")}
+          style={{ width: 30, height: 30, alignSelf: "center", margin: 30 }}
+        />
+      </TouchableOpacity>
+
+      <Footer />
     </View>
   );
 }

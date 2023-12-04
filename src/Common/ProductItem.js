@@ -23,8 +23,12 @@ export default function ProductItem({ item }) {
     >
       <Text
         style={{
-          backgroundColor: '#000',
-          color: '#FFF',fontSize: 15, fontWeight: 600, height: 50,textAlign: 'center'
+          backgroundColor: "#000",
+          color: "#FFF",
+          fontSize: 15,
+          fontWeight: 600,
+          height: 50,
+          textAlign: "center",
         }}
       >
         {item.name.substring(0, 40)}
@@ -51,7 +55,23 @@ export default function ProductItem({ item }) {
           alignItems: "center",
         }}
       >
-        <Text style={{ fontSize: 15, fontWeight: "600" }}>AED{item.price}</Text>
+        <Text style={{ fontSize: 15, fontWeight: "600" }}>
+          AED{" "}
+          {item.discount ? (
+            <>
+              <Text style={{ marginRight: 5, color: "#333" }}>
+                {item.discount}
+              </Text>
+              <Text
+                style={{ textDecorationLine: "line-through", color: "#999" }}
+              >
+                {item.price}
+              </Text>
+            </>
+          ) : (
+            item.price
+          )}
+        </Text>
         <Text>{item.duration}</Text>
       </View>
     </TouchableOpacity>

@@ -13,12 +13,12 @@ import { addAddress } from "../redux/actions/Actions";
 export default function AddAddress() {
   const dispatch = useDispatch();
   const navigation = useNavigation();
-  const [building, setBuilding] = useState("Burj Khalifa");
-  const [villa, setVilla] = useState("84");
-  const [street, setStreet] = useState("Souk Al Bahar Bridge");
+  const [building, setBuilding] = useState("");
+  const [villa, setVilla] = useState("");
+  const [street, setStreet] = useState("");
   const [area, setArea] = useState("");
-  const [landmark, setLandmark] = useState("Mazaya Center");
-  const [city, setCity] = useState("Dubai");
+  const [landmark, setLandmark] = useState("");
+  const [city, setCity] = useState("");
   const [error, setError] = useState("");
   const [zones, setZones] = useState([]);
   const [loading, setLoading] = useState(true);

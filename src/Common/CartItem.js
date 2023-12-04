@@ -41,7 +41,23 @@ export default function CartItem({ item, onRemoveFromCart, onAddToCart , onAddTo
           alignItem: "center",
         }}
       >
-        <Text style={{ fontSize: 15, fontWeight: "600" }}>AED{item.price}</Text>
+        <Text style={{ fontSize: 15, fontWeight: "600" }}>
+          AED{" "}
+          {item.discount ? (
+            <>
+              <Text style={{ marginRight: 5, color: "#333" }}>
+                {item.discount}
+              </Text>
+              <Text
+                style={{ textDecorationLine: "line-through", color: "#999" }}
+              >
+                {item.price}
+              </Text>
+            </>
+          ) : (
+            item.price
+          )}
+        </Text>
         {isWishlist ? (
           <TouchableOpacity
           style={{

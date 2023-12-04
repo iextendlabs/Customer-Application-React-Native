@@ -80,12 +80,15 @@ export default function Main() {
       }}
     >
       <Image
-        source= {require('../images/category/Makup.png')}
-        style={{
-          width: 80,
-          height: 80,
-          borderRadius: 40, // Half of the width and height to make it a circle
-        }}
+      source={{
+        uri: BaseUrl + "service-category-icons/" + item.icon,
+      }}
+      defaultSource={require('../images/category/Makup.png')}
+      style={{
+        width: 80,
+        height: 80,
+        borderRadius: 40
+      }}
       />
       <Text style={{ marginTop: 8, textAlign: 'center' }}>{item.title}</Text>
     </TouchableOpacity>
@@ -131,11 +134,11 @@ export default function Main() {
             marginTop: 10,
             marginLeft: 20,
             color: "#000",
-            fontSize: 16,
-            fontWeight: "600",
+            fontSize: 18,
+            fontWeight: "700",
           }}
         >
-          Products
+          Offers
         </Text>
         <View style={{ marginTop: 10, marginBottom: 70 }}>
           <FlatList

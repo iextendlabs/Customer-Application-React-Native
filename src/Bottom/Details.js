@@ -3,8 +3,8 @@ import {
   View,
   ScrollView,
   Image,
-  StyleSheet ,
-  TouchableOpacity 
+  StyleSheet,
+  TouchableOpacity,
 } from "react-native";
 import React from "react";
 import Footer from "../Common/Footer";
@@ -17,42 +17,58 @@ import { addItemToCart, addItemToWishlist } from "../redux/actions/Actions";
 import { useDispatch, useSelector } from "react-redux";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
-import HTML from 'react-native-render-html';
+import HTML from "react-native-render-html";
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFF', // Adjust the background color as needed
+    backgroundColor: "#FFF", // Adjust the background color as needed
   },
   image: {
-    width: '100%',
+    width: "100%",
     height: 200,
-    resizeMode: 'cover',
+    resizeMode: "cover",
   },
   contentContainer: {
     padding: 20,
   },
+
   price: {
+    color: "#333",
     fontSize: 20,
-    fontWeight: 'bold',
+    fontWeight: "bold",
+    marginBottom: 10,
+  },
+  discountedPrice: {
+    marginRight: 5,
+    color: "#333",
+  },
+  originalPrice: {
+    textDecorationLine: "line-through",
+    color: "#999",
+  },
+
+  duration: {
+    fontSize: 20,
+    fontWeight: "bold",
     marginBottom: 10,
   },
   addToCartButton: {
-    backgroundColor: '#3498db',
+    backgroundColor: "#3498db",
     padding: 10,
     borderRadius: 5,
-    alignItems: 'center',
+    alignItems: "center",
     marginBottom: 20,
   },
   addToCartButtonText: {
-    color: '#FFF',
+    color: "#FFF",
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   wishButton: {
-    backgroundColor: '#ff0437',
+    backgroundColor: "#ff0437",
     padding: 10,
     borderRadius: 5,
-    alignItems: 'center',
+    alignItems: "center",
     marginBottom: 20,
   },
   description: {
@@ -65,7 +81,7 @@ export default function Details() {
   const route = useRoute();
   const [loading, setLoading] = useState(false);
   const [service, setService] = useState(null);
-  const [description, setDescription] = useState('Loading...');
+  const [description, setDescription] = useState("Loading...");
   const cartData = useSelector((state) => state.cart);
   const wishlistData = useSelector((state) => state.wishlist);
   const saveToAsyncStorage = async (key, data) => {
@@ -105,16 +121,16 @@ export default function Details() {
     }
   };
 
- const getDetails = async (id) => {
-  console.log('lya rya'+id);
+  const getDetails = async (id) => {
+    console.log("lya rya" + id);
     setLoading(true);
-      const response = await axios.get(getServiceUrl+id);
-      if (response.status === 200) {
-        let data = response.data;
-        console.log(response.data);
-        setDescription(response.data.services.description);
-      }
-    
+    const response = await axios.get(getServiceUrl + id);
+    if (response.status === 200) {
+      let data = response.data;
+      console.log(response.data);
+      setDescription(response.data.services.description);
+    }
+
     setLoading(false);
   };
 
@@ -126,52 +142,59 @@ export default function Details() {
     }
   }, [route.params?.service]);
 
-
-
-const handleAddToCart = () => onAddToCart(service);
-const handleAddToWish = () => onAddToWishList(service);
-
-
+  const handleAddToCart = () => onAddToCart(service);
+  const handleAddToWish = () => onAddToWishList(service);
 
   if (loading) {
     return Splash();
   }
   return (
-    <View style={{ flex: 1 , backgroundColor: '#FFCACC' }}>
+    <View style={{ flex: 1, backgroundColor: "#FFCACC" }}>
       <Header title={service ? service.name : "Details"} />
-      {service && 
-      (  <>
+      {service && (
+        <>
           <Image
-        source={{
-          uri: BaseUrl + "service-images/" + service.image,
-        }}
-        style={{
-          width: '100%',
-          height: 200,
-          resizeMode: 'cover'
-        }}
-        />
-       <ScrollView style={styles.contentContainer}>
-        <Text style={styles.price}>AED {service.price}</Text>
-        <Text style={styles.price}>Duaration:  {service.duration}</Text>
+            source={{
+              uri: BaseUrl + "service-images/" + service.image,
+            }}
+            style={{
+              width: "100%",
+              height: 200,
+              resizeMode: "cover",
+            }}
+          />
+          <ScrollView style={styles.contentContainer}>
+            <Text style={styles.price}>
+              AED{" "}
+              {service.discount ? (
+                <>
+                  <Text style={styles.discountedPrice}>{service.discount}</Text>
+                  <Text style={styles.originalPrice}>{service.price}</Text>
+                </>
+              ) : (
+                service.price
+              )}
+            </Text>
+            <Text style={styles.duration}>Duaration: {service.duration}</Text>
 
-        <TouchableOpacity style={styles.addToCartButton} onPress={handleAddToCart}>
-          <Text style={styles.addToCartButtonText}>Add to Cart</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.wishButton} onPress={handleAddToWish}>
-          <Text style={styles.addToCartButtonText}>Save to Wishlist</Text>
-        </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.addToCartButton}
+              onPress={handleAddToCart}
+            >
+              <Text style={styles.addToCartButtonText}>Add to Cart</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.wishButton}
+              onPress={handleAddToWish}
+            >
+              <Text style={styles.addToCartButtonText}>Save to Wishlist</Text>
+            </TouchableOpacity>
 
-        <HTML source={{ html: description }} />
-      </ScrollView>
-
-   
-      
-        </>)
-      }
+            <HTML source={{ html: description }} />
+          </ScrollView>
+        </>
+      )}
       <Footer />
     </View>
   );
- 
-  
 }

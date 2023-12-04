@@ -17,6 +17,7 @@ import axios from "axios";
 import { Picker } from "@react-native-picker/picker";
 import CommonButton from "../Common/CommonButton";
 import { clearCart } from "../redux/actions/Actions";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function Checkout() {
   const dispatch = useDispatch();
@@ -66,11 +67,14 @@ export default function Checkout() {
       setGender(info.gender || null);
     }
   }, [personalInformationData]);
-  
-  const getServicesTotal = () => {
-    return cartData.reduce((total, item) => total + parseFloat(item.price), 0);
-  };
 
+  const getServicesTotal = () => {
+    return cartData.reduce((total, item) => {
+      const itemTotal = item.discount ? parseFloat(item.discount) : parseFloat(item.price);
+      return total + itemTotal;
+    }, 0);
+  };
+  
   const selectAddress = (item) => {
     setSelectedAddress(
       `${item.building} ${item.villa} ${item.street} ${item.area} ${item.city}`
@@ -162,7 +166,8 @@ export default function Checkout() {
       });
 
       if (response.status === 200) {
-        dispatch(clearCart());
+      await AsyncStorage.removeItem("@cartData");
+      dispatch(clearCart());
         navigation.reset({
           index: 0,
           routes: [{ name: "OrderSuccess" }],
@@ -197,7 +202,26 @@ export default function Checkout() {
             />
             <View style={{ padding: 10 }}>
               <Text style={{ fontSize: 15 }}>{item.name}</Text>
-              <Text style={{ marginTop: 15 }}>{"AED " + item.price}</Text>
+              <Text style={{ marginTop: 15 }}>
+                AED{" "}
+                {item.discount ? (
+                  <>
+                    <Text style={{ marginRight: 5, color: "#333" }}>
+                      {item.discount}
+                    </Text>
+                    <Text
+                      style={{
+                        textDecorationLine: "line-through",
+                        color: "#999",
+                      }}
+                    >
+                      {item.price}
+                    </Text>
+                  </>
+                ) : (
+                  item.price
+                )}
+              </Text>
             </View>
           </View>
         )}
