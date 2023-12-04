@@ -97,7 +97,7 @@ const Signup = () => {
     return Splash();
   }
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1, backgroundColor: "#FFCACC" }}>
       <Image
         source={require("../images/logo.png")}
         style={{

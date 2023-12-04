@@ -16,7 +16,7 @@ import ProductItem from "../Common/ProductItem";
 import { useDispatch, useSelector } from "react-redux";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
-import Splash from '../Screen/Splash';
+import Splash from "../Screen/Splash";
 import { updateServices } from "../redux/actions/Actions";
 export default function Main() {
   const navigation = useNavigation();
@@ -32,25 +32,19 @@ export default function Main() {
     getData();
   }, []);
 
-
-  const saveToAsyncStorage = async (key, data) => {
-    try {
-      await AsyncStorage.setItem(key, JSON.stringify(data));
-    } catch (error) {
-      console.error(`Error saving to ${key}:`, error);
-    }
-  };
-
   const getData = async () => {
     setLoading(true);
     try {
       const response = await axios.get(appIndex);
       if (response.status === 200) {
         let data = response.data;
+        const selectedServices = data.services.filter((service) =>
+          data.featured_services.includes(String(service.id))
+        );
         setSliderImages(data.images);
         setCategories(data.categories);
         setServices(data.services);
-        setSelectedServices(data.services.slice(0, 10));
+        setSelectedServices(selectedServices);
         setLoading(false);
         dispatch(updateServices(data.services));
       } else {
@@ -69,7 +63,7 @@ export default function Main() {
     <TouchableOpacity
       style={{
         flex: 1,
-        alignItems: 'center',
+        alignItems: "center",
         margin: 8,
       }}
       onPress={() => {
@@ -79,23 +73,22 @@ export default function Main() {
       }}
     >
       <Image
-      source={{
-        uri: BaseUrl + "service-category-icons/" + item.icon,
-      }}
-      defaultSource={require('../images/category/Makup.png')}
-      style={{
-        width: 80,
-        height: 80,
-        borderRadius: 40
-      }}
+        source={{
+          uri: BaseUrl + "service-category-icons/" + item.icon,
+        }}
+        defaultSource={require("../images/category/Makup.png")}
+        style={{
+          width: 80,
+          height: 80,
+          borderRadius: 40,
+        }}
       />
-      <Text style={{ marginTop: 8, textAlign: 'center' }}>{item.title}</Text>
+      <Text style={{ marginTop: 8, textAlign: "center" }}>{item.title}</Text>
     </TouchableOpacity>
   );
   const renderCategoryItem = ({ item }) => <CategoryItem item={item} />;
   return (
-    <View style={{ flex: 1, backgroundColor: '#FFCACC' }}>
-       
+    <View style={{ flex: 1, backgroundColor: "#FFCACC" }}>
       <Header title={"LipSlay Home Saloon"} />
       <ScrollView>
         <View>
@@ -145,15 +138,11 @@ export default function Main() {
             showsVerticalScrollIndicator={false}
             numColumns={2}
             keyExtractor={(item, index) => index.toString()}
-            renderItem={({ item }) => (
-              <ProductItem
-                item={item}
-              />
-            )}
+            renderItem={({ item }) => <ProductItem item={item} />}
           />
         </View>
       </ScrollView>
-      <Footer/>
+      <Footer />
     </View>
   );
 }

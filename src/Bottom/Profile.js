@@ -47,7 +47,7 @@ export default function Profile() {
     }
   };
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1, backgroundColor: "#FFCACC" }}>
       <Header title={"Profile"} />
       <Image
         source={require("../images/profile.png")}

@@ -26,6 +26,7 @@ import {
   addPersonalInformation,
 } from "./redux/actions/Actions";
 import Details from "./Bottom/Details";
+import { ImageBackground } from "react-native";
 
 export default function AppNavigator() {
   const cartReduxData = useSelector((state) => state.cart);
@@ -79,7 +80,24 @@ export default function AppNavigator() {
   };
   return (
     <NavigationContainer>
-      <Stack.Navigator>
+      <Stack.Navigator
+        screenOptions={{
+          headerBackground: () => (
+            <ImageBackground
+              source={require("./images/rotated_logo.png")}
+              style={{
+                position: "absolute",
+                top: 1,
+                left: 0,
+                width: 150,
+                height: 100,
+                zIndex: 1,
+              }}
+            />
+          ),
+          headerTintColor: "#000",
+        }}
+      >
         <Stack.Screen
           options={{ headerShown: false }}
           name="Main"

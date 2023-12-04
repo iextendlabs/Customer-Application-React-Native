@@ -43,7 +43,7 @@ export default function MyOrders() {
   }
 
   return (
-    <View style={{ flex: 1, padding: 5 }}>
+    <View style={{ flex: 1, padding: 5, backgroundColor: "#FFCACC" }}>
       {orders.length === 0 ? (
         <View
           style={{ flex: 1, justifyContent: "center", alignItems: "center" }}

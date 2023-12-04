@@ -25,7 +25,7 @@ const MyAddress = () => {
     }
   };
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1, backgroundColor: "#FFCACC" }}>
       <TouchableOpacity
         style={{
           margin: 20,

@@ -444,8 +444,8 @@ export default function RescheduleOrder() {
   }
 
   return (
-    <ScrollView style={{ flex: 1 }}>
-      <View style={{ flex: 1 }}>
+    <ScrollView style={{ flex: 1, backgroundColor: "#FFCACC" }}>
+      <View style={{ flex: 1,marginTop:30 }}>
         {renderDate()}
         {selectedDate && (
           <>

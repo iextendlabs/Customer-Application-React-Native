@@ -61,7 +61,7 @@ export default function Wishlist() {
   };
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1, backgroundColor: "#FFCACC" }}>
       <Header title={"Wishlist"} />
       {wishlistData.length !== 0 ? (
         <FlatList

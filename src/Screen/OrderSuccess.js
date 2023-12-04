@@ -6,7 +6,7 @@ import { useNavigation } from "@react-navigation/native";
 export default function OrderSuccess() {
   const navigation = useNavigation();
   return (
-    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+    <View style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "#FFCACC" }}>
       <Image
         source={require("../images/checked.png")}
         style={{ width: 50, height: 50, alignSelf: "center" }}

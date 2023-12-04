@@ -10,9 +10,9 @@ export default function CartItem({ item, onRemoveFromCart, onAddToCart , onAddTo
         height: 175,
         borderRadius: 10,
         elevation: 5,
-        backgroundColor: "#fff",
         marginLeft: 10,
         marginBottom: 10,
+        backgroundColor: "#FFCACC"
       }}
     >
       <Image

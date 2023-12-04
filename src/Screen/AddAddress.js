@@ -84,7 +84,7 @@ export default function AddAddress() {
   }
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1, backgroundColor: "#FFCACC" }}>
       {error && (
         <Text style={{ marginTop: 10, marginLeft: 40, color: "red" }}>
           {error}

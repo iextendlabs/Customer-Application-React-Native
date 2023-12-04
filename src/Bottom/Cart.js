@@ -72,7 +72,7 @@ export default function Cart() {
     }
   };
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1, backgroundColor: "#FFCACC" }}>
       <Header title={"Shopping Cart"} />
       <ScrollView>
         {cartData.length !== 0 ? (

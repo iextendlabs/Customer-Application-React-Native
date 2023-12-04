@@ -1,10 +1,4 @@
-import {
-  StyleSheet,
-  Text,
-  View,
-  ScrollView,
-  FlatList,
-} from "react-native";
+import { StyleSheet, Text, View, ScrollView, FlatList,TouchableOpacity } from "react-native";
 import React from "react";
 import Footer from "../Common/Footer";
 import Header from "../Common/Header";
@@ -16,7 +10,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
 import { addItemToCart, addItemToWishlist } from "../redux/actions/Actions";
 import CustomTextInput from "../Common/CustomTextInput";
-import Splash from '../Screen/Splash';
+import Splash from "../Screen/Splash";
 
 export default function Search() {
   const data = useSelector((state) => state);
@@ -43,19 +37,13 @@ export default function Search() {
   const wishlistData = useSelector((state) => state.wishlist);
 
   const onAddToCart = async (item) => {
-    const user = await AsyncStorage.getItem("@user_id");
+    const isItemInCart = cartData.some((cartItem) => cartItem.id === item.id);
 
-    if (user === "" || user === null) {
-      navigation.navigate("Login");
+    if (!isItemInCart) {
+      dispatch(addItemToCart(item));
+      saveToAsyncStorage("@cartData", [...cartData, item]);
     } else {
-      const isItemInCart = cartData.some((cartItem) => cartItem.id === item.id);
-
-      if (!isItemInCart) {
-        dispatch(addItemToCart(item));
-        saveToAsyncStorage("@cartData", [...cartData, item]);
-      } else {
-        console.log("Item is already in the cart");
-      }
+      console.log("Item is already in the cart");
     }
   };
 
@@ -81,25 +69,31 @@ export default function Search() {
   };
 
   const getServicesByCategory = (category_id) => {
-    const filtered = data.services[0].filter((item) => item.category_id === category_id.toString());
+    const filtered = data.services[0].filter(
+      (item) => item.category_id === category_id.toString()
+    );
     setServices(filtered);
-    console.log('seting up serv'+filtered.length + 'for category' +category);
+    console.log("seting up serv" + filtered.length + "for category" + category);
   };
 
   const filter = () => {
     if (search) {
-      setServices(data.services[0].filter((item) =>  item.name.toLocaleLowerCase().includes(search.toLocaleLowerCase())));
+      setServices(
+        data.services[0].filter((item) =>
+          item.name.toLocaleLowerCase().includes(search.toLocaleLowerCase())
+        )
+      );
     } else if (category) {
-      getServicesByCategory(category)
+      getServicesByCategory(category);
     }
   };
   if (loading) {
-      return Splash();
+    return Splash();
   }
   return (
-    <View style={{ flex: 1 , backgroundColor: '#FFCACC' }}>
+    <View style={{ flex: 1, backgroundColor: "#FFCACC" }}>
       <Header title={"Search"} />
-      <ScrollView style={{backgroundColor: ''}}>
+      <ScrollView style={{ backgroundColor: "" }}>
         <CustomTextInput
           placeholder={"Search Services"}
           icon={require("../images/search.png")}
@@ -108,6 +102,26 @@ export default function Search() {
             setSearch(txt);
           }}
         />
+        <TouchableOpacity
+          style={{
+            justifyContent: "center",
+            alignItems: "center",
+            height: 40,
+            width: "20%",
+            borderRadius: 10,
+            alignSelf: "flex-end",
+            margin: 20,
+            borderWidth:0.5,
+            borderColor:"#8e8e8e",
+          }}
+          onPress={() => {
+            setSearch(null);
+            setServices([]);
+            setCategory(null);
+          }}
+        >
+          <Text style={{ color: "#000" }}>Clear</Text>
+        </TouchableOpacity>
         {services.length > 0 ? (
           <View style={{ marginTop: 10, marginBottom: 70 }}>
             <FlatList

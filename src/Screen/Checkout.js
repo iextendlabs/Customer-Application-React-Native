@@ -792,7 +792,7 @@ export default function Checkout() {
     return Splash();
   }
   return (
-    <ScrollView style={{ flex: 1 }}>
+    <ScrollView style={{ flex: 1, backgroundColor: "#FFCACC" }}>
       <View style={{ flex: 1 }}>
         {renderServices()}
         {renderPersonalInformation()}
