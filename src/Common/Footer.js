@@ -5,7 +5,9 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation,useRoute  } from "@react-navigation/native";
 
 export default function Footer() {
-  const data = useSelector((state) => state);
+  const wishlistData = useSelector((state) => state.wishlist);
+  const cartData = useSelector((state) => state.cart);
+  
   const navigation = useNavigation();
   const route = useRoute();
   const checkAuthentication = async () => {
@@ -113,7 +115,7 @@ export default function Footer() {
               }}
             >
               <Text style={{ color: "#fff", fontWeight: "600" }}>
-                {data.cart.length}
+                {cartData.length}
               </Text>
             </View>
           </TouchableOpacity>
@@ -151,7 +153,7 @@ export default function Footer() {
             }}
           >
             <Text style={{ color: "#fff", fontWeight: "600" }}>
-              {data.wishlist.length}
+              {wishlistData.length}
             </Text>
           </View>
         </TouchableOpacity>
