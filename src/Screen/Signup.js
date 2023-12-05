@@ -1,4 +1,4 @@
-import { View, Text, Image } from "react-native";
+import { View, Text, Image, ScrollView } from "react-native";
 import React, { useState } from "react";
 import CustomTextInput from "../Common/CustomTextInput";
 import CommonButton from "../Common/CommonButton";
@@ -21,7 +21,10 @@ const Signup = () => {
   const [notValidPassword, setNotValidPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-
+  const isValidEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
   const handleSignup = async () => {
     setError("");
     setLoading(true);
@@ -36,6 +39,11 @@ const Signup = () => {
         setLoading(false);
         return;
       } else {
+        if (!isValidEmail(email)) {
+          setLoading(false);
+          setError("Enter a valid email address.");
+          return;
+        }
         setBadEmail(false);
         if (password === "") {
           setBadPassword(true);
@@ -97,116 +105,118 @@ const Signup = () => {
     return Splash();
   }
   return (
-    <View style={{ flex: 1, backgroundColor: "#FFCACC" }}>
-      <Image
-        source={require("../images/logo.png")}
-        style={{
-          width: 60,
-          height: 60,
-          alignSelf: "center",
-          marginTop: 40,
-        }}
-      />
-      <Text
-        style={{
-          marginTop: 20,
-          alignSelf: "center",
-          fontSize: 24,
-          fontWeight: 600,
-          color: "#000",
-        }}
-      >
-        Create New Account
-      </Text>
-      {error && (
-        <Text style={{ marginTop: 10, marginLeft: 40, color: "red" }}>
-          {error}
+    <ScrollView style={{ flex: 1, backgroundColor: "#FFCACC"  }}>
+      <View style={{ flex: 1}}>
+        <Image
+          source={require("../images/logo.png")}
+          style={{
+            width: 60,
+            height: 60,
+            alignSelf: "center",
+            marginTop: 40,
+          }}
+        />
+        <Text
+          style={{
+            marginTop: 20,
+            alignSelf: "center",
+            fontSize: 24,
+            fontWeight: 600,
+            color: "#000",
+          }}
+        >
+          Create New Account
         </Text>
-      )}
-      <CustomTextInput
-        placeholder={"Enter Name"}
-        icon={require("../images/user.png")}
-        value={name}
-        onChangeText={(txt) => {
-          setName(txt);
-        }}
-      />
-      {badName === true && (
-        <Text style={{ marginTop: 10, marginLeft: 40, color: "red" }}>
-          Please Enter Name
-        </Text>
-      )}
-      <CustomTextInput
-        placeholder={"Enter Email"}
-        icon={require("../images/mail.png")}
-        value={email}
-        onChangeText={(txt) => {
-          setEmail(txt);
-        }}
-      />
-      {badEmail === true && (
-        <Text style={{ marginTop: 10, marginLeft: 40, color: "red" }}>
-          Please Enter Email
-        </Text>
-      )}
-      <CustomTextInput
-        placeholder={"Enter Password"}
-        icon={require("../images/lock.png")}
-        type={"password"}
-        value={password}
-        onChangeText={(txt) => {
-          setPassword(txt);
-        }}
-      />
-      {badPassword === true && (
-        <Text style={{ marginTop: 10, marginLeft: 40, color: "red" }}>
-          Please Enter Password
-        </Text>
-      )}
-      <CustomTextInput
-        placeholder={"Enter Confirm Password"}
-        icon={require("../images/lock.png")}
-        type={"password"}
-        value={confirmPassword}
-        onChangeText={(txt) => {
-          setConfirmPassword(txt);
-        }}
-      />
-      {badConfirmPassword === true && (
-        <Text style={{ marginTop: 10, marginLeft: 40, color: "red" }}>
-          Please Enter Confirm Password
-        </Text>
-      )}
+        {error && (
+          <Text style={{ marginTop: 10, marginLeft: 40, color: "red" }}>
+            {error}
+          </Text>
+        )}
+        <CustomTextInput
+          placeholder={"Enter Name"}
+          icon={require("../images/user.png")}
+          value={name}
+          onChangeText={(txt) => {
+            setName(txt);
+          }}
+        />
+        {badName === true && (
+          <Text style={{ marginTop: 10, marginLeft: 40, color: "red" }}>
+            Please Enter Name
+          </Text>
+        )}
+        <CustomTextInput
+          placeholder={"Enter Email"}
+          icon={require("../images/mail.png")}
+          value={email}
+          onChangeText={(txt) => {
+            setEmail(txt);
+          }}
+        />
+        {badEmail === true && (
+          <Text style={{ marginTop: 10, marginLeft: 40, color: "red" }}>
+            Please Enter Email
+          </Text>
+        )}
+        <CustomTextInput
+          placeholder={"Enter Password"}
+          icon={require("../images/lock.png")}
+          type={"password"}
+          value={password}
+          onChangeText={(txt) => {
+            setPassword(txt);
+          }}
+        />
+        {badPassword === true && (
+          <Text style={{ marginTop: 10, marginLeft: 40, color: "red" }}>
+            Please Enter Password
+          </Text>
+        )}
+        <CustomTextInput
+          placeholder={"Enter Confirm Password"}
+          icon={require("../images/lock.png")}
+          type={"password"}
+          value={confirmPassword}
+          onChangeText={(txt) => {
+            setConfirmPassword(txt);
+          }}
+        />
+        {badConfirmPassword === true && (
+          <Text style={{ marginTop: 10, marginLeft: 40, color: "red" }}>
+            Please Enter Confirm Password
+          </Text>
+        )}
 
-      {notValidPassword === true && (
-        <Text style={{ marginTop: 10, marginLeft: 40, color: "red" }}>
-          The password and confirm-password must match.
+        {notValidPassword === true && (
+          <Text style={{ marginTop: 10, marginLeft: 40, color: "red" }}>
+            The password and confirm-password must match.
+          </Text>
+        )}
+        <CommonButton
+          title={"Signup"}
+          bgColor={"#000"}
+          textColor={"#fff"}
+          onPress={() => {
+            handleSignup();
+          }}
+        />
+        <Text
+          style={{
+            fontSize: 18,
+            fontWeight: "600",
+            alignSelf: "center",
+            marginTop: 20,
+            marginBottom: 40,
+            textDecorationLine: "underline",
+          }}
+          onPress={() => {
+            navigation.goBack();
+          }}
+        >
+          Already Have Account?
         </Text>
-      )}
-      <CommonButton
-        title={"Signup"}
-        bgColor={"#000"}
-        textColor={"#fff"}
-        onPress={() => {
-          handleSignup();
-        }}
-      />
-      <Text
-        style={{
-          fontSize: 18,
-          fontWeight: "600",
-          alignSelf: "center",
-          marginTop: 20,
-          marginBottom: 40,
-          textDecorationLine: "underline",
-        }}
-        onPress={() => {
-          navigation.goBack();
-        }}
-      >
-        Already Have Account?
-      </Text>
-    </View>
+      </View>
+    </ScrollView>
   );
 };
 

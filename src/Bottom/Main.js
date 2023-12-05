@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import {
   StyleSheet,
   View,
@@ -7,6 +7,7 @@ import {
   FlatList,
   TouchableOpacity,
   ScrollView,
+  Dimensions,
 } from "react-native";
 import axios from "axios";
 import Header from "../Common/Header";
@@ -27,6 +28,9 @@ export default function Main() {
   const [selectedServices, setSelectedServices] = useState([]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const { height, width } = Dimensions.get("window");
+  const [currentIndex, setCurrentIndex] = useState(0); // Initialize with 0
+  const flatListRef = useRef(null);
 
   useEffect(() => {
     getData();
@@ -54,6 +58,26 @@ export default function Main() {
       setError("An error occurred while fetching data.");
     }
   };
+
+  const moveToNextSlide = () => {
+    if (flatListRef.current) {
+      const nextIndex = (currentIndex + 1) % sliderImages.length;
+
+      if (!isNaN(nextIndex)) {
+        flatListRef.current.scrollToOffset({
+          offset: nextIndex * width,
+          animated: true,
+        });
+        setCurrentIndex(nextIndex);
+      }
+    }
+  };
+
+  useEffect(() => {
+    const intervalId = setInterval(moveToNextSlide, 3000);
+
+    return () => clearInterval(intervalId);
+  }, [currentIndex]);
 
   if (loading) {
     return Splash();
@@ -92,26 +116,62 @@ export default function Main() {
       <Header title={"LipSlay Home Saloon"} />
       <ScrollView>
         <View>
-          <FlatList
-            data={sliderImages}
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            keyExtractor={(item, index) => index.toString()}
-            renderItem={({ item }) => (
-              <Image
-                source={{
-                  uri: BaseUrl + "slider-images/" + item,
-                }}
+          {sliderImages.length > 0 && (
+            <FlatList
+              ref={flatListRef}
+              data={sliderImages}
+              horizontal
+              pagingEnabled
+              showsHorizontalScrollIndicator={false}
+              keyExtractor={(item, index) => index.toString()}
+              onScroll={(e) => {
+                const x = e.nativeEvent.contentOffset.x;
+                setCurrentIndex(Math.round(x / width));
+              }}
+              renderItem={({ item }) => (
+                <View
+                  style={{
+                    width: width,
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <Image
+                    source={{
+                      uri: BaseUrl + "slider-images/" + item,
+                    }}
+                    style={{
+                      width: "90%",
+                      height: 200,
+                      borderRadius: 10,
+                    }}
+                  />
+                </View>
+              )}
+            />
+          )}
+          <View
+            style={{
+              flexDirection: "row",
+              width: width,
+              justifyContent: "center",
+              alignItems: "center",
+              marginTop: 10,
+            }}
+          >
+            {sliderImages.map((item, index) => (
+              <View
+                key={index.toString()}
                 style={{
-                  width: 340,
-                  height: 200,
-                  borderRadius: 10,
-                  alignSelf: "center",
-                  margin: 9,
+                  width: currentIndex === index ? 40 : 8,
+                  height: 8,
+                  borderRadius: currentIndex === index ? 5 : 4,
+                  backgroundColor: currentIndex === index ? "#ff9ca0" : "#fff",
+                  marginLeft: 5,
                 }}
-              />
-            )}
-          />
+              ></View>
+            ))}
+          </View>
         </View>
         <View style={{ flex: 1, padding: 16 }}>
           <FlatList
@@ -123,11 +183,11 @@ export default function Main() {
         </View>
         <Text
           style={{
-            marginTop: 10,
-            marginLeft: 20,
+            margin: 14 ,
             color: "#000",
-            fontSize: 18,
+            fontSize: 25,
             fontWeight: "700",
+            alignSelf:"center"
           }}
         >
           Offers

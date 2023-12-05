@@ -1,5 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { Text, View, TouchableOpacity, Image, StyleSheet } from "react-native";
+import {
+  Text,
+  View,
+  TouchableOpacity,
+  Image,
+  StyleSheet,
+  ScrollView,
+} from "react-native";
 import CustomTextInput from "../Common/CustomTextInput";
 import CommonButton from "../Common/CommonButton";
 import { useNavigation } from "@react-navigation/native";
@@ -108,75 +115,77 @@ export default function PersonalInformation() {
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: "#FFCACC" }}>
-      {error !== "" && (
-        <Text style={{ marginTop: 10, marginLeft: 40, color: "red" }}>
-          {error}
-        </Text>
-      )}
-      <CustomTextInput
-        placeholder={"Enter Name"}
-        icon={require("../images/name.png")}
-        value={name}
-        onChangeText={(txt) => setName(txt)}
-      />
-      <CustomTextInput
-        placeholder={"Enter Email"}
-        icon={require("../images/mail.png")}
-        value={email}
-        onChangeText={(txt) => setEmail(txt)}
-        keyboardType={"email-address"}
-      />
-      <CustomTextInput
-        placeholder={"Enter Phone Number"}
-        icon={require("../images/phone.png")}
-        value={number}
-        onChangeText={(txt) => setNumber(txt)}
-        keyboardType={"numeric"}
-      />
-      <CustomTextInput
-        placeholder={"Enter Whatsapp Number"}
-        icon={require("../images/whatsapp.png")}
-        value={whatsapp}
-        onChangeText={(txt) => setWhatsapp(txt)}
-        keyboardType={"numeric"}
-      />
-      <View style={{ flexDirection: "row", marginLeft: 40, marginTop: 30 }}>
-        <Text style={{ marginRight: 20, marginTop: 5 }}>Gender:</Text>
-        <TouchableOpacity
-          onPress={() => setSelectedGender("Male")}
-          style={[
-            styles.genderOption,
-            selectedGender === "Male" && styles.selectedGender,
-          ]}
-        >
-          <Image
-            source={require("../images/male.png")}
-            style={{ width: 20, height: 20 }}
-          />
-          <Text style={{ marginLeft: 5 }}>Male</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => setSelectedGender("Female")}
-          style={[
-            styles.genderOption,
-            selectedGender === "Female" && styles.selectedGender,
-          ]}
-        >
-          <Image
-            source={require("../images/female.png")}
-            style={{ width: 20, height: 20 }}
-          />
-          <Text style={{ marginLeft: 5 }}>Female</Text>
-        </TouchableOpacity>
+    <ScrollView style={{ flex: 1, backgroundColor: "#FFCACC" }}>
+      <View style={{ flex: 1 }}>
+        {error !== "" && (
+          <Text style={{ marginTop: 10, marginLeft: 40, color: "red" }}>
+            {error}
+          </Text>
+        )}
+        <CustomTextInput
+          placeholder={"Enter Name"}
+          icon={require("../images/name.png")}
+          value={name}
+          onChangeText={(txt) => setName(txt)}
+        />
+        <CustomTextInput
+          placeholder={"Enter Email"}
+          icon={require("../images/mail.png")}
+          value={email}
+          onChangeText={(txt) => setEmail(txt)}
+          keyboardType={"email-address"}
+        />
+        <CustomTextInput
+          placeholder={"Enter Phone Number"}
+          icon={require("../images/phone.png")}
+          value={number}
+          onChangeText={(txt) => setNumber(txt)}
+          keyboardType={"numeric"}
+        />
+        <CustomTextInput
+          placeholder={"Enter Whatsapp Number"}
+          icon={require("../images/whatsapp.png")}
+          value={whatsapp}
+          onChangeText={(txt) => setWhatsapp(txt)}
+          keyboardType={"numeric"}
+        />
+        <View style={{ flexDirection: "row", marginLeft: 40, marginTop: 30 }}>
+          <Text style={{ marginRight: 20, marginTop: 5 }}>Gender:</Text>
+          <TouchableOpacity
+            onPress={() => setSelectedGender("Male")}
+            style={[
+              styles.genderOption,
+              selectedGender === "Male" && styles.selectedGender,
+            ]}
+          >
+            <Image
+              source={require("../images/male.png")}
+              style={{ width: 20, height: 20 }}
+            />
+            <Text style={{ marginLeft: 5 }}>Male</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => setSelectedGender("Female")}
+            style={[
+              styles.genderOption,
+              selectedGender === "Female" && styles.selectedGender,
+            ]}
+          >
+            <Image
+              source={require("../images/female.png")}
+              style={{ width: 20, height: 20 }}
+            />
+            <Text style={{ marginLeft: 5 }}>Female</Text>
+          </TouchableOpacity>
+        </View>
+        <CommonButton
+          title={"Save"}
+          bgColor="#000"
+          textColor="#fff"
+          onPress={() => handleSave()}
+        />
       </View>
-      <CommonButton
-        title={"Save"}
-        bgColor="#000"
-        textColor="#fff"
-        onPress={() => handleSave()}
-      />
-    </View>
+    </ScrollView>
   );
 }
 

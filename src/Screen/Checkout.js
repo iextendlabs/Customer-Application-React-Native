@@ -7,6 +7,7 @@ import {
   Image,
   TouchableOpacity,
   ScrollView,
+  Modal,
 } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
 import { BaseUrl, availableTimeSlotUrl, AddOrderUrl } from "../Config/Api";
@@ -17,7 +18,7 @@ import { Picker } from "@react-native-picker/picker";
 import CommonButton from "../Common/CommonButton";
 import { clearCart } from "../redux/actions/Actions";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import Splash from '../Screen/Splash';
+import Splash from "../Screen/Splash";
 
 export default function Checkout() {
   const dispatch = useDispatch();
@@ -55,6 +56,7 @@ export default function Checkout() {
   const [gender, setGender] = useState(null);
   const [servicesTotal, setServicesTotal] = useState(null);
   const [orderTotal, setOrderTotal] = useState(null);
+  const [modalVisible, setModalVisible] = useState(true);
 
   useEffect(() => {
     // If personalInformationData is available, set values from it
@@ -70,11 +72,17 @@ export default function Checkout() {
 
   const getServicesTotal = () => {
     return cartData.reduce((total, item) => {
-      const itemTotal = item.discount ? parseFloat(item.discount) : parseFloat(item.price);
+      const itemTotal = item.discount
+        ? parseFloat(item.discount)
+        : parseFloat(item.price);
       return total + itemTotal;
     }, 0);
   };
-  
+  useEffect(() => {
+    if (addressData.length === 1) {
+      selectAddress(addressData[0]);
+    }
+  }, [addressData]);
   const selectAddress = (item) => {
     setSelectedAddress(
       `${item.building} ${item.villa} ${item.street} ${item.area} ${item.city}`
@@ -92,6 +100,7 @@ export default function Checkout() {
   };
 
   const handleDateSelect = (date) => {
+    setModalVisible(false);
     setSelectedDate(date.dateString);
     fetchAvailableTimeSlots(date.dateString, selectedArea);
   };
@@ -167,8 +176,8 @@ export default function Checkout() {
       });
 
       if (response.status === 200) {
-      await AsyncStorage.removeItem("@cartData");
-      dispatch(clearCart());
+        await AsyncStorage.removeItem("@cartData");
+        dispatch(clearCart());
         navigation.reset({
           index: 0,
           routes: [{ name: "OrderSuccess" }],
@@ -199,7 +208,7 @@ export default function Checkout() {
           >
             <Image
               source={{ uri: `${BaseUrl}service-images/${item.image}` }}
-              defaultSource={require('../images/logo.png')}
+              defaultSource={require("../images/logo.png")}
               style={{ width: 70, height: 70, marginLeft: 10 }}
             />
             <View style={{ padding: 10 }}>
@@ -235,9 +244,9 @@ export default function Checkout() {
           alignItems: "center",
           paddingLeft: 30,
           paddingRight: 30,
-          marginTop: 30,
+          marginTop: 10,
           borderTopWidth: 0.5,
-          height: 50,
+          height: 40,
           borderColor: "#8e8e8e",
           borderBottomWidth: 0.5,
         }}
@@ -249,7 +258,7 @@ export default function Checkout() {
   );
 
   const renderPersonalInformation = () => (
-    <View>
+    <View style={{ borderColor: "#8e8e8e", borderTopWidth: 0.5 }}>
       {personalInformationData.length !== 0 ? (
         <View>
           <View
@@ -340,7 +349,9 @@ export default function Checkout() {
   );
 
   const renderAddress = () => (
-    <View>
+    <View
+      style={{ borderColor: "#8e8e8e", borderTopWidth: 0.5, marginTop: 10 }}
+    >
       {selectedAddress === null && (
         <View>
           <View
@@ -376,38 +387,19 @@ export default function Checkout() {
             <FlatList
               data={addressData}
               renderItem={({ item, index }) => (
-                <View
+                <TouchableOpacity
                   style={{
-                    width: "100%",
+                    margin: 5,
                     borderWidth: 0.5,
                     borderColor: "#8e8e8e",
-                    alignSelf: "center",
-                    justifyContent: "space-between",
-                    flexDirection: "row",
-                    alignItems: "center",
                     borderRadius: 10,
                   }}
+                  onPress={() => selectAddress(item)}
                 >
-                  <View style={{ flex: 8 }}>
-                    <Text style={{ margin: 20 }}>
-                      {`${item.building} ${item.villa} ${item.street} ${item.area} ${item.city}`}
-                    </Text>
-                  </View>
-                  <TouchableOpacity
-                    style={{
-                      flex: 1,
-                      borderWidth: 0.2,
-                      borderRadius: 4,
-                      padding: 7,
-                      marginRight: 20,
-                      alignSelf: "center",
-                      justifyContent: "center",
-                    }}
-                    onPress={() => selectAddress(item)}
-                  >
-                    <Text>Select</Text>
-                  </TouchableOpacity>
-                </View>
+                  <Text style={{ margin: 20 }}>
+                    {`${item.building} ${item.villa} ${item.street} ${item.area} ${item.city}`}
+                  </Text>
+                </TouchableOpacity>
               )}
             />
           ) : (
@@ -461,7 +453,6 @@ export default function Checkout() {
             <Text
               style={{
                 marginLeft: 10,
-
                 fontWeight: "800",
               }}
             >
@@ -512,59 +503,125 @@ export default function Checkout() {
   );
 
   const renderDate = () => (
-    <View>
-      <Text
-        style={{ margin: 10, fontWeight: "800" }}
-        onPress={() => {
-          setSelectedDate(null);
-          setAvailableStaff([]);
-          setAvailableSlot([]);
-          setSelectedStaff(null);
-          setSelectedStaffId(null);
-          setSelectedStaffCharges(null);
-          setSelectedSlot(null);
-          setSelectedSlotValue(null);
-          setSelectedSlotId(null);
-          setOrderTotal(null);
-        }}
-      >
+    <View
+      style={{
+        width: "100%",
+        justifyContent: "space-between",
+        height: 40,
+        flexDirection: "row",
+        alignItems: "center",
+        borderColor: "#8e8e8e",
+        borderTopWidth: 0.5,
+        marginTop: 10,
+      }}
+    >
+      <Text style={{ margin: 10, fontWeight: "800" }}>
         Date: {selectedDate && selectedDate}
       </Text>
-      {selectedDate === null && (
-        <Calendar
-          onDayPress={handleDateSelect}
-          markedDates={
-            selectedDate ? { [selectedDate]: { selected: true } } : {}
-          }
-          minDate={new Date()}
-        />
+      {selectedDate && (
+        <TouchableOpacity
+          style={{
+            borderWidth: 0.2,
+            borderRadius: 4,
+            padding: 7,
+            marginRight: 20,
+            alignSelf: "center",
+            justifyContent: "center",
+          }}
+          onPress={() => {
+            setSelectedDate(null);
+            setAvailableStaff([]);
+            setAvailableSlot([]);
+            setSelectedStaff(null);
+            setSelectedStaffId(null);
+            setSelectedStaffCharges(null);
+            setSelectedSlot(null);
+            setSelectedSlotValue(null);
+            setSelectedSlotId(null);
+            setOrderTotal(null);
+            setModalVisible(true);
+          }}
+        >
+          <Text>Change</Text>
+        </TouchableOpacity>
       )}
+      <Modal animationType="slide" visible={modalVisible} transparent={true}>
+        <View
+          style={{
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+            backgroundColor: "rgba(0, 0, 0, 0.5)",
+          }}
+        >
+          <View
+            style={{
+              backgroundColor: "#fff",
+              borderRadius: 10,
+              padding: 20,
+              width: "90%",
+            }}
+          >
+            <Calendar
+              onDayPress={handleDateSelect}
+              markedDates={
+                selectedDate ? { [selectedDate]: { selected: true } } : {}
+              }
+              minDate={new Date()}
+            />
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 
   const renderStaff = () => (
-    <View>
-      <Text
+    <View style={{ borderColor: "#8e8e8e", borderTopWidth: 0.5 }}>
+      <View
         style={{
-          margin: 10,
-
-          fontWeight: "800",
-        }}
-        onPress={() => {
-          setAvailableStaff([]);
-          setAvailableSlot([]);
-          setSelectedStaff(null);
-          setSelectedStaffId(null);
-          setSelectedStaffCharges(null);
-          fetchAvailableTimeSlots(selectedDate, selectedArea);
-          setSelectedSlot(null);
-          setSelectedSlotValue(null);
-          setSelectedSlotId(null);
-          setOrderTotal(null);
+          width: "100%",
+          justifyContent: "space-between",
+          height: 40,
+          flexDirection: "row",
+          alignItems: "center",
         }}
       >
-        Staff: {selectedStaff && selectedStaff}
-      </Text>
+        <Text
+          style={{
+            margin: 10,
+
+            fontWeight: "800",
+          }}
+        >
+          Staff: {selectedStaff && selectedStaff}
+        </Text>
+        {selectedStaff && (
+          <TouchableOpacity
+            style={{
+              borderWidth: 0.2,
+              borderRadius: 4,
+              padding: 7,
+              marginRight: 20,
+              alignSelf: "center",
+              justifyContent: "center",
+            }}
+            onPress={() => {
+              setAvailableStaff([]);
+              setAvailableSlot([]);
+              setSelectedStaff(null);
+              setSelectedStaffId(null);
+              setSelectedStaffCharges(null);
+              fetchAvailableTimeSlots(selectedDate, selectedArea);
+              setSelectedSlot(null);
+              setSelectedSlotValue(null);
+              setSelectedSlotId(null);
+              setOrderTotal(null);
+            }}
+          >
+            <Text>Change</Text>
+          </TouchableOpacity>
+        )}
+      </View>
       <FlatList
         data={availableStaff}
         renderItem={({ item, index }) => (
@@ -585,7 +642,7 @@ export default function Checkout() {
                       source={{
                         uri: `${BaseUrl}staff-images/${item.staff.image}`,
                       }}
-                      defaultSource={require('../images/logo.png')}
+                      defaultSource={require("../images/logo.png")}
                       style={{
                         width: 70,
                         height: 70,
@@ -616,62 +673,51 @@ export default function Checkout() {
                 </View>
               )
             ) : (
-              <View
-                style={{
-                  width: "100%",
-                  height: 70,
-                  flexDirection: "row",
-                  marginTop: 10,
-                  justifyContent: "space-between",
-                }}
-              >
-                <View style={{ flexDirection: "row" }}>
-                  <Image
-                    source={{
-                      uri: `${BaseUrl}staff-images/${item.staff.image}`,
-                    }}
-                    defaultSource={require('../images/logo.png')}
-                    style={{
-                      width: 70,
-                      height: 70,
-                      marginLeft: 10,
-                    }}
-                  />
-                  <View style={{ padding: 10 }}>
-                    <Text
-                      style={{
-                        fontSize: 15,
-                        fontWeight: "700",
+              <TouchableOpacity onPress={() => selectStaff(item)}>
+                <View
+                  style={{
+                    width: "100%",
+                    height: 70,
+                    flexDirection: "row",
+                    marginTop: 10,
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <View style={{ flexDirection: "row" }}>
+                    <Image
+                      source={{
+                        uri: `${BaseUrl}staff-images/${item.staff.image}`,
                       }}
-                    >
-                      {item.name}
-                    </Text>
-                    {item.staff.charges && (
+                      defaultSource={require("../images/logo.png")}
+                      style={{
+                        width: 70,
+                        height: 70,
+                        marginLeft: 10,
+                      }}
+                    />
+                    <View style={{ padding: 10 }}>
                       <Text
                         style={{
-                          marginTop: 15,
-                          fontSize: 12,
+                          fontSize: 15,
+                          fontWeight: "700",
                         }}
                       >
-                        Extra Charges: AED {item.staff.charges}
+                        {item.name}
                       </Text>
-                    )}
+                      {item.staff.charges && (
+                        <Text
+                          style={{
+                            marginTop: 15,
+                            fontSize: 12,
+                          }}
+                        >
+                          Extra Charges: AED {item.staff.charges}
+                        </Text>
+                      )}
+                    </View>
                   </View>
                 </View>
-                <TouchableOpacity
-                  style={{
-                    borderWidth: 0.2,
-                    borderRadius: 4,
-                    padding: 7,
-                    marginRight: 20,
-                    alignSelf: "center",
-                    justifyContent: "center",
-                  }}
-                  onPress={() => selectStaff(item)}
-                >
-                  <Text>Select</Text>
-                </TouchableOpacity>
-              </View>
+              </TouchableOpacity>
             )}
           </>
         )}
@@ -679,26 +725,52 @@ export default function Checkout() {
     </View>
   );
   const renderSlot = () => (
-    <View>
+    <View
+      style={{ borderColor: "#8e8e8e", borderTopWidth: 0.5, marginTop: 10 }}
+    >
       {availableSlot.length === 0 ? (
         <Text style={{ margin: 10, color: "red" }}>
           No Staff Availalbe for the Selected Date / Zone
         </Text>
       ) : (
         <View>
-          <Text
+          <View
             style={{
-              margin: 10,
-              fontWeight: "800",
-            }}
-            onPress={() => {
-              setSelectedSlot(null);
-              setSelectedSlotValue(null);
-              setSelectedSlotId(null);
+              width: "100%",
+              justifyContent: "space-between",
+              height: 40,
+              flexDirection: "row",
+              alignItems: "center",
             }}
           >
-            Slot: {selectedSlotValue && selectedSlotValue}
-          </Text>
+            <Text
+              style={{
+                margin: 10,
+                fontWeight: "800",
+              }}
+            >
+              Slot: {selectedSlotValue && selectedSlotValue}
+            </Text>
+            {selectedSlotValue && (
+              <TouchableOpacity
+                style={{
+                  borderWidth: 0.2,
+                  borderRadius: 4,
+                  padding: 7,
+                  marginRight: 20,
+                  alignSelf: "center",
+                  justifyContent: "center",
+                }}
+                onPress={() => {
+                  setSelectedSlot(null);
+                  setSelectedSlotValue(null);
+                  setSelectedSlotId(null);
+                }}
+              >
+                <Text>Change</Text>
+              </TouchableOpacity>
+            )}
+          </View>
           {selectedSlot === null && (
             <View
               style={{
@@ -771,7 +843,7 @@ export default function Checkout() {
         }}
       >
         <Text style={{ padding: 10 }}>
-          Product Total: AED {getServicesTotal()}
+          Total Services Charges: AED {getServicesTotal()}
         </Text>
         <Text style={{ padding: 10 }}>
           Staff Charges: AED {selectedStaffCharge ? selectedStaffCharge : 0}
@@ -784,7 +856,9 @@ export default function Checkout() {
         >
           Transport Charges: AED {transportCharges ? transportCharges : 0}
         </Text>
-        <Text style={{ padding: 10 }}>Order Total: AED {orderTotal}</Text>
+        <Text style={{ padding: 10 }}>
+          Total Order Charges: AED {orderTotal}
+        </Text>
       </View>
     </View>
   );
@@ -793,7 +867,7 @@ export default function Checkout() {
   }
   return (
     <ScrollView style={{ flex: 1, backgroundColor: "#FFCACC" }}>
-      <View style={{ flex: 1 }}>
+      <View style={{ flex: 1, marginBottom: 40 }}>
         {renderServices()}
         {renderPersonalInformation()}
         {name !== null && email !== null && (

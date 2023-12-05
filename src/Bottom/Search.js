@@ -1,4 +1,11 @@
-import { StyleSheet, Text, View, ScrollView, FlatList,TouchableOpacity } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  ScrollView,
+  FlatList,
+  TouchableOpacity,
+} from "react-native";
 import React from "react";
 import Footer from "../Common/Footer";
 import Header from "../Common/Header";
@@ -27,8 +34,6 @@ export default function Search() {
   useEffect(() => {
     filter();
   }, [search]);
-
-
 
   const getServicesByCategory = (category_id) => {
     const filtered = data.services[0].filter(
@@ -62,27 +67,13 @@ export default function Search() {
           onChangeText={(txt) => {
             setSearch(txt);
           }}
-        />
-        <TouchableOpacity
-          style={{
-            justifyContent: "center",
-            alignItems: "center",
-            height: 40,
-            width: "20%",
-            borderRadius: 10,
-            alignSelf: "flex-end",
-            margin: 20,
-            borderWidth:0.5,
-            borderColor:"#8e8e8e",
-          }}
-          onPress={() => {
+          onClearPress={() => {
             setSearch(null);
             setServices([]);
             setCategory(null);
           }}
-        >
-          <Text style={{ color: "#000" }}>Clear</Text>
-        </TouchableOpacity>
+          isSearch={true}
+        />
         {services.length > 0 ? (
           <View style={{ marginTop: 10, marginBottom: 70 }}>
             <FlatList
@@ -90,11 +81,7 @@ export default function Search() {
               showsVerticalScrollIndicator={false}
               numColumns={2}
               keyExtractor={(item, index) => index.toString()}
-              renderItem={({ item }) => (
-                <ProductItem
-                  item={item}
-                />
-              )}
+              renderItem={({ item }) => <ProductItem item={item} />}
             />
           </View>
         ) : (

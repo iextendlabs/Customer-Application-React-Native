@@ -1,10 +1,13 @@
 import { View, Text, Image } from "react-native";
 import React from "react";
+import * as Animatable from "react-native-animatable";
 
 const Splash = () => {
   return (
     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-      <Image
+      <Animatable.Image
+        animation="fadeIn" // You can use other animations like 'fadeIn', 'slideInUp', etc.
+        iterationCount="infinite"
         source={require("../images/logo.png")}
         style={{
           width: 100,
@@ -12,7 +15,9 @@ const Splash = () => {
           resizeMode: "center",
         }}
       />
-      <Text style={{ alignItems:"center", fontWeight:800, marginTop:20, fontSize:24, color:"#000"}}>LipsLay</Text>
+      <Text style={{ fontWeight: "800", marginTop: 20, fontSize: 24, color: "#000" }}>
+        LipsLay
+      </Text>
     </View>
   );
 };

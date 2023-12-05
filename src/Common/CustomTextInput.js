@@ -1,4 +1,4 @@
-import { View, Text, Image, TextInput } from "react-native";
+import { View, Text, Image, TextInput, TouchableOpacity } from "react-native";
 import React from "react";
 
 const CustomTextInput = ({
@@ -8,6 +8,8 @@ const CustomTextInput = ({
   icon,
   type,
   keyboardType,
+  onClearPress,
+  isSearch,
 }) => {
   return (
     <View
@@ -26,7 +28,7 @@ const CustomTextInput = ({
     >
       <Image source={icon} style={{ width: 24, height: 24 }} />
       <TextInput
-        clearButtonMode={'always'}
+        clearButtonMode={"always"}
         value={value}
         onChangeText={(txt) => {
           onChangeText(txt);
@@ -36,6 +38,18 @@ const CustomTextInput = ({
         style={{ marginLeft: 10, width: 220 }}
         keyboardType={keyboardType ? keyboardType : "default"}
       />
+      {isSearch && (
+        <TouchableOpacity
+          onPress={() => {
+            onClearPress();
+          }}
+        >
+          <Image
+            source={require("../images/close.png")}
+            style={{ width: 15, height: 15 }}
+          />
+        </TouchableOpacity>
+      )}
     </View>
   );
 };
