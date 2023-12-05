@@ -16,6 +16,8 @@ import {
   addPersonalInformation,
   deletePersonalInformation,
 } from "../redux/actions/Actions";
+import { UpdateCustomerInfoUrl } from "../Config/Api";
+import axios from "axios";
 
 export default function PersonalInformation() {
   const dispatch = useDispatch();
@@ -107,6 +109,21 @@ export default function PersonalInformation() {
       } else {
         dispatch(addPersonalInformation(personalInfo));
       }
+      const user_id = await AsyncStorage.getItem("@user_id");
+
+      try {
+        const response = await axios.post(UpdateCustomerInfoUrl, {
+          number: number,
+          whatsapp: whatsapp,
+          gender: selectedGender,
+          user_id: user_id,
+        });
+        if (response.status === 200) {
+          console.log(response.data.msg);
+        } else {
+          setError("Please try again.");
+        }
+      } catch (error) {}
 
       navigation.goBack();
     } else {

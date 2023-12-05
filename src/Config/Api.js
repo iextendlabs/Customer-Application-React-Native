@@ -11,6 +11,7 @@ const AddOrderUrl = BaseUrl + "api/addOrder";
 const UpdateOrderUrl = BaseUrl + "api/updateOrder";
 const getStaffZoneUrl = BaseUrl + "api/getZones";
 const filterServicesUrl = BaseUrl + "api/filterServices?";
+const UpdateCustomerInfoUrl = BaseUrl + "api/updateCustomerInfo";
 export {
   LoginUrl,
   SignupUrl,
@@ -23,5 +24,6 @@ export {
   editOrderUrl,
   UpdateOrderUrl,
   filterServicesUrl,
-  getServiceUrl
+  getServiceUrl,
+  UpdateCustomerInfoUrl,
 };

@@ -3,7 +3,7 @@ import { ScrollView, Text, View } from "react-native";
 import CustomTextInput from "../Common/CustomTextInput";
 import CommonButton from "../Common/CommonButton";
 import { useNavigation } from "@react-navigation/native";
-import { getStaffZoneUrl } from "../Config/Api";
+import { getStaffZoneUrl,UpdateCustomerInfoUrl } from "../Config/Api";
 import axios from "axios";
 import { Picker } from "@react-native-picker/picker";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -86,6 +86,25 @@ export default function Address() {
       } else {
         dispatch(addAddress(addressInfo));
       }
+
+      const user_id = await AsyncStorage.getItem("@user_id");
+
+      try {
+        const response = await axios.post(UpdateCustomerInfoUrl, {
+          buildingName: building,
+          flatVilla: villa,
+          street: street,
+          area: area,
+          landmark: landmark,
+          city: city,
+          user_id: user_id,
+        });
+        if (response.status === 200) {
+          console.log(response.data.msg);
+        } else {
+          setError("Please try again.");
+        }
+      } catch (error) {}
 
       navigation.goBack();
     } else {

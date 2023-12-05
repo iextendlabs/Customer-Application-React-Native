@@ -69,10 +69,10 @@ export default function AppNavigator() {
       }
 
       const addressDataJson = await AsyncStorage.getItem("@addressData");
-      const addressData = JSON.parse(addressDataJson) || [];
-      addressData.forEach((item) => {
-        dispatch(addAddress(item));
-      });
+      const addressData = JSON.parse(addressDataJson);
+      if (addressData) {
+        dispatch(addAddress(addressData));
+      }
     } catch (error) {
       console.error("Error updating Redux state:", error);
     }

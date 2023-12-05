@@ -8,11 +8,14 @@ import { LoginUrl } from "../Config/Api";
 import axios from "axios";
 import { useEffect } from "react";
 import Splash from "../Screen/Splash";
+import { useDispatch } from "react-redux";
+import { addPersonalInformation, addAddress } from "../redux/actions/Actions";
 
 const Login = () => {
+  const dispatch = useDispatch();
   const navigation = useNavigation();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("admin@gmail.com");
+  const [password, setPassword] = useState("test");
   const [badEmail, setBadEmail] = useState(false);
   const [badPassword, setBadPassword] = useState(false);
   const [error, setError] = useState("");
@@ -35,25 +38,54 @@ const Login = () => {
         setBadPassword(false);
       }
     }
-    console.log(email);
-    console.log(password);
+
     try {
       const response = await axios.post(LoginUrl, {
         username: email,
         password: password,
       });
-
+      const data = response.data;
       if (response.status === 200) {
-        const userId = response.data.user.id;
-        const userName = response.data.user.name;
-        const userEmail = response.data.user.email;
-        const accessToken = response.data.access_token;
+        if (data.user_info !== null) {
+          const addressInfo = {
+            building: data.user_info.buildingName || "",
+            villa: data.user_info.flatVilla || "",
+            street: data.user_info.street || "",
+            area: data.user_info.area || "",
+            landmark: data.user_info.landmark || "",
+            city: data.user_info.city || "",
+          };
 
-        // Store access token in AsyncStorage
+          const personalInfo = {
+            name: data.user.name,
+            email: data.user.email,
+            number: data.user_info.number || "",
+            whatsapp: data.user_info.whatsapp || "",
+            gender: data.user_info.gender || "",
+          };
+
+          await AsyncStorage.setItem(
+            "@addressData",
+            JSON.stringify(addressInfo)
+          );
+          await AsyncStorage.setItem(
+            "@personalInformation",
+            JSON.stringify(personalInfo)
+          );
+          dispatch(addPersonalInformation(personalInfo));
+          dispatch(addAddress(addressInfo));
+        }
+
+        const userId = data.user.id;
+        const userName = data.user.name;
+        const userEmail = data.user.email;
+        const accessToken = data.access_token;
+
         await AsyncStorage.setItem("@access_token", accessToken);
         await AsyncStorage.setItem("@user_id", String(userId));
         await AsyncStorage.setItem("@user_name", String(userName));
         await AsyncStorage.setItem("@user_email", String(userEmail));
+
         const headers = {
           Authorization: `Bearer ${accessToken}`,
         };
@@ -73,7 +105,7 @@ const Login = () => {
   if (loading) {
     return Splash();
   }
-  
+
   return (
     <View style={{ flex: 1, backgroundColor: "#FFCACC" }}>
       <Image
