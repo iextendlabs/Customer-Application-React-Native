@@ -18,6 +18,8 @@ import { useDispatch, useSelector } from "react-redux";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import HTML from "react-native-render-html";
+import Toast from 'react-native-toast-message';
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -100,6 +102,11 @@ export default function Details() {
     } else {
       console.log("Item is already in the cart");
     }
+    Toast.show({
+      type: 'info',
+      position: 'bottom',
+      text1: 'Added to Cart'
+    });
   };
 
   const onAddToWishList = async (item) => {
@@ -113,6 +120,11 @@ export default function Details() {
     } else {
       console.log("Item is already in the Wishlist");
     }
+    Toast.show({
+      type: 'info',
+      position: 'bottom',
+      text1: 'Added to WisthList'
+    });
   };
 
   const getDetails = async (id) => {

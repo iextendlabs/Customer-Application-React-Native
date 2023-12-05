@@ -83,7 +83,7 @@ export default function CartItem({ item, onRemoveFromCart, onAddToCart , onAddTo
               onRemoveFromCart();
             }}
           >
-            <Text>Remove From Cart</Text>
+            <Text>Remove</Text>
           </TouchableOpacity>
         )}
       </View>

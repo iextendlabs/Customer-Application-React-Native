@@ -6,16 +6,11 @@ import { useRoute } from "@react-navigation/native";
 import { useEffect, useState } from "react";
 import ProductItem from "../Common/ProductItem";
 import { useSelector, useDispatch } from "react-redux";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useNavigation } from "@react-navigation/native";
-import { addItemToCart, addItemToWishlist } from "../redux/actions/Actions";
 import CustomTextInput from "../Common/CustomTextInput";
 import Splash from "../Screen/Splash";
 
 export default function Search() {
   const data = useSelector((state) => state);
-  const navigation = useNavigation();
-  const dispatch = useDispatch();
   const route = useRoute();
   const [loading, setLoading] = useState(false);
   const [services, setServices] = useState([]);
@@ -33,47 +28,13 @@ export default function Search() {
     filter();
   }, [search]);
 
-  const cartData = useSelector((state) => state.cart);
-  const wishlistData = useSelector((state) => state.wishlist);
 
-  const onAddToCart = async (item) => {
-    const isItemInCart = cartData.some((cartItem) => cartItem.id === item.id);
-
-    if (!isItemInCart) {
-      dispatch(addItemToCart(item));
-      saveToAsyncStorage("@cartData", [...cartData, item]);
-    } else {
-      console.log("Item is already in the cart");
-    }
-  };
-
-  const onAddToWishList = async (item) => {
-    const isItemInWishlist = wishlistData.some(
-      (wishlistItem) => wishlistItem.id === item.id
-    );
-
-    if (!isItemInWishlist) {
-      dispatch(addItemToWishlist(item));
-      saveToAsyncStorage("@wishlistData", [...wishlistData, item]);
-    } else {
-      console.log("Item is already in the Wishlist");
-    }
-  };
-
-  const saveToAsyncStorage = async (key, data) => {
-    try {
-      await AsyncStorage.setItem(key, JSON.stringify(data));
-    } catch (error) {
-      console.error(`Error saving to ${key}:`, error);
-    }
-  };
 
   const getServicesByCategory = (category_id) => {
     const filtered = data.services[0].filter(
       (item) => item.category_id === category_id.toString()
     );
     setServices(filtered);
-    console.log("seting up serv" + filtered.length + "for category" + category);
   };
 
   const filter = () => {
@@ -132,8 +93,6 @@ export default function Search() {
               renderItem={({ item }) => (
                 <ProductItem
                   item={item}
-                  onAddToCart={onAddToCart}
-                  onAddToWishList={onAddToWishList}
                 />
               )}
             />
@@ -149,7 +108,7 @@ export default function Search() {
               alignSelf: "center",
             }}
           >
-            Their is No Services related {search}.
+            ......
           </Text>
         )}
       </ScrollView>

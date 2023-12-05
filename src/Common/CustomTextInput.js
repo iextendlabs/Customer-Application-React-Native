@@ -26,6 +26,7 @@ const CustomTextInput = ({
     >
       <Image source={icon} style={{ width: 24, height: 24 }} />
       <TextInput
+        clearButtonMode={'always'}
         value={value}
         onChangeText={(txt) => {
           onChangeText(txt);
