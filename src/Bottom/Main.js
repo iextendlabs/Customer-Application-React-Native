@@ -14,7 +14,7 @@ import Header from "../Common/Header";
 import Footer from "../Common/Footer";
 import { appIndex, BaseUrl } from "../Config/Api";
 import ProductItem from "../Common/ProductItem";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
 import Splash from "../Screen/Splash";

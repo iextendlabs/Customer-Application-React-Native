@@ -10,7 +10,7 @@ import {
   clearPersonalInformation,
   clearWishlist,
 } from "../redux/actions/Actions";
-import { useSelector, useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
 import Footer from "../Common/Footer";
 
 export default function Profile() {
