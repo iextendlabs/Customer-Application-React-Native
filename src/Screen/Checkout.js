@@ -70,6 +70,13 @@ export default function Checkout() {
     }
   }, [personalInformationData]);
 
+  useEffect(() => {
+    // If personalInformationData is available, set values from it
+    if (addressData && addressData.length > 0) {
+      selectAddress(addressData[0]);
+    }
+  }, [addressData]);
+
   const getServicesTotal = () => {
     return cartData.reduce((total, item) => {
       const itemTotal = item.discount
@@ -78,11 +85,7 @@ export default function Checkout() {
       return total + itemTotal;
     }, 0);
   };
-  useEffect(() => {
-    if (addressData.length === 1) {
-      selectAddress(addressData[0]);
-    }
-  }, [addressData]);
+ 
   const selectAddress = (item) => {
     setSelectedAddress(
       `${item.building} ${item.villa} ${item.street} ${item.area} ${item.city}`
@@ -349,10 +352,9 @@ export default function Checkout() {
   );
 
   const renderAddress = () => (
-    <View
-      style={{ borderColor: "#8e8e8e", borderTopWidth: 0.5, marginTop: 10 }}
-    >
-      {selectedAddress === null && (
+
+    <View style={{ borderColor: "#8e8e8e", borderTopWidth: 0.5 }}>
+      {addressData.length !== 0 ? (
         <View>
           <View
             style={{
@@ -364,101 +366,7 @@ export default function Checkout() {
             }}
           >
             <Text style={{ marginLeft: 10, fontWeight: "800" }}>Address</Text>
-            {addressData.length !== 0 && (
-              <TouchableOpacity
-                style={{
-                  borderWidth: 0.2,
-                  borderRadius: 4,
-                  padding: 7,
-                  marginRight: 20,
-                  alignSelf: "center",
-                  justifyContent: "center",
-                }}
-                onPress={() => {
-                  navigation.navigate("AddAddress");
-                }}
-              >
-                <Text>Add</Text>
-              </TouchableOpacity>
-            )}
-          </View>
-
-          {addressData.length !== 0 ? (
-            <FlatList
-              data={addressData}
-              renderItem={({ item, index }) => (
-                <TouchableOpacity
-                  style={{
-                    margin: 5,
-                    borderWidth: 0.5,
-                    borderColor: "#8e8e8e",
-                    borderRadius: 10,
-                  }}
-                  onPress={() => selectAddress(item)}
-                >
-                  <Text style={{ margin: 20 }}>
-                    {`${item.building} ${item.villa} ${item.street} ${item.area} ${item.city}`}
-                  </Text>
-                </TouchableOpacity>
-              )}
-            />
-          ) : (
-            <View
-              style={{
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              <Text
-                style={{
-                  alignItems: "center",
-                  fontWeight: 600,
-                  fontSize: 16,
-                  color: "#000",
-                }}
-              >
-                No Addresses Saved Yet!
-              </Text>
-              <TouchableOpacity
-                style={{
-                  margin: 20,
-                  justifyContent: "center",
-                  alignItems: "center",
-                  borderWidth: 0.2,
-                  padding: 7,
-                  borderRadius: 10,
-                }}
-                onPress={() => {
-                  navigation.navigate("AddAddress");
-                }}
-              >
-                <Text>Add Address</Text>
-              </TouchableOpacity>
-            </View>
-          )}
-        </View>
-      )}
-
-      {addressData.length !== 0 && (
-        <View>
-          <View
-            style={{
-              width: "100%",
-              justifyContent: "space-between",
-              height: 40,
-              flexDirection: "row",
-              alignItems: "center",
-            }}
-          >
-            <Text
-              style={{
-                marginLeft: 10,
-                fontWeight: "800",
-              }}
-            >
-              Selected Address
-            </Text>
-            {selectedAddress && (
+            {selectedAddress !== null && (
               <TouchableOpacity
                 style={{
                   borderWidth: 0.2,
@@ -479,6 +387,7 @@ export default function Checkout() {
                   setSelectedSlotValue(null);
                   setSelectedSlotId(null);
                   setOrderTotal(null);
+                  navigation.navigate("Address");
                 }}
               >
                 <Text>Change</Text>
@@ -486,17 +395,63 @@ export default function Checkout() {
             )}
           </View>
 
-          <Text
+          <View
             style={{
               marginLeft: 20,
               marginRight: 20,
               fontSize: 16,
             }}
           >
-            {selectedAddress === null
-              ? "Note: Please Select Address From the Above List!"
-              : selectedAddress}
+            <Text
+            style={{
+              marginLeft: 20,
+              marginRight: 20,
+              fontSize: 16,
+            }}
+          >
+              { selectedAddress }
           </Text>
+          </View>
+        </View>
+      ) : (
+        <View>
+          <Text
+            style={{
+              fontWeight: "800",
+              padding: 10,
+              borderTopWidth: 0.5,
+              borderColor: "#8e8e8e",
+            }}
+          >
+            Address :
+          </Text>
+          <View style={{ justifyContent: "center", alignItems: "center" }}>
+            <Text
+              style={{
+                alignItems: "center",
+                fontWeight: 600,
+                fontSize: 16,
+                color: "#000",
+              }}
+            >
+              No Addresses Saved Yet!
+            </Text>
+            <TouchableOpacity
+              style={{
+                margin: 20,
+                justifyContent: "center",
+                alignItems: "center",
+                borderWidth: 0.2,
+                padding: 7,
+                borderRadius: 10,
+              }}
+              onPress={() => {
+                navigation.navigate("Address");
+              }}
+            >
+              <Text>Add Address</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       )}
     </View>

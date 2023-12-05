@@ -85,7 +85,7 @@ export default function Profile() {
           justifyContent: "center",
         }}
         onPress={() => {
-          navigation.navigate("MyAddress");
+          navigation.navigate("Address");
         }}
       >
         <Text>My Address</Text>

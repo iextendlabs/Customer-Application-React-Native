@@ -7,11 +7,11 @@ import { getStaffZoneUrl } from "../Config/Api";
 import axios from "axios";
 import { Picker } from "@react-native-picker/picker";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useDispatch } from "react-redux";
-import { addAddress } from "../redux/actions/Actions";
-import Splash from "../Screen/Splash";
+import { useDispatch, useSelector } from "react-redux";
+import { addAddress, deleteAddress } from "../redux/actions/Actions";
+import Splash from "./Splash";
 
-export default function AddAddress() {
+export default function Address() {
   const dispatch = useDispatch();
   const navigation = useNavigation();
   const [building, setBuilding] = useState("");
@@ -23,10 +23,22 @@ export default function AddAddress() {
   const [error, setError] = useState("");
   const [zones, setZones] = useState([]);
   const [loading, setLoading] = useState(true);
-
+  const address = useSelector((state) => state.address);
   useEffect(() => {
     getStaffZone();
   }, []);
+
+  useEffect(() => {
+    if (address && address.length > 0) {
+      const addressData = address[0];
+      setBuilding(addressData.building || "");
+      setVilla(addressData.villa || "");
+      setStreet(addressData.street || "");
+      setArea(addressData.area || "");
+      setLandmark(addressData.landmark || "");
+      setCity(addressData.city || "");
+    }
+  }, [address]);
 
   const getStaffZone = async () => {
     try {
@@ -64,15 +76,17 @@ export default function AddAddress() {
         landmark: landmark,
         city: city,
       };
+      await AsyncStorage.removeItem("@addressData");
 
-      const jsonString = await AsyncStorage.getItem("@addressData");
-      const addressData = JSON.parse(jsonString) || [];
+      await AsyncStorage.setItem("@addressData", JSON.stringify(addressInfo));
 
-      await AsyncStorage.setItem(
-        "@addressData",
-        JSON.stringify([...addressData, addressInfo])
-      );
-      dispatch(addAddress(addressInfo));
+      if (address && address.length > 0) {
+        dispatch(deleteAddress(0));
+        dispatch(addAddress(addressInfo));
+      } else {
+        dispatch(addAddress(addressInfo));
+      }
+
       navigation.goBack();
     } else {
       setError("Fill up all fields.");
@@ -85,7 +99,7 @@ export default function AddAddress() {
 
   return (
     <ScrollView style={{ flex: 1, backgroundColor: "#FFCACC" }}>
-      <View style={{ flex: 1}}>
+      <View style={{ flex: 1 }}>
         {error && (
           <Text style={{ marginTop: 10, marginLeft: 40, color: "red" }}>
             {error}

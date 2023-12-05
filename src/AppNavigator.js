@@ -9,8 +9,7 @@ import Main from "./Bottom/Main";
 import Profile from "./Bottom/Profile";
 import Search from "./Bottom/Search";
 import Wishlist from "./Bottom/Wishlist";
-import MyAddress from "./Screen/MyAddress";
-import AddAddress from "./Screen/AddAddress";
+import Address from "./Screen/Address";
 import Checkout from "./Screen/Checkout";
 import PersonalInformation from "./Screen/PersonalInformation";
 import OrderSuccess from "./Screen/OrderSuccess";
@@ -139,14 +138,9 @@ export default function AppNavigator() {
           component={Wishlist}
         />
         <Stack.Screen
-          options={{ title: "My Address" }}
-          name="MyAddress"
-          component={MyAddress}
-        />
-        <Stack.Screen
-          options={{ title: "Add Address" }}
-          name="AddAddress"
-          component={AddAddress}
+          options={{ title: "Address" }}
+          name="Address"
+          component={Address}
         />
         <Stack.Screen name="Checkout" component={Checkout} />
         <Stack.Screen
