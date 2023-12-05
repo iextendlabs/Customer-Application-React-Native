@@ -177,14 +177,15 @@ export default function Checkout() {
         gender: gender,
         service_ids: cartDataIds,
       });
-
+      console.log(response.data);
       if (response.status === 200) {
         await AsyncStorage.removeItem("@cartData");
         dispatch(clearCart());
-        navigation.reset({
-          index: 0,
-          routes: [{ name: "OrderSuccess" }],
-        });
+        navigation.navigate("OrderSuccess", {
+            date: response.data.date,
+            staff: response.data.staff,
+            slot: response.data.slot
+          });
       } else if (response.status === 201) {
         setOrderError(response.data.msg);
       } else {

@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import CustomTextInput from "../Common/CustomTextInput";
 import CommonButton from "../Common/CommonButton";
-import { useNavigation, useFocusEffect } from "@react-navigation/native";
+import { useNavigation, useFocusEffect, useRoute } from "@react-navigation/native";
 import { LoginUrl } from "../Config/Api";
 import axios from "axios";
 import { useEffect } from "react";
@@ -12,6 +12,8 @@ import { useDispatch } from "react-redux";
 import { addPersonalInformation, addAddress } from "../redux/actions/Actions";
 
 const Login = () => {
+  const route = useRoute();
+
   const dispatch = useDispatch();
   const navigation = useNavigation();
   const [email, setEmail] = useState("admin@gmail.com");
@@ -91,7 +93,7 @@ const Login = () => {
         };
         navigation.reset({
           index: 0,
-          routes: [{ name: "Main" }],
+          routes: [{ name: (route.params && route.params.target) ? route.params.target : "Main" }],
         });
       } else {
         setError("Login failed. Please try again.");
@@ -178,7 +180,9 @@ const Login = () => {
           textDecorationLine: "underline",
         }}
         onPress={() => {
-          navigation.navigate("Signup");
+          navigation.navigate("Signup", {
+            target: (route.params && route.params.target) ? route.params.target : 'Main'
+          });
         }}
       >
         Create New Account?

@@ -68,9 +68,7 @@ export default function Search() {
             setSearch(txt);
           }}
           onClearPress={() => {
-            setSearch(null);
-            setServices([]);
-            setCategory(null);
+            setSearch('');
           }}
           isSearch={true}
         />

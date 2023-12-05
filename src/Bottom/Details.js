@@ -140,7 +140,6 @@ export default function Details() {
   };
 
   const getDetails = async (id) => {
-    console.log("lya rya" + id);
     setLoading(true);
     const response = await axios.get(getServiceUrl + id);
     if (response.status === 200) {
@@ -162,10 +161,6 @@ export default function Details() {
 
   const handleAddToCart = () => onAddToCart(service);
   const handleAddToWish = () => onAddToWishList(service);
-
-  if (loading) {
-    return Splash();
-  }
   return (
     <View style={{ flex: 1, backgroundColor: "#FFCACC" }}>
       <Header title={service ? service.name : "Details"} />

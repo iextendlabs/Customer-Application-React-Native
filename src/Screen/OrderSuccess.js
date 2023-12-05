@@ -1,9 +1,11 @@
 import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
 import React from "react";
 import Header from "../Common/Header";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
+import { useEffect } from "react";
 
 export default function OrderSuccess() {
+  const route = useRoute();
   const navigation = useNavigation();
   return (
     <View style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "#FFCACC" }}>
@@ -12,8 +14,11 @@ export default function OrderSuccess() {
         style={{ width: 50, height: 50, alignSelf: "center" }}
       />
       <Text style={{ fontSize: 15, alignSelf: "center", marginTop: 20 }}>
-        Your Order Places Successfully!
+        Your Order Placed Successfully!
       </Text>
+      <Text>Appointment: {route.params.date}</Text>
+      <Text>Staff {route.params.staff}</Text>
+      <Text>Slot {route.params.slot}</Text>
       <TouchableOpacity
         style={{
           width: 200,

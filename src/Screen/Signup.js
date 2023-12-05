@@ -2,13 +2,14 @@ import { View, Text, Image, ScrollView } from "react-native";
 import React, { useState } from "react";
 import CustomTextInput from "../Common/CustomTextInput";
 import CommonButton from "../Common/CommonButton";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import { SignupUrl } from "../Config/Api";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Splash from "../Screen/Splash";
 
 const Signup = () => {
+  const route = useRoute();
   const navigation = useNavigation();
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
@@ -90,7 +91,10 @@ const Signup = () => {
         const headers = {
           Authorization: `Bearer ${accessToken}`,
         };
-        navigation.navigate("Main");
+        navigation.reset({
+          index: 0,
+          routes: [{ name: (route.params && route.params.target) ? route.params.target : "Main" }],
+        });
       } else if (response.status === 201) {
         setError(response.data.errors.email);
       } else {

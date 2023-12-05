@@ -42,7 +42,9 @@ export default function Cart() {
     try {
       const user = await AsyncStorage.getItem("@user_id");
       if (!user) {
-        navigation.navigate("Login");
+        navigation.navigate("Login", {
+          target: 'Checkout'
+        });
       } else {
         navigation.navigate("Checkout");
       }
