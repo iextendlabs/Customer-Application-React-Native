@@ -154,7 +154,7 @@ export default function AppNavigator() {
           component={OrderSuccess}
         />
         <Stack.Screen
-          options={{ title: "My Orders" }}
+          options={{ title: "My Booking" }}
           name="MyOrders"
           component={MyOrders}
         />

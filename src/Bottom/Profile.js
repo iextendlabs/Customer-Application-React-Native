@@ -32,8 +32,7 @@ export default function Profile() {
       await AsyncStorage.removeItem("@access_token");
       await AsyncStorage.removeItem("@user_name");
       await AsyncStorage.removeItem("@user_email");
-      // dispatch(clearCart());
-      // dispatch(clearWishlist());
+
       dispatch(clearAddress());
       dispatch(clearPersonalInformation());
       await AsyncStorage.removeItem("@personalInformation");
@@ -103,7 +102,7 @@ export default function Profile() {
           navigation.navigate("MyOrders");
         }}
       >
-        <Text>My Order</Text>
+        <Text>My Booking</Text>
       </TouchableOpacity>
       <TouchableOpacity
         onPress={() => {

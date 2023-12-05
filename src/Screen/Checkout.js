@@ -561,12 +561,9 @@ export default function Checkout() {
               justifyContent: "center",
             }}
             onPress={() => {
-              setAvailableStaff([]);
-              setAvailableSlot([]);
               setSelectedStaff(null);
               setSelectedStaffId(null);
               setSelectedStaffCharges(null);
-              fetchAvailableTimeSlots(selectedDate, selectedArea);
               setSelectedSlot(null);
               setSelectedSlotValue(null);
               setSelectedSlotId(null);

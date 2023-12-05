@@ -5,6 +5,7 @@ import {
   FlatList,
   Image,
   TouchableOpacity,
+  Modal,
   ScrollView,
 } from "react-native";
 import React, { useEffect, useState } from "react";
@@ -17,11 +18,10 @@ import {
   BaseUrl,
 } from "../Config/Api";
 import { useNavigation } from "@react-navigation/native";
-import { useSelector, useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
 import { Calendar } from "react-native-calendars";
 import { Picker } from "@react-native-picker/picker";
 import CommonButton from "../Common/CommonButton";
-import { clearCart } from "../redux/actions/Actions";
 import Splash from '../Screen/Splash';
 
 export default function RescheduleOrder() {
@@ -33,14 +33,8 @@ export default function RescheduleOrder() {
   const [availableStaff, setAvailableStaff] = useState([]);
   const [availableSlot, setAvailableSlot] = useState([]);
   const [transportCharges, setTransportCharges] = useState(null);
-  const dispatch = useDispatch();
   const [selectedDate, setSelectedDate] = useState(null);
-  const [selectedBuilding, setSelectedBuilding] = useState(null);
   const [selectedArea, setSelectedArea] = useState(null);
-  const [selectedLandmark, setSelectedLandmark] = useState(null);
-  const [selectedFlatVilla, setSelectedFlatVilla] = useState(null);
-  const [selectedStreet, setSelectedStreet] = useState(null);
-  const [selectedCity, setSelectedCity] = useState(null);
   const [selectedStaff, setSelectedStaff] = useState(null);
   const [selectedStaffId, setSelectedStaffId] = useState(null);
   const [selectedStaffCharge, setSelectedStaffCharges] = useState(null);
@@ -49,13 +43,9 @@ export default function RescheduleOrder() {
   const [selectedSlotId, setSelectedSlotId] = useState(null);
   const [error, setError] = useState(null);
   const [orderError, setOrderError] = useState(null);
-  const [name, setName] = useState(null);
-  const [email, setEmail] = useState(null);
-  const [number, setNumber] = useState(null);
-  const [whatsapp, setWhatsapp] = useState(null);
-  const [gender, setGender] = useState(null);
   const [servicesTotal, setServicesTotal] = useState(null);
   const [orderTotal, setOrderTotal] = useState(null);
+  const [modalVisible, setModalVisible] = useState(false);
 
   useEffect(() => {
     getOrders();
@@ -94,6 +84,7 @@ export default function RescheduleOrder() {
   const handleDateSelect = (date) => {
     setSelectedDate(date.dateString);
     fetchAvailableTimeSlots(date.dateString, selectedArea);
+    setModalVisible(false);
   };
 
   const fetchAvailableTimeSlots = async (date, area) => {
@@ -141,60 +132,124 @@ export default function RescheduleOrder() {
         parseFloat(transportCharges)
     );
   };
-
+  
   const renderDate = () => (
-    <View>
-      <Text
-        style={{ margin: 10, fontWeight: "800" }}
-        onPress={() => {
-          setSelectedDate(null);
-          setAvailableStaff([]);
-          setAvailableSlot([]);
-          setSelectedStaff(null);
-          setSelectedStaffId(null);
-          setSelectedStaffCharges(null);
-          setSelectedSlot(null);
-          setSelectedSlotValue(null);
-          setSelectedSlotId(null);
-          setOrderTotal(null);
-        }}
-      >
+    <View
+      style={{
+        width: "100%",
+        justifyContent: "space-between",
+        height: 40,
+        flexDirection: "row",
+        alignItems: "center",
+        borderColor: "#8e8e8e",
+        borderTopWidth: 0.5,
+        marginTop: 10,
+      }}
+    >
+      <Text style={{ margin: 10, fontWeight: "800" }}>
         Date: {selectedDate && selectedDate}
       </Text>
-      {selectedDate === null && (
-        <Calendar
-          onDayPress={handleDateSelect}
-          markedDates={
-            selectedDate ? { [selectedDate]: { selected: true } } : {}
-          }
-          minDate={new Date()}
-        />
+      {selectedDate && (
+        <TouchableOpacity
+          style={{
+            borderWidth: 0.2,
+            borderRadius: 4,
+            padding: 7,
+            marginRight: 20,
+            alignSelf: "center",
+            justifyContent: "center",
+          }}
+          onPress={() => {
+            setSelectedDate(null);
+            setAvailableStaff([]);
+            setAvailableSlot([]);
+            setSelectedStaff(null);
+            setSelectedStaffId(null);
+            setSelectedStaffCharges(null);
+            setSelectedSlot(null);
+            setSelectedSlotValue(null);
+            setSelectedSlotId(null);
+            setOrderTotal(null);
+            setModalVisible(true);
+          }}
+        >
+          <Text>Change</Text>
+        </TouchableOpacity>
       )}
+      <Modal animationType="slide" visible={modalVisible} transparent={true}>
+        <View
+          style={{
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+            backgroundColor: "rgba(0, 0, 0, 0.5)",
+          }}
+        >
+          <View
+            style={{
+              backgroundColor: "#fff",
+              borderRadius: 10,
+              padding: 20,
+              width: "90%",
+            }}
+          >
+            <Calendar
+              onDayPress={handleDateSelect}
+              markedDates={
+                selectedDate ? { [selectedDate]: { selected: true } } : {}
+              }
+              minDate={new Date()}
+            />
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 
   const renderStaff = () => (
-    <View>
-      <Text
+    <View style={{ borderColor: "#8e8e8e", borderTopWidth: 0.5 }}>
+      <View
         style={{
-          margin: 10,
-          fontWeight: "800",
-        }}
-        onPress={() => {
-          setAvailableStaff([]);
-          setAvailableSlot([]);
-          setSelectedStaff(null);
-          setSelectedStaffId(null);
-          setSelectedStaffCharges(null);
-          fetchAvailableTimeSlots(selectedDate, selectedArea);
-          setSelectedSlot(null);
-          setSelectedSlotValue(null);
-          setSelectedSlotId(null);
-          setOrderTotal(null);
+          width: "100%",
+          justifyContent: "space-between",
+          height: 40,
+          flexDirection: "row",
+          alignItems: "center",
         }}
       >
-        Staff: {selectedStaff && selectedStaff}
-      </Text>
+        <Text
+          style={{
+            margin: 10,
+
+            fontWeight: "800",
+          }}
+        >
+          Staff: {selectedStaff && selectedStaff}
+        </Text>
+        {selectedStaff && (
+          <TouchableOpacity
+            style={{
+              borderWidth: 0.2,
+              borderRadius: 4,
+              padding: 7,
+              marginRight: 20,
+              alignSelf: "center",
+              justifyContent: "center",
+            }}
+            onPress={() => {
+              setSelectedStaff(null);
+              setSelectedStaffId(null);
+              setSelectedStaffCharges(null);
+              setSelectedSlot(null);
+              setSelectedSlotValue(null);
+              setSelectedSlotId(null);
+              setOrderTotal(null);
+            }}
+          >
+            <Text>Change</Text>
+          </TouchableOpacity>
+        )}
+      </View>
       <FlatList
         data={availableStaff}
         renderItem={({ item, index }) => (
@@ -246,81 +301,93 @@ export default function RescheduleOrder() {
                 </View>
               )
             ) : (
-              <View
-                style={{
-                  width: "100%",
-                  height: 70,
-                  flexDirection: "row",
-                  marginTop: 10,
-                  justifyContent: "space-between",
-                }}
-              >
-                <View style={{ flexDirection: "row" }}>
-                  <Image
-                    source={{
-                      uri: `${BaseUrl}staff-images/${item.staff.image}`,
-                    }}
-                    defaultSource={require("../images/logo.png")}
-                    style={{
-                      width: 70,
-                      height: 70,
-                      marginLeft: 10,
-                    }}
-                  />
-                  <View style={{ padding: 10 }}>
-                    <Text
-                      style={{
-                        fontSize: 15,
-                        fontWeight: "700",
+              <TouchableOpacity onPress={() => selectStaff(item)}>
+                <View
+                  style={{
+                    width: "100%",
+                    height: 70,
+                    flexDirection: "row",
+                    marginTop: 10,
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <View style={{ flexDirection: "row" }}>
+                    <Image
+                      source={{
+                        uri: `${BaseUrl}staff-images/${item.staff.image}`,
                       }}
-                    >
-                      {item.name}
-                    </Text>
-                    {item.staff.charges && (
+                      defaultSource={require("../images/logo.png")}
+                      style={{
+                        width: 70,
+                        height: 70,
+                        marginLeft: 10,
+                      }}
+                    />
+                    <View style={{ padding: 10 }}>
                       <Text
                         style={{
-                          marginTop: 15,
-                          fontSize: 12,
+                          fontSize: 15,
+                          fontWeight: "700",
                         }}
                       >
-                        Extra Charges: AED {item.staff.charges}
+                        {item.name}
                       </Text>
-                    )}
+                      {item.staff.charges && (
+                        <Text
+                          style={{
+                            marginTop: 15,
+                            fontSize: 12,
+                          }}
+                        >
+                          Extra Charges: AED {item.staff.charges}
+                        </Text>
+                      )}
+                    </View>
                   </View>
                 </View>
-                <TouchableOpacity
-                  style={{
-                    borderWidth: 0.2,
-                    borderRadius: 4,
-                    padding: 7,
-                    marginRight: 20,
-                    alignSelf: "center",
-                    justifyContent: "center",
-                  }}
-                  onPress={() => selectStaff(item)}
-                >
-                  <Text>Select</Text>
-                </TouchableOpacity>
-              </View>
+              </TouchableOpacity>
             )}
           </>
         )}
       />
     </View>
   );
-
   const renderSlot = () => (
-    <View>
-          {availableSlot.length === 0 ? (
-            <Text style={{ margin: 10, color: "red" }}>
-              No Staff Available for the Selected Date / Zone
+    <View
+      style={{ borderColor: "#8e8e8e", borderTopWidth: 0.5, marginTop: 10 }}
+    >
+      {availableSlot.length === 0 ? (
+        <Text style={{ margin: 10, color: "red" }}>
+          No Staff Availalbe for the Selected Date / Zone
+        </Text>
+      ) : (
+        <View>
+          <View
+            style={{
+              width: "100%",
+              justifyContent: "space-between",
+              height: 40,
+              flexDirection: "row",
+              alignItems: "center",
+            }}
+          >
+            <Text
+              style={{
+                margin: 10,
+                fontWeight: "800",
+              }}
+            >
+              Slot: {selectedSlotValue && selectedSlotValue}
             </Text>
-          ) : (
-            <View>
-              <Text
+            {selectedSlotValue && (
+              <TouchableOpacity
                 style={{
-                  margin: 10,
-                  fontWeight: "800",
+                  borderWidth: 0.2,
+                  borderRadius: 4,
+                  padding: 7,
+                  marginRight: 20,
+                  alignSelf: "center",
+                  justifyContent: "center",
                 }}
                 onPress={() => {
                   setSelectedSlot(null);
@@ -328,54 +395,56 @@ export default function RescheduleOrder() {
                   setSelectedSlotId(null);
                 }}
               >
-                Slot: {selectedSlotValue && selectedSlotValue}
-              </Text>
-              {selectedSlotValue === null && (
-              <View
-                style={{
-                  height: 50,
-                  width: "80%",
-                  alignSelf: "center",
-                  borderWidth: 0.5,
-                  borderColor: "#8e8e8e",
+                <Text>Change</Text>
+              </TouchableOpacity>
+            )}
+          </View>
+          {selectedSlotValue === null && (
+            <View
+              style={{
+                height: 50,
+                width: "80%",
+                alignSelf: "center",
+                borderWidth: 0.5,
+                borderColor: "#8e8e8e",
+              }}
+            >
+              <Picker
+                selectedValue={
+                  selectedSlot
+                    ? selectedSlot[0] + "," + selectedSlot[1]
+                    : undefined
+                }
+                onValueChange={(itemValue, itemIndex) => {
+                  setSelectedSlot(itemValue);
+
+                  // Add a check to ensure itemValue is defined
+                  if (itemValue) {
+                    const [slotId, timeRange] = itemValue.split(",");
+                    setSelectedSlotId(slotId);
+                    setSelectedSlotValue(timeRange);
+                  }
                 }}
               >
-                <Picker
-                  selectedValue={
-                    selectedSlot
-                      ? selectedSlot[0] + "," + selectedSlot[1]
-                      : undefined
+                <Picker.Item label="Select Time Slot" />
+                {Object.keys(availableSlot).map((slotIndex) => {
+                  // Display slots only for the selected staff
+                  if (slotIndex == selectedStaffId) {
+                    return availableSlot[slotIndex].map((slot) => (
+                      <Picker.Item
+                        key={slot[0]}
+                        label={slot[1]}
+                        value={slot[0] + "," + slot[1]} // Keep the value as a string
+                      />
+                    ));
                   }
-                  onValueChange={(itemValue, itemIndex) => {
-                    setSelectedSlot(itemValue);
-
-                    // Add a check to ensure itemValue is defined
-                    if (itemValue) {
-                      const [slotId, timeRange] = itemValue.split(",");
-                      setSelectedSlotId(slotId);
-                      setSelectedSlotValue(timeRange);
-                    }
-                  }}
-                >
-                  <Picker.Item label="Select Time Slot" value={null} />
-                  {Object.keys(availableSlot).map((slotIndex) => {
-                    // Display slots only for the selected staff
-                    if (slotIndex == selectedStaffId) {
-                      return availableSlot[slotIndex].map((slot) => (
-                        <Picker.Item
-                          key={slot[0]}
-                          label={slot[1]}
-                          value={slot[0] + "," + slot[1]} // Keep the value as a string
-                        />
-                      ));
-                    }
-                    return null;
-                  })}
-                </Picker>
-              </View>
-              )}
+                  return null;
+                })}
+              </Picker>
             </View>
           )}
+        </View>
+      )}
     </View>
   );
 
