@@ -18,7 +18,7 @@ import { useDispatch, useSelector } from "react-redux";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import HTML from "react-native-render-html";
-import Toast from 'react-native-toast-message';
+import FlashMessage, { showMessage } from "react-native-flash-message";
 
 const styles = StyleSheet.create({
   container: {
@@ -86,6 +86,14 @@ export default function Details() {
   const [description, setDescription] = useState("Loading...");
   const cartData = useSelector((state) => state.cart);
   const wishlistData = useSelector((state) => state.wishlist);
+  const toastOptions = {
+    type: "info",
+    backgroundColor: "#fff",
+    color: "#000",
+    duration: 1500,
+    margin: 20,
+  };
+
   const saveToAsyncStorage = async (key, data) => {
     try {
       await AsyncStorage.setItem(key, JSON.stringify(data));
@@ -99,14 +107,16 @@ export default function Details() {
     if (!isItemInCart) {
       dispatch(addItemToCart(item));
       saveToAsyncStorage("@cartData", [...cartData, item]);
+      showMessage({
+        message: "Added to Cart.",
+        ...toastOptions,
+      });
     } else {
-      console.log("Item is already in the cart");
+      showMessage({
+        message: "Item is already in the cart.",
+        ...toastOptions,
+      });
     }
-    Toast.show({
-      type: 'info',
-      position: 'bottom',
-      text1: 'Added to Cart'
-    });
   };
 
   const onAddToWishList = async (item) => {
@@ -117,14 +127,16 @@ export default function Details() {
     if (!isItemInWishlist) {
       dispatch(addItemToWishlist(item));
       saveToAsyncStorage("@wishlistData", [...wishlistData, item]);
+      showMessage({
+        message: "Added to WisthList.",
+        ...toastOptions,
+      });
     } else {
-      console.log("Item is already in the Wishlist");
+      showMessage({
+        message: "Item is already in the Wishlist.",
+        ...toastOptions,
+      });
     }
-    Toast.show({
-      type: 'info',
-      position: 'bottom',
-      text1: 'Added to WisthList'
-    });
   };
 
   const getDetails = async (id) => {
@@ -201,6 +213,16 @@ export default function Details() {
           </ScrollView>
         </>
       )}
+      <FlashMessage
+        position="bottom"
+        style={{
+          borderRadius: 8,
+          padding: 30,
+          marginHorizontal: 50,
+          marginBottom: 50,
+          alignItems: "center",
+        }}
+      />
       <Footer />
     </View>
   );
