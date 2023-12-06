@@ -46,13 +46,14 @@ export default function CartItem({ item, onRemoveFromCart, onAddToCart , onAddTo
           AED{" "}
           {item.discount ? (
             <>
-              <Text style={{ marginRight: 5, color: "#333" }}>
-                {item.discount}
-              </Text>
+              
               <Text
                 style={{ textDecorationLine: "line-through", color: "#999" }}
               >
                 {item.price}
+              </Text>
+              <Text style={{ marginRight: 5, color: "#333" }}>
+                {item.discount}
               </Text>
             </>
           ) : (

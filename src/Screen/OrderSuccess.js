@@ -19,6 +19,7 @@ export default function OrderSuccess() {
       <Text>Appointment: {route.params.date}</Text>
       <Text>Staff: {route.params.staff}</Text>
       <Text>Slot: {route.params.slot}</Text>
+      <Text>Total Amount: AED {route.params.total_amount}</Text>
       <TouchableOpacity
         style={{
           width: 200,

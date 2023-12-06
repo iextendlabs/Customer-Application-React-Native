@@ -29,16 +29,20 @@ export default function ProductItem({ item }) {
           fontWeight: 600,
           height: 50,
           textAlign: "center",
-          padding:5
+          padding: 5,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
         }}
       >
         {item.name.substring(0, 40)}
       </Text>
+
       <Image
         source={{
           uri: BaseUrl + "service-images/" + item.image,
         }}
-        defaultSource={require('../images/logo.png')}
+        defaultSource={require("../images/logo.png")}
         style={{
           width: "100%",
           height: "60%",
@@ -61,13 +65,13 @@ export default function ProductItem({ item }) {
           AED{" "}
           {item.discount ? (
             <>
-              <Text style={{ marginRight: 5, color: "#333" }}>
-                {item.discount}
-              </Text>
               <Text
                 style={{ textDecorationLine: "line-through", color: "#999" }}
               >
                 {item.price}
+              </Text>
+              <Text style={{ marginRight: 5, color: "#333" }}>
+                {item.discount}
               </Text>
             </>
           ) : (

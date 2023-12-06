@@ -144,6 +144,7 @@ export default function PersonalInformation() {
           icon={require("../images/name.png")}
           value={name}
           onChangeText={(txt) => setName(txt)}
+          label={'Name'}
         />
         <CustomTextInput
           placeholder={"Enter Email"}
@@ -151,6 +152,7 @@ export default function PersonalInformation() {
           value={email}
           onChangeText={(txt) => setEmail(txt)}
           keyboardType={"email-address"}
+          label={'Email'}
         />
         <CustomTextInput
           placeholder={"Enter Phone Number"}
@@ -158,6 +160,7 @@ export default function PersonalInformation() {
           value={number}
           onChangeText={(txt) => setNumber(txt)}
           keyboardType={"numeric"}
+          label={'Phone Number'}
         />
         <CustomTextInput
           placeholder={"Enter Whatsapp Number"}
@@ -165,6 +168,7 @@ export default function PersonalInformation() {
           value={whatsapp}
           onChangeText={(txt) => setWhatsapp(txt)}
           keyboardType={"numeric"}
+          label={'Whatsapp Number'}
         />
         <View style={{ flexDirection: "row", marginLeft: 40, marginTop: 30 }}>
           <Text style={{ marginRight: 20, marginTop: 5 }}>Gender:</Text>

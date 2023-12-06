@@ -32,7 +32,6 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     padding: 20,
-    marginBottom:50
   },
 
   price: {
@@ -183,14 +182,26 @@ export default function Details() {
               AED{" "}
               {service.discount ? (
                 <>
-                  <Text style={styles.discountedPrice}>{service.discount}</Text>
                   <Text style={styles.originalPrice}>{service.price}</Text>
+                  <Text style={styles.discountedPrice}>{service.discount}</Text>
                 </>
               ) : (
                 service.price
               )}
             </Text>
-            <Text style={styles.duration}>Duaration: {service.duration}</Text>
+            <View>
+              <Text style={styles.duration}>
+                Duaration:{" "}
+                <Image
+                  source={require("../images/clock.png")}
+                  style={{
+                    width: 15,
+                    height: 15,
+                  }}
+                />
+                {service.duration}
+              </Text>
+            </View>
 
             <TouchableOpacity
               style={styles.addToCartButton}
@@ -204,8 +215,9 @@ export default function Details() {
             >
               <Text style={styles.addToCartButtonText}>Save to Wishlist</Text>
             </TouchableOpacity>
-
-            <HTML source={{ html: description }} />
+            <View style={{ marginBottom: 80 }}>
+              <HTML source={{ html: description }} />
+            </View>
           </ScrollView>
         </>
       )}

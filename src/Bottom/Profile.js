@@ -5,10 +5,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import {
-  clearCart,
   clearAddress,
   clearPersonalInformation,
-  clearWishlist,
 } from "../redux/actions/Actions";
 import { useDispatch } from "react-redux";
 import Footer from "../Common/Footer";
@@ -52,7 +50,7 @@ export default function Profile() {
   };
   return (
     <View style={{ flex: 1, backgroundColor: "#FFCACC" }}>
-      <Header title={"Profile"} />
+      <Header title={"Profile"} isProfile={true}/>
       <Image
         source={require("../images/profile.png")}
         style={{ width: 80, height: 80, alignSelf: "center", marginTop: 30 }}
@@ -107,7 +105,7 @@ export default function Profile() {
           navigation.navigate("MyOrders");
         }}
       >
-        <Text>My Booking</Text>
+        <Text>My Bookings</Text>
       </TouchableOpacity>
       <TouchableOpacity
         onPress={() => {

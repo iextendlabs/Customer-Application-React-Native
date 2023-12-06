@@ -16,18 +16,15 @@ import { Calendar } from "react-native-calendars";
 import axios from "axios";
 import { Picker } from "@react-native-picker/picker";
 import CommonButton from "../Common/CommonButton";
-import { clearCart } from "../redux/actions/Actions";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import Splash from "../Screen/Splash";
+import Header from "../Common/Header";
+import Footer from "../Common/Footer";
 
-export default function Checkout() {
-  const dispatch = useDispatch();
+export default function Booking() {
   const navigation = useNavigation();
-  const cartData = useSelector((state) => state.cart);
   const personalInformationData = useSelector(
     (state) => state.personalInformation
   );
-  const cartDataIds = cartData.map((item) => item.id);
   const addressData = useSelector((state) => state.address);
   const [selectedAddress, setSelectedAddress] = useState(null);
   const [selectedDate, setSelectedDate] = useState(null);
@@ -47,19 +44,15 @@ export default function Checkout() {
   const [selectedSlotValue, setSelectedSlotValue] = useState(null);
   const [selectedSlotId, setSelectedSlotId] = useState(null);
   const [error, setError] = useState(null);
-  const [orderError, setOrderError] = useState(null);
   const [loading, setLoading] = useState(false);
   const [name, setName] = useState(null);
   const [email, setEmail] = useState(null);
   const [number, setNumber] = useState(null);
   const [whatsapp, setWhatsapp] = useState(null);
   const [gender, setGender] = useState(null);
-  const [servicesTotal, setServicesTotal] = useState(null);
-  const [orderTotal, setOrderTotal] = useState(null);
   const [modalVisible, setModalVisible] = useState(true);
 
   useEffect(() => {
-    // If personalInformationData is available, set values from it
     if (personalInformationData && personalInformationData.length > 0) {
       const info = personalInformationData[0];
       setName(info.name || null);
@@ -76,15 +69,6 @@ export default function Checkout() {
       selectAddress(addressData[0]);
     }
   }, [addressData]);
-
-  const getServicesTotal = () => {
-    return cartData.reduce((total, item) => {
-      const itemTotal = item.discount
-        ? parseFloat(item.discount)
-        : parseFloat(item.price);
-      return total + itemTotal;
-    }, 0);
-  };
 
   const selectAddress = (item) => {
     setSelectedAddress(
@@ -148,119 +132,7 @@ export default function Checkout() {
       staff_charges = parseFloat(item.staff.charges);
     }
     setSelectedStaffCharges(staff_charges);
-    // setAvailableStaff([]);
-    setServicesTotal(getServicesTotal());
-    setOrderTotal(
-      getServicesTotal() +
-        parseFloat(staff_charges) +
-        parseFloat(transportCharges)
-    );
   };
-
-  const handleSave = async () => {
-    setLoading(true);
-    try {
-      const response = await axios.post(AddOrderUrl, {
-        name: name,
-        email: email,
-        buildingName: selectedBuilding,
-        area: selectedArea,
-        landmark: selectedLandmark,
-        flatVilla: selectedFlatVilla,
-        street: selectedStreet,
-        city: selectedCity,
-        number: number,
-        whatsapp: whatsapp,
-        service_staff_id: selectedStaffId,
-        date: selectedDate,
-        time_slot_id: selectedSlotId,
-        gender: gender,
-        service_ids: cartDataIds,
-      });
-      console.log(response.data);
-      if (response.status === 200) {
-        await AsyncStorage.removeItem("@cartData");
-        dispatch(clearCart());
-        navigation.navigate("OrderSuccess", {
-          date: response.data.date,
-          staff: response.data.staff,
-          slot: response.data.slot,
-          total_amount: response.data.total_amount,
-        });
-      } else if (response.status === 201) {
-        setOrderError(response.data.msg);
-      } else {
-        setError("Order failed. Please try again.");
-      }
-    } catch (error) {
-      // setError("These credentials do not match our records.");
-    }
-    setLoading(false);
-  };
-
-  const renderServices = () => (
-    <View>
-      <FlatList
-        data={cartData}
-        renderItem={({ item, index }) => (
-          <View
-            style={{
-              width: "100%",
-              height: 70,
-              flexDirection: "row",
-              marginTop: 10,
-            }}
-          >
-            <Image
-              source={{ uri: `${BaseUrl}service-images/${item.image}` }}
-              defaultSource={require("../images/logo.png")}
-              style={{ width: 70, height: 70, marginLeft: 10 }}
-            />
-            <View style={{ padding: 10 }}>
-              <Text style={{ fontSize: 15 }}>{item.name}</Text>
-              <Text style={{ marginTop: 15 }}>
-                AED{" "}
-                {item.discount ? (
-                  <>
-                    <Text
-                      style={{
-                        textDecorationLine: "line-through",
-                        color: "#999",
-                      }}
-                    >
-                      {item.price}
-                    </Text>
-                    <Text style={{ marginRight: 5, color: "#333" }}>
-                      {item.discount}
-                    </Text>
-                  </>
-                ) : (
-                  item.price
-                )}
-              </Text>
-            </View>
-          </View>
-        )}
-      />
-      <View
-        style={{
-          flexDirection: "row",
-          justifyContent: "space-between",
-          alignItems: "center",
-          paddingLeft: 30,
-          paddingRight: 30,
-          marginTop: 10,
-          borderTopWidth: 0.5,
-          height: 40,
-          borderColor: "#8e8e8e",
-          borderBottomWidth: 0.5,
-        }}
-      >
-        <Text style={{ fontWeight: "800" }}>Total :</Text>
-        <Text>AED {getServicesTotal()}</Text>
-      </View>
-    </View>
-  );
 
   const renderPersonalInformation = () => (
     <View style={{ borderColor: "#8e8e8e", borderTopWidth: 0.5 }}>
@@ -486,7 +358,6 @@ export default function Checkout() {
             setSelectedSlot(null);
             setSelectedSlotValue(null);
             setSelectedSlotId(null);
-            setOrderTotal(null);
             setModalVisible(true);
           }}
         >
@@ -560,7 +431,6 @@ export default function Checkout() {
               setSelectedSlot(null);
               setSelectedSlotValue(null);
               setSelectedSlotId(null);
-              setOrderTotal(null);
             }}
           >
             <Text>Change</Text>
@@ -669,6 +539,7 @@ export default function Checkout() {
       />
     </View>
   );
+
   const renderSlot = () => (
     <View
       style={{ borderColor: "#8e8e8e", borderTopWidth: 0.5, marginTop: 10 }}
@@ -765,110 +636,66 @@ export default function Checkout() {
     </View>
   );
 
-  const renderSummary = () => (
-    <View
-      style={{
-        borderTopWidth: 0.5,
-        borderColor: "#8e8e8e",
-      }}
-    >
-      <Text
-        style={{
-          margin: 10,
-          fontWeight: "800",
-        }}
-      >
-        Order Summary:
-      </Text>
-      <View
-        style={{
-          marginLeft: 30,
-          fontSize: 16,
-          width: "80%",
-        }}
-      >
-        <Text style={{ padding: 10 }}>
-          Total Services Charges: AED {getServicesTotal()}
-        </Text>
-        <Text style={{ padding: 10 }}>
-          Staff Charges: AED {selectedStaffCharge ? selectedStaffCharge : 0}
-        </Text>
-        <Text
-          style={{
-            padding: 10,
-            borderBottomWidth: 0.5,
-          }}
-        >
-          Transport Charges: AED {transportCharges ? transportCharges : 0}
-        </Text>
-        <Text style={{ padding: 10 }}>
-          Total Order Charges: AED {orderTotal}
-        </Text>
-      </View>
-    </View>
-  );
   if (loading) {
     return Splash();
   }
   return (
-    <ScrollView style={{ flex: 1, backgroundColor: "#FFCACC" }}>
-      <View style={{ flex: 1, marginBottom: 40 }}>
-        {renderServices()}
-        {renderPersonalInformation()}
-        {name !== null && email !== null && (
-          <>
-            {renderAddress()}
-            {selectedAddress && (
-              <>
-                {renderDate()}
-                {selectedDate && (
-                  <>
-                    {error ? (
-                      <Text style={{ margin: 10, color: "red" }}>{error}</Text>
-                    ) : (
-                      <>
-                        {availableStaff && (
-                          <>
-                            {renderStaff()}
-                            {selectedStaff && (
-                              <>
-                                {renderSlot()}
-                                {selectedSlotValue && (
-                                  <>
-                                    {renderSummary()}
-                                    <View style={{ marginBottom: 30 }}>
-                                      {orderError && (
-                                        <Text
-                                          style={{ margin: 10, color: "red" }}
-                                        >
-                                          {orderError}
-                                        </Text>
-                                      )}
-                                      <CommonButton
-                                        title={"Place Order"}
-                                        bgColor={"#000"}
-                                        textColor={"#fff"}
-                                        onPress={() => {
-                                          handleSave();
-                                        }}
-                                      />
-                                    </View>
-                                  </>
-                                )}
-                              </>
-                            )}
-                          </>
-                        )}
-                      </>
-                    )}
-                  </>
-                )}
-              </>
-            )}
-          </>
-        )}
-      </View>
-    </ScrollView>
+    <View style={{ flex: 1, backgroundColor: "#FFCACC" }}>
+      <Header title={"Booking"} />
+      <ScrollView>
+        <View style={{ flex: 1, marginBottom: 40 }}>
+          {renderPersonalInformation()}
+          {name !== null && email !== null && (
+            <>
+              {renderAddress()}
+              {selectedAddress && (
+                <>
+                  {renderDate()}
+                  {selectedDate && (
+                    <>
+                      {error ? (
+                        <Text style={{ margin: 10, color: "red" }}>
+                          {error}
+                        </Text>
+                      ) : (
+                        <>
+                          {availableStaff && (
+                            <>
+                              {renderStaff()}
+                              {selectedStaff && (
+                                <>
+                                  {renderSlot()}
+                                  {selectedSlotValue && (
+                                    <>
+                                      <View style={{ marginBottom: 30 }}>
+                                        <CommonButton
+                                          title={"Add Services to Cart"}
+                                          bgColor={"#000"}
+                                          textColor={"#fff"}
+                                          onPress={() => {
+                                            console.log('as');
+                                            navigation.navigate("Main");
+                                          }}
+                                        />
+                                      </View>
+                                    </>
+                                  )}
+                                </>
+                              )}
+                            </>
+                          )}
+                        </>
+                      )}
+                    </>
+                  )}
+                </>
+              )}
+            </>
+          )}
+        </View>
+      </ScrollView>
+      <Footer />
+    </View>
   );
 }
 

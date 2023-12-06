@@ -33,6 +33,7 @@ export default function Header({ title, onPress, isProfile }) {
       >
         {title}
       </Text>
+      {!isProfile && (
       <Text
         style={{
           fontSize: 14, // Adjust the font size as needed
@@ -42,17 +43,6 @@ export default function Header({ title, onPress, isProfile }) {
       >
         Best In the Town Services
       </Text>
-      {isProfile && (
-        <TouchableOpacity
-          onPress={() => {
-            onPress();
-          }}
-        >
-          <Image
-            source={require("../images/logout.png")}
-            style={{ width: 24, height: 24, marginRight: 20 }}
-          />
-        </TouchableOpacity>
       )}
     </View>
   );

@@ -21,6 +21,7 @@
       }
     },
     "android": {
+      "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
@@ -37,7 +38,7 @@
     },
     "extra": {
       "eas": {
-        "projectId": "17cc5928-514c-4894-a150-447f2383e16a"
+        "projectId": "11b2a292-16ba-4160-a92e-45954046a190"
       }
     }
   }

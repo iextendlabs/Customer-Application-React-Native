@@ -26,6 +26,7 @@ import {
 } from "./redux/actions/Actions";
 import Details from "./Bottom/Details";
 import { ImageBackground } from "react-native";
+import Booking from "./Bottom/Booking";
 
 export default function AppNavigator() {
   const cartReduxData = useSelector((state) => state.cart);
@@ -136,6 +137,11 @@ export default function AppNavigator() {
           options={{ headerShown: false }}
           name="Wishlist"
           component={Wishlist}
+        />
+        <Stack.Screen
+          options={{ headerShown: false }}
+          name="Booking"
+          component={Booking}
         />
         <Stack.Screen
           options={{ title: "Address" }}

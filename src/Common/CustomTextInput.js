@@ -10,11 +10,11 @@ const CustomTextInput = ({
   keyboardType,
   onClearPress,
   isSearch,
-  addressLabel,
+  label,
 }) => {
   return (
-    <View style={addressLabel ? null : { marginTop: 30 }}>
-      {addressLabel && (
+    <View style={label ? null : { marginTop: 10 }}>
+      {label && (
         <Text
           style={{
             width: "85%",
@@ -23,7 +23,7 @@ const CustomTextInput = ({
             padding: 10,
           }}
         >
-          {addressLabel}:
+          {label}:
         </Text>
       )}
 

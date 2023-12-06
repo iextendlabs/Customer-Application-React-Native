@@ -59,7 +59,7 @@ export default function Search() {
   return (
     <View style={{ flex: 1, backgroundColor: "#FFCACC" }}>
       <Header title={"Search"} />
-      <ScrollView style={{ backgroundColor: "" }}>
+      <ScrollView>
         <CustomTextInput
           placeholder={"Search Services"}
           icon={require("../images/search.png")}
