@@ -1,27 +1,51 @@
-import { View, Text, Image } from "react-native";
+import { View, Text, Image, ScrollView } from "react-native";
 import React, { useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import CustomTextInput from "../Common/CustomTextInput";
 import CommonButton from "../Common/CommonButton";
-import { useNavigation, useFocusEffect, useRoute } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
+
 import { LoginUrl } from "../Config/Api";
 import axios from "axios";
 import { useEffect } from "react";
 import Splash from "../Screen/Splash";
 import { useDispatch } from "react-redux";
 import { addPersonalInformation, addAddress } from "../redux/actions/Actions";
+import { BackHandler } from "react-native";
 
 const Login = () => {
-  const route = useRoute();
-
   const dispatch = useDispatch();
   const navigation = useNavigation();
+  const route = useRoute();
   const [email, setEmail] = useState("admin@gmail.com");
   const [password, setPassword] = useState("test");
   const [badEmail, setBadEmail] = useState(false);
   const [badPassword, setBadPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (route.params && route.params.back) {
+      const handleBackPress = () => {
+        navigation.reset({
+          index: 0,
+          routes: [{ name: "Main" }],
+        });
+        return true;
+      };
+
+      const backHandler = BackHandler.addEventListener(
+        "hardwareBackPress",
+        handleBackPress
+      );
+
+      return () => {
+        backHandler.remove();
+      };
+    }
+
+    return () => {};
+  }, [navigation]);
 
   const handleLogin = async () => {
     setError("");
@@ -91,10 +115,15 @@ const Login = () => {
         const headers = {
           Authorization: `Bearer ${accessToken}`,
         };
-        navigation.reset({
-          index: 0,
-          routes: [{ name: (route.params && route.params.target) ? route.params.target : "Main" }],
-        });
+
+        if (route.params && route.params.Navigate) {
+          navigation.navigate(route.params.Navigate);
+        } else {
+          navigation.reset({
+            index: 0,
+            routes: [{ name: "Main" }],
+          });
+        }
       } else {
         setError("Login failed. Please try again.");
       }
@@ -109,85 +138,90 @@ const Login = () => {
   }
 
   return (
-    <View style={{ flex: 1, backgroundColor: "#FFCACC" }}>
-      <Image
-        source={require("../images/logo.png")}
-        style={{
-          width: 60,
-          height: 60,
-          alignSelf: "center",
-          marginTop: 120,
-        }}
-      />
-      <Text
-        style={{
-          marginTop: 20,
-          alignSelf: "center",
-          fontSize: 24,
-          fontWeight: "600",
-          color: "#000",
-        }}
-      >
-        Login
-      </Text>
+    <ScrollView style={{ flex: 1, backgroundColor: "#FFCACC" }}>
+      <View style={{ flex: 1 }}>
+        <Image
+          source={require("../images/logo.png")}
+          style={{
+            width: 60,
+            height: 60,
+            alignSelf: "center",
+            marginTop: 120,
+          }}
+        />
+        <Text
+          style={{
+            marginTop: 20,
+            alignSelf: "center",
+            fontSize: 24,
+            fontWeight: "600",
+            color: "#000",
+          }}
+        >
+          Login
+        </Text>
 
-      {error && (
-        <Text style={{ marginTop: 10, marginLeft: 40, color: "red" }}>
-          {error}
+        {error && (
+          <Text style={{ marginTop: 10, marginLeft: 40, color: "red" }}>
+            {error}
+          </Text>
+        )}
+        <CustomTextInput
+          placeholder={"Enter Email"}
+          icon={require("../images/mail.png")}
+          value={email}
+          onChangeText={(txt) => {
+            setEmail(txt);
+          }}
+        />
+        {badEmail === true && (
+          <Text style={{ marginTop: 10, marginLeft: 40, color: "red" }}>
+            Please Enter Email
+          </Text>
+        )}
+        <CustomTextInput
+          placeholder={"Enter Password"}
+          icon={require("../images/lock.png")}
+          type={"password"}
+          value={password}
+          onChangeText={(txt) => {
+            setPassword(txt);
+          }}
+        />
+        {badPassword === true && (
+          <Text style={{ marginTop: 10, marginLeft: 40, color: "red" }}>
+            Please Enter Password
+          </Text>
+        )}
+        <CommonButton
+          title={"Login"}
+          bgColor={"#000"}
+          textColor={"#fff"}
+          onPress={() => {
+            handleLogin();
+          }}
+        />
+        <Text
+          style={{
+            fontSize: 18,
+            fontWeight: "600",
+            alignSelf: "center",
+            marginTop: 20,
+            textDecorationLine: "underline",
+          }}
+          onPress={() => {
+            navigation.navigate("Signup", {
+              target:
+                route.params && route.params.target
+                  ? route.params.target
+                  : "Main",
+            });
+          }}
+        >
+          Create New Account?
         </Text>
-      )}
-      <CustomTextInput
-        placeholder={"Enter Email"}
-        icon={require("../images/mail.png")}
-        value={email}
-        onChangeText={(txt) => {
-          setEmail(txt);
-        }}
-      />
-      {badEmail === true && (
-        <Text style={{ marginTop: 10, marginLeft: 40, color: "red" }}>
-          Please Enter Email
-        </Text>
-      )}
-      <CustomTextInput
-        placeholder={"Enter Password"}
-        icon={require("../images/lock.png")}
-        type={"password"}
-        value={password}
-        onChangeText={(txt) => {
-          setPassword(txt);
-        }}
-      />
-      {badPassword === true && (
-        <Text style={{ marginTop: 10, marginLeft: 40, color: "red" }}>
-          Please Enter Password
-        </Text>
-      )}
-      <CommonButton
-        title={"Login"}
-        bgColor={"#000"}
-        textColor={"#fff"}
-        onPress={() => {
-          handleLogin();
-        }}
-      />
-      <Text
-        style={{
-          fontSize: 18,
-          fontWeight: "600",
-          alignSelf: "center",
-          marginTop: 20,
-          textDecorationLine: "underline",
-        }}
-        onPress={() => {
-          navigation.navigate("Signup", {
-            target: (route.params && route.params.target) ? route.params.target : 'Main'
-          });
-        }}
-      >
-        Create New Account?
-      </Text>
-    </View>
+      </View>
+    </ScrollView>
   );
 };
 

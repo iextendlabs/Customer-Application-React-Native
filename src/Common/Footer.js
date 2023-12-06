@@ -13,7 +13,7 @@ export default function Footer() {
   const checkAuthentication = async () => {
     const user = await AsyncStorage.getItem("@user_id");
     if (user === "" || user === null) {
-      navigation.navigate("Login");
+      navigation.navigate('Login', { Navigate: "Profile" });
     } else {
       navigation.navigate("Profile");
     }

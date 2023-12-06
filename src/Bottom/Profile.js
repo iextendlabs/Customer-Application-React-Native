@@ -39,7 +39,12 @@ export default function Profile() {
       await AsyncStorage.removeItem("@addressData");
       navigation.reset({
         index: 0,
-        routes: [{ name: "Login" }],
+        routes: [
+          {
+            name: 'Login',
+            params: { back: "Home" }, // Add your params here
+          },
+        ],
       });
     } catch (error) {
       console.log("Error occurred during logout:", error);
