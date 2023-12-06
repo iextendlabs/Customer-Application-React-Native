@@ -32,6 +32,7 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     padding: 20,
+    marginBottom:50
   },
 
   price: {

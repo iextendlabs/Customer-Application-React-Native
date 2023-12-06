@@ -301,11 +301,11 @@ export default function Checkout() {
               fontSize: 16,
             }}
           >
-            <Text>Name:{name}</Text>
-            <Text>Email:{email}</Text>
-            <Text>Gender:{gender}</Text>
-            <Text>Phone Number:{number}</Text>
-            <Text>Whatsapp Number:{whatsapp}</Text>
+            <Text>Name: {name}</Text>
+            <Text>Email: {email}</Text>
+            <Text>Gender: {gender}</Text>
+            <Text>Phone Number: {number}</Text>
+            <Text>Whatsapp Number: {whatsapp}</Text>
           </View>
         </View>
       ) : (
@@ -354,7 +354,7 @@ export default function Checkout() {
 
   const renderAddress = () => (
 
-    <View style={{ borderColor: "#8e8e8e", borderTopWidth: 0.5 }}>
+    <View style={{ borderColor: "#8e8e8e", borderTopWidth: 0.5, marginTop:15 }}>
       {addressData.length !== 0 ? (
         <View>
           <View
@@ -611,7 +611,7 @@ export default function Checkout() {
                       >
                         {item.name}
                       </Text>
-                      {item.staff.charges && (
+                      {item.staff.charges > 0 && (
                         <Text
                           style={{
                             marginTop: 15,
@@ -657,7 +657,7 @@ export default function Checkout() {
                       >
                         {item.name}
                       </Text>
-                      {item.staff.charges && (
+                      {item.staff.charges > 0 && (
                         <Text
                           style={{
                             marginTop: 15,

@@ -29,6 +29,7 @@ export default function ProductItem({ item }) {
           fontWeight: 600,
           height: 50,
           textAlign: "center",
+          padding:5
         }}
       >
         {item.name.substring(0, 40)}

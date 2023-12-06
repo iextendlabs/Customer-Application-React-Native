@@ -129,38 +129,43 @@ export default function Address() {
           icon={require("../images/building.png")}
           value={building}
           onChangeText={(txt) => setBuilding(txt)}
+          addressLabel={'Building'}
         />
         <CustomTextInput
           placeholder={"Enter Villa"}
           icon={require("../images/villa.png")}
           value={villa}
           onChangeText={(txt) => setVilla(txt)}
+          addressLabel={'Villa'}
         />
         <CustomTextInput
           placeholder={"Enter Street"}
           icon={require("../images/street.png")}
           value={street}
           onChangeText={(txt) => setStreet(txt)}
+          addressLabel={'Street'}
         />
         <CustomTextInput
           placeholder={"Enter Landmark"}
           icon={require("../images/landmark.png")}
           value={landmark}
           onChangeText={(txt) => setLandmark(txt)}
+          addressLabel={'Landmark'}
         />
         <CustomTextInput
           placeholder={"Enter City Name"}
           icon={require("../images/city.png")}
           value={city}
           onChangeText={(txt) => setCity(txt)}
+          addressLabel={'City'}
         />
+        <Text style={{width: "85%",alignSelf: "center", padding:10}}>Area:</Text>
         <View
           style={{
             height: 50,
             width: "85%",
             alignSelf: "center",
             borderWidth: 0.5,
-            margin: 20,
             borderColor: "#8e8e8e",
             borderRadius: 10,
           }}

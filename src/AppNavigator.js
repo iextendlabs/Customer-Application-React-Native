@@ -159,7 +159,7 @@ export default function AppNavigator() {
           component={MyOrders}
         />
         <Stack.Screen
-          options={{ title: "Reschedule Orders" }}
+          options={{ title: "Reschedule Booking" }}
           name="RescheduleOrder"
           component={RescheduleOrder}
         />
