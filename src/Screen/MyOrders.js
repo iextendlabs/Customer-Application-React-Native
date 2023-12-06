@@ -10,12 +10,16 @@ import axios from "axios";
 import { getOrdersUrl } from "../Config/Api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
-import Splash from '../Screen/Splash';
+import Splash from "../Screen/Splash";
+import { useDispatch, useSelector } from "react-redux";
+import { addItemToCart, clearCart } from "../redux/actions/Actions";
 
 export default function MyOrders() {
+  const dispatch = useDispatch();
   const navigation = useNavigation();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(false);
+  const cartData = useSelector((state) => state.cart);
 
   useEffect(() => {
     getOrders();
@@ -38,6 +42,25 @@ export default function MyOrders() {
     }
   };
 
+  const saveToAsyncStorage = async (key, data) => {
+    try {
+      await AsyncStorage.setItem(key, JSON.stringify(data));
+    } catch (error) {
+      console.error(`Error saving to ${key}:`, error);
+    }
+  };
+
+  const reOrder = async (item) => {
+    await AsyncStorage.removeItem("@cartData");
+    dispatch(clearCart());
+
+    item.order_services.forEach((order_service, index) => {
+      dispatch(addItemToCart(order_service.service));
+      saveToAsyncStorage("@cartData", [...cartData, order_service.service]);
+    });
+
+    navigation.navigate("Cart");
+  };
   if (loading) {
     return Splash();
   }
@@ -105,6 +128,24 @@ export default function MyOrders() {
                   }}
                 >
                   <Text>Reschedule</Text>
+                </TouchableOpacity>
+              )}
+              {item.status === "Complete" && (
+                <TouchableOpacity
+                  style={{
+                    flex: 1,
+                    borderWidth: 0.2,
+                    borderRadius: 4,
+                    padding: 7,
+                    marginRight: 20,
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                  onPress={() => {
+                    reOrder(item);
+                  }}
+                >
+                  <Text>ReOrder</Text>
                 </TouchableOpacity>
               )}
             </View>
