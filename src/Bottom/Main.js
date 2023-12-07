@@ -19,6 +19,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
 import Splash from "../Screen/Splash";
 import { updateServices, updateZone } from "../redux/actions/Actions";
+import CommonButton from "../Common/CommonButton";
+
 export default function Main() {
   const navigation = useNavigation();
   const dispatch = useDispatch();
@@ -51,7 +53,7 @@ export default function Main() {
         setSelectedServices(selectedServices);
         setLoading(false);
         dispatch(updateServices(data.services));
-        dispatch(updateZone(data.staffZones))
+        dispatch(updateZone(data.staffZones));
       } else {
         setError("Please try again.");
       }
@@ -174,6 +176,15 @@ export default function Main() {
             ))}
           </View>
         </View>
+        <CommonButton
+          title={"Check Booking"}
+          bgColor={"#FF000080"}
+          textColor={"#fff"}
+          onPress={() => {
+            navigation.navigate("Booking");
+          }}
+        />
+
         <View style={{ flex: 1, padding: 16 }}>
           <FlatList
             data={categories}
@@ -184,11 +195,11 @@ export default function Main() {
         </View>
         <Text
           style={{
-            margin: 14 ,
+            margin: 14,
             color: "#000",
             fontSize: 25,
             fontWeight: "700",
-            alignSelf:"center"
+            alignSelf: "center",
           }}
         >
           Offers

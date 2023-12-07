@@ -19,13 +19,18 @@ import CommonButton from "../Common/CommonButton";
 import Splash from "../Screen/Splash";
 import Header from "../Common/Header";
 import Footer from "../Common/Footer";
+import { updateBooking } from "../redux/actions/Actions";
 
 export default function Booking() {
+  const dispatch = useDispatch();
   const navigation = useNavigation();
   const personalInformationData = useSelector(
     (state) => state.personalInformation
   );
   const addressData = useSelector((state) => state.address);
+  const bookingData = useSelector((state) => state.booking);
+  const cartData = useSelector((state) => state.cart);
+
   const [selectedAddress, setSelectedAddress] = useState(null);
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedBuilding, setSelectedBuilding] = useState(null);
@@ -70,6 +75,24 @@ export default function Booking() {
     }
   }, [addressData]);
 
+  useEffect(() => {
+    if (bookingData && bookingData.length > 0) {
+      setModalVisible(false);
+      const booking = bookingData[0];
+      console.log(booking);
+      setSelectedDate(booking.selectedDate || null);
+      setSelectedStaff(booking.selectedStaff || null);
+      setSelectedStaffId(booking.selectedStaffId || null);
+      if (booking.selectedDate && booking.selectedArea) {
+        fetchAvailableTimeSlots(
+          booking.selectedDate,
+          booking.selectedArea,
+          booking.selectedStaffId
+        );
+      }
+    }
+  }, [bookingData[0]]);
+
   const selectAddress = (item) => {
     setSelectedAddress(
       `${item.building} ${item.villa} ${item.street} ${item.area} ${item.city}`
@@ -92,15 +115,9 @@ export default function Booking() {
     fetchAvailableTimeSlots(date.dateString, selectedArea);
   };
 
-  const fetchAvailableTimeSlots = async (date, area) => {
+  const fetchAvailableTimeSlots = async (date, area, ...selectedStaffId) => {
     setLoading(true);
     setError(null);
-    setSelectedStaff(null);
-    setSelectedStaffId(null);
-    setSelectedStaffCharges(null);
-    setTransportCharges(null);
-    setAvailableStaff([]);
-    setAvailableSlot([]);
     try {
       const response = await axios.get(
         `${availableTimeSlotUrl}area=${area}&date=${date}`
@@ -109,6 +126,13 @@ export default function Booking() {
       if (response.status === 200) {
         setAvailableStaff(response.data.availableStaff);
         setAvailableSlot(response.data.slots);
+        const isStaffIdInAvailableStaff = response.data.availableStaff.some(
+          (availableStaff) => availableStaff.id === selectedStaffId[0]
+        );
+
+        if (!isStaffIdInAvailableStaff) {
+          setSelectedStaff(null);
+        }
         setTransportCharges(parseFloat(response.data.transport_charges));
         setLoading(false);
       } else if (response.status === 201) {
@@ -669,12 +693,32 @@ export default function Booking() {
                                     <>
                                       <View style={{ marginBottom: 30 }}>
                                         <CommonButton
-                                          title={"Add Services to Cart"}
+                                          title={
+                                            cartData.length > 0
+                                              ? "Checkout"
+                                              : "Add Services to Cart"
+                                          }
                                           bgColor={"#000"}
                                           textColor={"#fff"}
                                           onPress={() => {
-                                            console.log('as');
-                                            navigation.navigate("Main");
+                                            setLoading(true);
+                                            const bookingInfo = {
+                                              selectedDate: selectedDate,
+                                              selectedStaff: selectedStaff,
+                                              selectedStaffId: selectedStaffId,
+                                              selectedArea: selectedArea,
+                                            };
+
+                                            dispatch(
+                                              updateBooking(bookingInfo)
+                                            );
+                                            if (cartData.length > 0) {
+                                              navigation.navigate("Checkout");
+                                            } else {
+                                              navigation.navigate("Main");
+                                            }
+
+                                            setLoading(false);
                                           }}
                                         />
                                       </View>

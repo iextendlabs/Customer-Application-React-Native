@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   ScrollView,
 } from "react-native";
-import React from "react";
+import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import CartItem from "../Common/CartItem";
 import { removeFromCart, addItemToWishlist } from "../redux/actions/Actions";
@@ -14,12 +14,14 @@ import Header from "../Common/Header";
 import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Footer from "../Common/Footer";
+import Splash from "../Screen/Splash";
 
 export default function Cart() {
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const cartData = useSelector((state) => state.cart);
   const wishlistData = useSelector((state) => state.wishlist);
+  const [loading, setLoading] = useState(false);
 
   const removeItemFromCart = async (item, index) => {
     try {
@@ -39,15 +41,18 @@ export default function Cart() {
   };
 
   const checkAuthentication = async () => {
+    setLoading(true);
     try {
       const user = await AsyncStorage.getItem("@user_id");
       if (!user) {
-        navigation.navigate('Login', { Navigate: "Checkout" });
+        navigation.navigate("Login", { Navigate: "Checkout" });
       } else {
         navigation.navigate("Checkout");
       }
+      setLoading(false);
     } catch (error) {
       console.error("Error checking authentication:", error);
+      setLoading(false);
     }
   };
 
@@ -71,6 +76,11 @@ export default function Cart() {
       console.error(`Error saving to ${key}:`, error);
     }
   };
+
+  if (loading) {
+    return Splash();
+  }
+
   return (
     <View style={{ flex: 1, backgroundColor: "#FFCACC" }}>
       <Header title={"Shopping Cart"} />

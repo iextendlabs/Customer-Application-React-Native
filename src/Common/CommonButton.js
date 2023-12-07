@@ -1,7 +1,7 @@
 import { View, Text, TouchableOpacity } from 'react-native'
 import React from 'react'
 
-const CommenButton = ({onPress, title, bgColor, textColor}) => {
+const CommonButton = ({onPress, title, bgColor, textColor}) => {
   return (
     <View>
       <TouchableOpacity
@@ -25,4 +25,4 @@ const CommenButton = ({onPress, title, bgColor, textColor}) => {
   )
 }
 
-export default CommenButton
+export default CommonButton

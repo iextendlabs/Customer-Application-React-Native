@@ -27,6 +27,7 @@ export default function Checkout() {
   const personalInformationData = useSelector(
     (state) => state.personalInformation
   );
+  const bookingData = useSelector((state) => state.booking);
   const cartDataIds = cartData.map((item) => item.id);
   const addressData = useSelector((state) => state.address);
   const [selectedAddress, setSelectedAddress] = useState(null);
@@ -77,6 +78,23 @@ export default function Checkout() {
     }
   }, [addressData]);
 
+  useEffect(() => {
+    if (bookingData && bookingData.length > 0) {
+      setModalVisible(false);
+      const booking = bookingData[0];
+      setSelectedDate(booking.selectedDate || null);
+      setSelectedStaff(booking.selectedStaff || null);
+      setSelectedStaffId(booking.selectedStaffId || null);
+      if (booking.selectedDate && booking.selectedArea) {
+        fetchAvailableTimeSlots(
+          booking.selectedDate,
+          booking.selectedArea,
+          booking.selectedStaffId
+        );
+      }
+    }
+  }, [bookingData]);
+
   const getServicesTotal = () => {
     return cartData.reduce((total, item) => {
       const itemTotal = item.discount
@@ -108,15 +126,9 @@ export default function Checkout() {
     fetchAvailableTimeSlots(date.dateString, selectedArea);
   };
 
-  const fetchAvailableTimeSlots = async (date, area) => {
+  const fetchAvailableTimeSlots = async (date, area, ...selectedStaffId) => {
     setLoading(true);
     setError(null);
-    setSelectedStaff(null);
-    setSelectedStaffId(null);
-    setSelectedStaffCharges(null);
-    setTransportCharges(null);
-    setAvailableStaff([]);
-    setAvailableSlot([]);
     try {
       const response = await axios.get(
         `${availableTimeSlotUrl}area=${area}&date=${date}`
@@ -126,6 +138,13 @@ export default function Checkout() {
         setAvailableStaff(response.data.availableStaff);
         setAvailableSlot(response.data.slots);
         setTransportCharges(parseFloat(response.data.transport_charges));
+        const isStaffIdInAvailableStaff = response.data.availableStaff.some(
+          (availableStaff) => availableStaff.id === selectedStaffId[0]
+        );
+
+        if (!isStaffIdInAvailableStaff) {
+          setSelectedStaff(null);
+        }
         setLoading(false);
       } else if (response.status === 201) {
         setError(response.data.msg);

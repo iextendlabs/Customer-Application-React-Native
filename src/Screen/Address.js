@@ -23,6 +23,7 @@ export default function Address() {
   const [error, setError] = useState("");
   const address = useSelector((state) => state.address);
   const zones = useSelector((state) => state.zones);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (address && address.length > 0) {
@@ -37,6 +38,7 @@ export default function Address() {
   }, [address]);
 
   const handleSaveAddress = async () => {
+    setLoading(true);
     setError("");
 
     if (
@@ -86,11 +88,18 @@ export default function Address() {
       } catch (error) {}
 
       navigation.goBack();
+      setLoading(false);
     } else {
+      setLoading(false);
+
       setError("Fill up all fields.");
     }
   };
 
+  if (loading) {
+    return Splash();
+  }
+  
   return (
     <ScrollView style={{ flex: 1, backgroundColor: "#FFCACC" }}>
       <View style={{ flex: 1 }}>
@@ -104,37 +113,39 @@ export default function Address() {
           icon={require("../images/building.png")}
           value={building}
           onChangeText={(txt) => setBuilding(txt)}
-          label={'Building'}
+          label={"Building"}
         />
         <CustomTextInput
           placeholder={"Enter Villa"}
           icon={require("../images/villa.png")}
           value={villa}
           onChangeText={(txt) => setVilla(txt)}
-          label={'Villa'}
+          label={"Villa"}
         />
         <CustomTextInput
           placeholder={"Enter Street"}
           icon={require("../images/street.png")}
           value={street}
           onChangeText={(txt) => setStreet(txt)}
-          label={'Street'}
+          label={"Street"}
         />
         <CustomTextInput
           placeholder={"Enter Landmark"}
           icon={require("../images/landmark.png")}
           value={landmark}
           onChangeText={(txt) => setLandmark(txt)}
-          label={'Landmark'}
+          label={"Landmark"}
         />
         <CustomTextInput
           placeholder={"Enter City Name"}
           icon={require("../images/city.png")}
           value={city}
           onChangeText={(txt) => setCity(txt)}
-          label={'City'}
+          label={"City"}
         />
-        <Text style={{width: "85%",alignSelf: "center", padding:10}}>Area:</Text>
+        <Text style={{ width: "85%", alignSelf: "center", padding: 10 }}>
+          Area:
+        </Text>
         <View
           style={{
             height: 50,
@@ -157,13 +168,14 @@ export default function Address() {
             </Picker>
           )}
         </View>
-
-        <CommonButton
-          title={"Save"}
-          bgColor={"#000"}
-          textColor={"#fff"}
-          onPress={() => handleSaveAddress()}
-        />
+        <View style={{ marginBottom: 40 }}>
+          <CommonButton
+            title={"Save"}
+            bgColor={"#000"}
+            textColor={"#fff"}
+            onPress={() => handleSaveAddress()}
+          />
+        </View>
       </View>
     </ScrollView>
   );

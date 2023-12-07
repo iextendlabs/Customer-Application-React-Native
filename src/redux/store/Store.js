@@ -5,6 +5,7 @@ import addressReducers from "../reducers/AddressReducers";
 import personalInformationReducers from "../reducers/PersonalInformationReducers";
 import serviceReducers from "../reducers/ServiceReducers";
 import zoneReducers from "../reducers/ZoneReducers";
+import BookingReducers from '../reducers/BookingReducers';
 
 const rootReducer = combineReducers({
   cart: cartReducers,     
@@ -12,7 +13,8 @@ const rootReducer = combineReducers({
   address: addressReducers,
   personalInformation: personalInformationReducers,
   services: serviceReducers,
-  zones: zoneReducers
+  zones: zoneReducers,
+  booking: BookingReducers
 });
 
 const store = createStore(rootReducer);
