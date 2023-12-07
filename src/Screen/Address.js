@@ -3,7 +3,7 @@ import { ScrollView, Text, View } from "react-native";
 import CustomTextInput from "../Common/CustomTextInput";
 import CommonButton from "../Common/CommonButton";
 import { useNavigation } from "@react-navigation/native";
-import { getStaffZoneUrl,UpdateCustomerInfoUrl } from "../Config/Api";
+import { UpdateCustomerInfoUrl } from "../Config/Api";
 import axios from "axios";
 import { Picker } from "@react-native-picker/picker";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -21,12 +21,8 @@ export default function Address() {
   const [landmark, setLandmark] = useState("");
   const [city, setCity] = useState("");
   const [error, setError] = useState("");
-  const [zones, setZones] = useState([]);
-  const [loading, setLoading] = useState(true);
   const address = useSelector((state) => state.address);
-  useEffect(() => {
-    getStaffZone();
-  }, []);
+  const zones = useSelector((state) => state.zones);
 
   useEffect(() => {
     if (address && address.length > 0) {
@@ -39,23 +35,6 @@ export default function Address() {
       setCity(addressData.city || "");
     }
   }, [address]);
-
-  const getStaffZone = async () => {
-    try {
-      const response = await axios.get(getStaffZoneUrl);
-      if (response.status === 200) {
-        const data = response.data;
-        setZones(data.staffZones || []);
-        setLoading(false);
-      } else {
-        setError("Please try again.");
-        setLoading(false);
-      }
-    } catch (error) {
-      setError("An error occurred while fetching data.");
-      setLoading(false);
-    }
-  };
 
   const handleSaveAddress = async () => {
     setError("");
@@ -112,10 +91,6 @@ export default function Address() {
     }
   };
 
-  if (loading) {
-    return Splash();
-  }
-
   return (
     <ScrollView style={{ flex: 1, backgroundColor: "#FFCACC" }}>
       <View style={{ flex: 1 }}>
@@ -170,13 +145,13 @@ export default function Address() {
             borderRadius: 10,
           }}
         >
-          {zones.length > 0 && (
+          {zones[0].length > 0 && (
             <Picker
               selectedValue={area}
               onValueChange={(itemValue, itemIndex) => setArea(itemValue)}
             >
               <Picker.Item label="Select Area" value="" />
-              {zones.map((zone, index) => (
+              {zones[0].map((zone, index) => (
                 <Picker.Item key={index.toString()} label={zone} value={zone} />
               ))}
             </Picker>

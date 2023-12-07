@@ -1,4 +1,4 @@
-const BaseUrl = "https://test.lipslay.com/";
+const BaseUrl = "https://localhost/";
 
 const LoginUrl = BaseUrl + "api/customerLogin";
 const SignupUrl = BaseUrl + "api/customerSignup";
@@ -9,7 +9,6 @@ const getServiceUrl = BaseUrl + "api/getServiceDetails?service_id=";
 const editOrderUrl = BaseUrl + "api/editOrder?";
 const AddOrderUrl = BaseUrl + "api/addOrder";
 const UpdateOrderUrl = BaseUrl + "api/updateOrder";
-const getStaffZoneUrl = BaseUrl + "api/getZones";
 const filterServicesUrl = BaseUrl + "api/filterServices?";
 const UpdateCustomerInfoUrl = BaseUrl + "api/updateCustomerInfo";
 export {
@@ -20,7 +19,6 @@ export {
   availableTimeSlotUrl,
   AddOrderUrl,
   getOrdersUrl,
-  getStaffZoneUrl,
   editOrderUrl,
   UpdateOrderUrl,
   filterServicesUrl,

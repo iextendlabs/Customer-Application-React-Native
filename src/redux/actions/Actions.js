@@ -11,11 +11,17 @@ import {
   DELETE_PERSONAL_INFORMATION,
   REMOVE_FROM_CART,
   REMOVE_FROM_WISHLIST,
-  UPDATE_SERVICES
+  UPDATE_SERVICES,
+  UPDATE_ZONE
 } from "../ActionTypes";
 
 export const updateServices = (data) => ({
   type: UPDATE_SERVICES,
+  payload: data,
+});
+
+export const updateZone = (data) => ({
+  type: UPDATE_ZONE,
   payload: data,
 });
 

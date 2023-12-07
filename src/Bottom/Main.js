@@ -18,7 +18,7 @@ import { useDispatch } from "react-redux";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
 import Splash from "../Screen/Splash";
-import { updateServices } from "../redux/actions/Actions";
+import { updateServices, updateZone } from "../redux/actions/Actions";
 export default function Main() {
   const navigation = useNavigation();
   const dispatch = useDispatch();
@@ -51,6 +51,7 @@ export default function Main() {
         setSelectedServices(selectedServices);
         setLoading(false);
         dispatch(updateServices(data.services));
+        dispatch(updateZone(data.staffZones))
       } else {
         setError("Please try again.");
       }
