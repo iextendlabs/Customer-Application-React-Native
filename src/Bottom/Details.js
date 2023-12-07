@@ -19,6 +19,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import HTML from "react-native-render-html";
 import FlashMessage, { showMessage } from "react-native-flash-message";
+import StarRating from "../Common/StarRating";
 
 const styles = StyleSheet.create({
   container: {
@@ -144,8 +145,7 @@ export default function Details() {
     const response = await axios.get(getServiceUrl + id);
     if (response.status === 200) {
       let data = response.data;
-      console.log(response.data);
-      setDescription(response.data.services.description);
+      setDescription(data.services.description);
     }
 
     setLoading(false);
@@ -155,7 +155,6 @@ export default function Details() {
     if (route.params && route.params.service) {
       setService(route.params.service);
       getDetails(route.params.service.id);
-      console.log(route.params.service);
     }
   }, [route.params?.service]);
 
@@ -215,6 +214,10 @@ export default function Details() {
             >
               <Text style={styles.addToCartButtonText}>Save to Wishlist</Text>
             </TouchableOpacity>
+            <View style={{ alignItems: "center" }}>
+              <StarRating rating={service.rating} size={17} />
+            </View>
+
             <View style={{ marginBottom: 80 }}>
               <HTML source={{ html: description }} />
             </View>

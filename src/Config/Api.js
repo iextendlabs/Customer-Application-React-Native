@@ -1,4 +1,4 @@
-const BaseUrl = "https://test.lipslay.com/";
+const BaseUrl = "https://localhost/";
 
 const LoginUrl = BaseUrl + "api/customerLogin";
 const SignupUrl = BaseUrl + "api/customerSignup";

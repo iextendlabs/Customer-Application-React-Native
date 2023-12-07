@@ -19,6 +19,7 @@ import CommonButton from "../Common/CommonButton";
 import { clearCart } from "../redux/actions/Actions";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Splash from "../Screen/Splash";
+import StarRating from "../Common/StarRating";
 
 export default function Checkout() {
   const dispatch = useDispatch();
@@ -622,16 +623,13 @@ export default function Checkout() {
                       >
                         {item.name}
                       </Text>
-                      {item.staff.charges > 0 && (
-                        <Text
-                          style={{
-                            marginTop: 15,
-                            fontSize: 12,
-                          }}
-                        >
-                          Extra Charges: AED {item.staff.charges}
-                        </Text>
-                      )}
+                      <View style={{ marginTop: 7, marginBottom: 7 }}>
+                        <StarRating rating={item.rating} size={12} />
+                      </View>
+                      <Text>
+                        {item.staff.charges > 0 &&
+                          "Extra Charges: AED " + item.staff.charges}
+                      </Text>
                     </View>
                   </View>
                 </View>
@@ -668,16 +666,13 @@ export default function Checkout() {
                       >
                         {item.name}
                       </Text>
-                      {item.staff.charges > 0 && (
-                        <Text
-                          style={{
-                            marginTop: 15,
-                            fontSize: 12,
-                          }}
-                        >
-                          Extra Charges: AED {item.staff.charges}
-                        </Text>
-                      )}
+                      <View style={{ marginTop: 7, marginBottom: 7 }}>
+                        <StarRating rating={item.rating} size={12} />
+                      </View>
+                      <Text>
+                        {item.staff.charges > 0 &&
+                          "Extra Charges: AED " + item.staff.charges}
+                      </Text>
                     </View>
                   </View>
                 </View>
