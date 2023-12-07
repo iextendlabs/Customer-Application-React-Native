@@ -12,8 +12,10 @@ export default function ProductItem({ item }) {
         width: "47%",
         height: 190,
         elevation: 5,
-        marginLeft: 7,
+        margin: 5,
         paddingBottom: 10,
+        backgroundColor: "#fdedee",
+        borderRadius: 10,
       }}
       onPress={() => {
         navigation.navigate("Details", {
@@ -21,35 +23,32 @@ export default function ProductItem({ item }) {
         });
       }}
     >
-      <Text
-        style={{
-          backgroundColor: "#000",
-          color: "#FFF",
-          fontSize: 15,
-          fontWeight: 600,
-          height: 50,
-          textAlign: "center",
-          padding: 5,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        {item.name.substring(0, 40)}
-      </Text>
-
       <Image
         source={{
           uri: BaseUrl + "service-images/" + item.image,
         }}
         defaultSource={require("../images/logo.png")}
         style={{
-          width: "100%",
+          width: "95%",
           height: "60%",
-          borderBottomLeftRadius: 10,
-          borderBottomRightRadius: 10,
+          justifyContent: "center",
+          alignSelf: "center",
+          marginTop: 5,
+          borderRadius: 10,
         }}
       />
+      <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+        <Text
+          style={{
+            fontSize: 15,
+            fontWeight: "700",
+            textAlign: "center",
+            padding: 5,
+          }}
+        >
+          {item.name.substring(0, 40)}
+        </Text>
+      </View>
 
       <View
         style={{
@@ -57,7 +56,6 @@ export default function ProductItem({ item }) {
           justifyContent: "space-between",
           paddingLeft: 10,
           paddingRight: 10,
-          marginTop: 10,
           alignItems: "center",
         }}
       >

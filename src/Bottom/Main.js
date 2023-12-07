@@ -20,6 +20,7 @@ import { useNavigation } from "@react-navigation/native";
 import Splash from "../Screen/Splash";
 import { updateServices, updateZone } from "../redux/actions/Actions";
 import CommonButton from "../Common/CommonButton";
+import StaffCard from "../Common/StaffCard";
 
 export default function Main() {
   const navigation = useNavigation();
@@ -32,6 +33,7 @@ export default function Main() {
   const [loading, setLoading] = useState(false);
   const { height, width } = Dimensions.get("window");
   const [currentIndex, setCurrentIndex] = useState(0); // Initialize with 0
+  const [staffs, setStaffs] = useState(0); // Initialize with 0
   const flatListRef = useRef(null);
 
   useEffect(() => {
@@ -51,6 +53,8 @@ export default function Main() {
         setCategories(data.categories);
         setServices(data.services);
         setSelectedServices(selectedServices);
+        setStaffs(data.staffs);
+        console.log(data.staffs);
         setLoading(false);
         dispatch(updateServices(data.services));
         dispatch(updateZone(data.staffZones));
@@ -176,6 +180,20 @@ export default function Main() {
             ))}
           </View>
         </View>
+
+        {/* <View>
+          {staffs.length > 0 && (
+            <FlatList
+              data={staffs}
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              keyExtractor={(item, index) => index.toString()}
+              renderItem={({ item }) => (
+                <StaffCard item={item} />
+              )}
+            />
+          )}
+        </View> */}
         <CommonButton
           title={"Check Booking"}
           bgColor={"#FF000080"}
