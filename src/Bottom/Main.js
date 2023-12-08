@@ -13,7 +13,7 @@ import axios from "axios";
 import Header from "../Common/Header";
 import Footer from "../Common/Footer";
 import { appIndex, BaseUrl } from "../Config/Api";
-import ProductItem from "../Common/ProductItem";
+import OfferProductItem from "../Common/OfferProductItem";
 import { useDispatch } from "react-redux";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
@@ -224,7 +224,7 @@ export default function Main() {
             showsHorizontalScrollIndicator={false}
             horizontal
             keyExtractor={(item, index) => index.toString()}
-            renderItem={({ item }) => <ProductItem item={item} />}
+            renderItem={({ item }) => <OfferProductItem item={item} />}
           />
         </View>
         <Text

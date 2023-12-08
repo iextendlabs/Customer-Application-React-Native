@@ -8,7 +8,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import FlashMessage, { showMessage } from "react-native-flash-message";
 import { addItemToCart, addItemToWishlist } from "../redux/actions/Actions";
 
-export default function ProductItem({ item }) {
+export default function OfferProductItem({ item }) {
   const dispatch = useDispatch();
   const navigation = useNavigation();
   const cartData = useSelector((state) => state.cart);
@@ -70,8 +70,8 @@ export default function ProductItem({ item }) {
   return (
     <View
       style={{
-        width: "47%",
-        height: 300,
+        width: 250,
+        height: 290,
         elevation: 5,
         margin: 5,
         paddingBottom: 10,
@@ -102,14 +102,16 @@ export default function ProductItem({ item }) {
         />
         <View
           style={{
+            flexDirection: "row",
             alignItems: "center",
             justifyContent: "space-between",
             padding: 8,
-            height: 70,
+            height: 55,
           }}
         >
           <Text
             style={{
+              flex: 3,
               fontSize: 15,
               fontWeight: "700",
               fontFamily:"Times New Roman"
@@ -117,7 +119,7 @@ export default function ProductItem({ item }) {
           >
             {item.name.substring(0, 40)}
           </Text>
-          <View>
+          <View style={{ flex: 1 }}>
             <StarRating rating={item.rating} size={12} />
           </View>
         </View>
