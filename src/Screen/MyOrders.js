@@ -13,11 +13,14 @@ import { useNavigation } from "@react-navigation/native";
 import Splash from "../Screen/Splash";
 import { useDispatch, useSelector } from "react-redux";
 import { addItemToCart, clearCart } from "../redux/actions/Actions";
+import OrderDetailModal from "./OrderDetailModel";
 
 export default function MyOrders() {
   const dispatch = useDispatch();
   const navigation = useNavigation();
   const [orders, setOrders] = useState([]);
+  const [selectedOrder, setSelectedOrder] = useState([]);
+  const [orderDetailModalVisible, setOrderDetailModalVisible] = useState(false);
   const [loading, setLoading] = useState(false);
   const cartData = useSelector((state) => state.cart);
 
@@ -61,6 +64,16 @@ export default function MyOrders() {
 
     navigation.navigate("Cart");
   };
+
+  const closeModal = () => {
+    setOrderDetailModalVisible(false);
+  };
+
+  const handleOrderDetail = (order) => {
+    setSelectedOrder(order);
+    setOrderDetailModalVisible(true);
+  };
+
   if (loading) {
     return Splash();
   }
@@ -113,11 +126,11 @@ export default function MyOrders() {
               {item.status === "Pending" && (
                 <TouchableOpacity
                   style={{
-                    flex: 1,
+                    flex: 1.2,
                     borderWidth: 0.2,
                     borderRadius: 4,
                     padding: 7,
-                    marginRight: 20,
+                    marginRight: 5,
                     alignItems: "center",
                     justifyContent: "center",
                   }}
@@ -137,7 +150,7 @@ export default function MyOrders() {
                     borderWidth: 0.2,
                     borderRadius: 4,
                     padding: 7,
-                    marginRight: 20,
+                    marginRight: 5,
                     alignItems: "center",
                     justifyContent: "center",
                   }}
@@ -148,10 +161,30 @@ export default function MyOrders() {
                   <Text>ReOrder</Text>
                 </TouchableOpacity>
               )}
+                <TouchableOpacity
+                  style={{
+                    flex: 0.5,
+                    borderWidth: 0.2,
+                    borderRadius: 4,
+                    padding: 7,
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                  onPress={() => {
+                    handleOrderDetail(item)
+                  }}
+                >
+                  <Text>View</Text>
+                </TouchableOpacity>
             </View>
           )}
         />
       )}
+      <OrderDetailModal
+        visible={orderDetailModalVisible}
+        order={selectedOrder}
+        onClose={closeModal}
+      />
     </View>
   );
 }
