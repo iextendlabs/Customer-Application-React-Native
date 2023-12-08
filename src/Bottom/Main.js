@@ -21,6 +21,7 @@ import Splash from "../Screen/Splash";
 import { updateServices, updateZone } from "../redux/actions/Actions";
 import CommonButton from "../Common/CommonButton";
 import StaffCard from "../Common/StaffCard";
+import FlashMessage, { showMessage } from "react-native-flash-message";
 
 export default function Main() {
   const navigation = useNavigation();
@@ -54,7 +55,6 @@ export default function Main() {
         setServices(data.services);
         setSelectedServices(selectedServices);
         setStaffs(data.staffs);
-        console.log(data.staffs);
         setLoading(false);
         dispatch(updateServices(data.services));
         dispatch(updateZone(data.staffZones));
@@ -81,7 +81,7 @@ export default function Main() {
   };
 
   useEffect(() => {
-    const intervalId = setInterval(moveToNextSlide, 3000);
+    const intervalId = setInterval(moveToNextSlide, 1500);
 
     return () => clearInterval(intervalId);
   }, [currentIndex]);
@@ -121,7 +121,7 @@ export default function Main() {
   return (
     <View style={{ flex: 1, backgroundColor: "#FFCACC" }}>
       <Header title={"LipSlay Home Saloon"} />
-      <ScrollView>
+      <ScrollView showsVerticalScrollIndicator={false}>
         <View>
           {sliderImages.length > 0 && (
             <FlatList
@@ -181,19 +181,6 @@ export default function Main() {
           </View>
         </View>
 
-        {/* <View>
-          {staffs.length > 0 && (
-            <FlatList
-              data={staffs}
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              keyExtractor={(item, index) => index.toString()}
-              renderItem={({ item }) => (
-                <StaffCard item={item} />
-              )}
-            />
-          )}
-        </View> */}
         <CommonButton
           title={"Check Booking"}
           bgColor={"#FF000080"}
@@ -213,7 +200,7 @@ export default function Main() {
         </View>
         <Text
           style={{
-            margin: 14,
+            marginTop: 14,
             color: "#000",
             fontSize: 25,
             fontWeight: "700",
@@ -222,16 +209,48 @@ export default function Main() {
         >
           Offers
         </Text>
-        <View style={{ marginTop: 10, marginBottom: 70 }}>
+        <View>
           <FlatList
             data={selectedServices}
-            showsVerticalScrollIndicator={false}
-            numColumns={2}
+            showsHorizontalScrollIndicator={false}
+            horizontal
             keyExtractor={(item, index) => index.toString()}
             renderItem={({ item }) => <ProductItem item={item} />}
           />
         </View>
+        <Text
+          style={{
+            marginTop: 14,
+            color: "#000",
+            fontSize: 25,
+            fontWeight: "700",
+            alignSelf: "center",
+          }}
+        >
+          Our Team
+        </Text>
+        <View style={{ marginBottom: 70 }}>
+          {staffs.length > 0 && (
+            <FlatList
+              data={staffs}
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              keyExtractor={(item, index) => index.toString()}
+              renderItem={({ item }) => <StaffCard item={item} />}
+            />
+          )}
+        </View>
       </ScrollView>
+      <FlashMessage
+        position="bottom"
+        style={{
+          borderRadius: 8,
+          padding: 30,
+          marginHorizontal: 50,
+          marginBottom: 50,
+          alignItems: "center",
+        }}
+      />
       <Footer />
     </View>
   );

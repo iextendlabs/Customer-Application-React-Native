@@ -83,11 +83,14 @@ export default function Booking() {
       setSelectedDate(booking.selectedDate || null);
       setSelectedStaff(booking.selectedStaff || null);
       setSelectedStaffId(booking.selectedStaffId || null);
+      setSelectedSlot(booking.selectedSlot || null);
+      setSelectedSlotId(booking.selectedSlotId || null);
       if (booking.selectedDate && booking.selectedArea) {
         fetchAvailableTimeSlots(
           booking.selectedDate,
           booking.selectedArea,
-          booking.selectedStaffId
+          booking.selectedStaffId,
+          booking.selectedSlot
         );
       }
     }
@@ -115,7 +118,12 @@ export default function Booking() {
     fetchAvailableTimeSlots(date.dateString, selectedArea);
   };
 
-  const fetchAvailableTimeSlots = async (date, area, ...selectedStaffId) => {
+  const fetchAvailableTimeSlots = async (
+    date,
+    area,
+    selectedStaffId = null,
+    selectedSlot = null
+  ) => {
     setLoading(true);
     setError(null);
     try {
@@ -127,12 +135,33 @@ export default function Booking() {
         setAvailableStaff(response.data.availableStaff);
         setAvailableSlot(response.data.slots);
         const isStaffIdInAvailableStaff = response.data.availableStaff.some(
-          (availableStaff) => availableStaff.id === selectedStaffId[0]
+          (availableStaff) => availableStaff.id === selectedStaffId
         );
 
         if (!isStaffIdInAvailableStaff) {
           setSelectedStaff(null);
         }
+
+        if (response.data.slots[selectedStaffId]) {
+          const selectedSlotArray = selectedSlot.split(",");
+
+          const isSlotInAvailableStaff = response.data.slots[
+            selectedStaffId
+          ].some(
+            (slot) =>
+              slot[0] === parseInt(selectedSlotArray[0]) &&
+              slot[1] === selectedSlotArray[1]
+          );
+
+          if (!isSlotInAvailableStaff) {
+            setSelectedSlotId(null);
+            setSelectedSlot(null);
+          }
+        } else {
+          setSelectedSlotId(null);
+          setSelectedSlot(null);
+        }
+
         setTransportCharges(parseFloat(response.data.transport_charges));
         setLoading(false);
       } else if (response.status === 201) {
@@ -589,72 +618,47 @@ export default function Booking() {
                 fontWeight: "800",
               }}
             >
-              Slot: {selectedSlotValue && selectedSlotValue}
+              Slot:
             </Text>
-            {selectedSlotValue && (
-              <TouchableOpacity
-                style={{
-                  borderWidth: 0.2,
-                  borderRadius: 4,
-                  padding: 7,
-                  marginRight: 20,
-                  alignSelf: "center",
-                  justifyContent: "center",
-                }}
-                onPress={() => {
-                  setSelectedSlot(null);
-                  setSelectedSlotValue(null);
-                  setSelectedSlotId(null);
-                }}
-              >
-                <Text>Change</Text>
-              </TouchableOpacity>
-            )}
           </View>
-          {selectedSlot === null && (
-            <View
-              style={{
-                height: 50,
-                width: "80%",
-                alignSelf: "center",
-                borderWidth: 0.5,
-                borderColor: "#8e8e8e",
+          <View
+            style={{
+              height: 50,
+              width: "80%",
+              alignSelf: "center",
+              borderWidth: 0.5,
+              borderColor: "#8e8e8e",
+            }}
+          >
+            <Picker
+              selectedValue={selectedSlot}
+              onValueChange={(itemValue, itemIndex) => {
+                setSelectedSlot(itemValue);
+
+                // Add a check to ensure itemValue is defined
+                if (itemValue) {
+                  const [slotId, timeRange] = itemValue.split(",");
+                  setSelectedSlotId(slotId);
+                  setSelectedSlotValue(timeRange);
+                }
               }}
             >
-              <Picker
-                selectedValue={
-                  selectedSlot
-                    ? selectedSlot[0] + "," + selectedSlot[1]
-                    : undefined
+              <Picker.Item label="Select Time Slot" />
+              {Object.keys(availableSlot).map((slotIndex) => {
+                // Display slots only for the selected staff
+                if (slotIndex == selectedStaffId) {
+                  return availableSlot[slotIndex].map((slot) => (
+                    <Picker.Item
+                      key={slot[0]}
+                      label={slot[1]}
+                      value={slot[0] + "," + slot[1]} // Keep the value as a string
+                    />
+                  ));
                 }
-                onValueChange={(itemValue, itemIndex) => {
-                  setSelectedSlot(itemValue);
-
-                  // Add a check to ensure itemValue is defined
-                  if (itemValue) {
-                    const [slotId, timeRange] = itemValue.split(",");
-                    setSelectedSlotId(slotId);
-                    setSelectedSlotValue(timeRange);
-                  }
-                }}
-              >
-                <Picker.Item label="Select Time Slot" />
-                {Object.keys(availableSlot).map((slotIndex) => {
-                  // Display slots only for the selected staff
-                  if (slotIndex == selectedStaffId) {
-                    return availableSlot[slotIndex].map((slot) => (
-                      <Picker.Item
-                        key={slot[0]}
-                        label={slot[1]}
-                        value={slot[0] + "," + slot[1]} // Keep the value as a string
-                      />
-                    ));
-                  }
-                  return null;
-                })}
-              </Picker>
-            </View>
-          )}
+                return null;
+              })}
+            </Picker>
+          </View>
         </View>
       )}
     </View>
@@ -689,7 +693,7 @@ export default function Booking() {
                               {selectedStaff && (
                                 <>
                                   {renderSlot()}
-                                  {selectedSlotValue && (
+                                  {selectedSlot && (
                                     <>
                                       <View style={{ marginBottom: 30 }}>
                                         <CommonButton
@@ -707,6 +711,8 @@ export default function Booking() {
                                               selectedStaff: selectedStaff,
                                               selectedStaffId: selectedStaffId,
                                               selectedArea: selectedArea,
+                                              selectedSlot: selectedSlot,
+                                              selectedSlotId: selectedSlotId,
                                             };
 
                                             dispatch(

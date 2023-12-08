@@ -5,7 +5,6 @@ const StarRating = ({ rating, size}) => {
   const fullStars = Math.floor(rating);
   const halfStars = Math.ceil(rating - fullStars);
   const emptyStars = Math.ceil(5 - (fullStars + halfStars));
-  console.log(fullStars, halfStars, rating, emptyStars);
   const renderStars = () => {
     const stars = [];
 
