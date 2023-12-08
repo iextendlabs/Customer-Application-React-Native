@@ -10,12 +10,12 @@ export default function Footer() {
 
   const navigation = useNavigation();
   const route = useRoute();
-  const checkAuthentication = async () => {
+  const checkAuthentication = async (navigate) => {
     const user = await AsyncStorage.getItem("@user_id");
     if (user === "" || user === null) {
-      navigation.navigate("Login", { Navigate: "Profile" });
+      navigation.navigate("Login", { Navigate: navigate });
     } else {
-      navigation.navigate("Profile");
+      navigation.navigate(navigate);
     }
   };
 
@@ -155,7 +155,7 @@ export default function Footer() {
             alignItems: "center",
           }}
           onPress={() => {
-            navigation.navigate("Booking");
+            checkAuthentication("Booking");
           }}
         >
           <Image
@@ -175,7 +175,7 @@ export default function Footer() {
             alignItems: "center",
           }}
           onPress={() => {
-            checkAuthentication();
+            checkAuthentication("Profile");
           }}
         >
           <Image

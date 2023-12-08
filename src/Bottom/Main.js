@@ -86,6 +86,15 @@ export default function Main() {
     return () => clearInterval(intervalId);
   }, [currentIndex]);
 
+  const checkAuthentication = async (navigate) => {
+    const user = await AsyncStorage.getItem("@user_id");
+    if (user === "" || user === null) {
+      navigation.navigate("Login", { Navigate: navigate });
+    } else {
+      navigation.navigate(navigate);
+    }
+  };
+
   if (loading) {
     return Splash();
   }
@@ -186,7 +195,7 @@ export default function Main() {
           bgColor={"#FF000080"}
           textColor={"#fff"}
           onPress={() => {
-            navigation.navigate("Booking");
+            checkAuthentication("Booking");
           }}
         />
 
