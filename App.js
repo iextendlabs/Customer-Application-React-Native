@@ -1,4 +1,4 @@
-import { Alert } from "react-native";
+import { Alert,TouchableOpacity,View,Image,Linking } from "react-native";
 import React, { useEffect, useState } from "react";
 import { Provider } from "react-redux";
 import MainContainer from "./src/MainContainer";
@@ -87,9 +87,34 @@ const App = () => {
     }
   }, [isConnected]);
 
+  const openWhatsAppMessage = () => {
+    const whatsappUrl = `whatsapp://send?phone=+9710562871241`;
+
+    Linking.canOpenURL(whatsappUrl)
+      .then((supported) => {
+        if (!supported) {
+          console.log("WhatsApp is not installed on the device");
+        } else {
+          return Linking.openURL(whatsappUrl);
+        }
+      })
+      .catch((err) => console.error('An error occurred', err));
+  };
+
   return (
     <Provider store={store}>
-      <MainContainer />
+      <View style={{ flex: 1 }}>
+        <MainContainer />
+        <TouchableOpacity
+          onPress={openWhatsAppMessage}
+          style={{ position: "absolute", bottom: 80, right: 20 }}
+        >
+          <Image
+            source={require("./src/images/whatsapp-chat.png")}
+            style={{ width: 50, height: 50 }}
+          />
+        </TouchableOpacity>
+      </View>
     </Provider>
   );
 };
