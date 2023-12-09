@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   ScrollView,
   Modal,
+  TextInput,
 } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
 import { BaseUrl, availableTimeSlotUrl, AddOrderUrl } from "../Config/Api";
@@ -59,6 +60,7 @@ export default function Checkout() {
   const [servicesTotal, setServicesTotal] = useState(null);
   const [orderTotal, setOrderTotal] = useState(null);
   const [modalVisible, setModalVisible] = useState(true);
+  const [note, setNote] = useState(null);
 
   useEffect(() => {
     // If personalInformationData is available, set values from it
@@ -225,6 +227,7 @@ export default function Checkout() {
         time_slot_id: selectedSlotId,
         gender: gender,
         service_ids: cartDataIds,
+        order_comment: note,
       });
       console.log(response.data);
       if (response.status === 200) {
@@ -826,7 +829,7 @@ export default function Checkout() {
       </View>
     </View>
   );
-  console.log(selectedSlot);
+
   if (loading) {
     return Splash();
   }
@@ -856,6 +859,38 @@ export default function Checkout() {
                                 {selectedSlot && (
                                   <>
                                     {renderSummary()}
+                                    <View
+                                      style={{
+                                        borderTopWidth: 0.5,
+                                        marginTop: 10,
+                                        borderColor: "#8e8e8e",
+                                      }}
+                                    >
+                                      <Text
+                                        style={{
+                                          margin: 10,
+                                          fontWeight: "800",
+                                        }}
+                                      >
+                                        Note:
+                                      </Text>
+                                      <TextInput
+                                        style={{
+                                          height: 100,
+                                          width:"80%",
+                                          alignSelf:"center",
+                                          borderColor: "#8e8e8e",
+                                          borderWidth: 0.5,
+                                          borderRadius: 5,
+                                          paddingHorizontal: 10,
+                                          paddingVertical: 5,
+                                        }}
+                                        value={note}
+                                        onChangeText={setNote}
+                                        placeholder="Enter your Note"
+                                        multiline
+                                      />
+                                    </View>
                                     <View style={{ marginBottom: 30 }}>
                                       {orderError && (
                                         <Text

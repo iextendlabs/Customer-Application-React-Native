@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   Modal,
   ScrollView,
+  TextInput
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
@@ -22,7 +23,7 @@ import { useDispatch } from "react-redux";
 import { Calendar } from "react-native-calendars";
 import { Picker } from "@react-native-picker/picker";
 import CommonButton from "../Common/CommonButton";
-import Splash from '../Screen/Splash';
+import Splash from "../Screen/Splash";
 
 export default function RescheduleOrder() {
   const route = useRoute();
@@ -46,6 +47,7 @@ export default function RescheduleOrder() {
   const [servicesTotal, setServicesTotal] = useState(null);
   const [orderTotal, setOrderTotal] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
+  const [note, setNote] = useState(null);
 
   useEffect(() => {
     getOrders();
@@ -72,6 +74,7 @@ export default function RescheduleOrder() {
         setOrderTotal(data.order.total_amount);
         setSelectedArea(data.order.area);
         setSelectedStaffCharges(data.orderTotal.staff_charges);
+        setNote(data.order.order_comment);
         setLoading(false);
       } else {
         setError("Please try again.");
@@ -132,7 +135,7 @@ export default function RescheduleOrder() {
         parseFloat(transportCharges)
     );
   };
-  
+
   const renderDate = () => (
     <View
       style={{
@@ -495,6 +498,7 @@ export default function RescheduleOrder() {
         date: selectedDate,
         id: route.params.order_id,
         time_slot_id: selectedSlotId,
+        order_comment:note
       });
 
       if (response.status === 200) {
@@ -514,7 +518,7 @@ export default function RescheduleOrder() {
 
   return (
     <ScrollView style={{ flex: 1, backgroundColor: "#FFCACC" }}>
-      <View style={{ flex: 1,marginTop:30 }}>
+      <View style={{ flex: 1, marginTop: 30 }}>
         {renderDate()}
         {selectedDate && (
           <>
@@ -531,6 +535,38 @@ export default function RescheduleOrder() {
                         {selectedSlotValue && (
                           <>
                             {renderSummary()}
+                            <View
+                              style={{
+                                borderTopWidth: 0.5,
+                                marginTop: 10,
+                                borderColor: "#8e8e8e",
+                              }}
+                            >
+                              <Text
+                                style={{
+                                  margin: 10,
+                                  fontWeight: "800",
+                                }}
+                              >
+                                Note:
+                              </Text>
+                              <TextInput
+                                style={{
+                                  height: 100,
+                                  width: "80%",
+                                  alignSelf: "center",
+                                  borderColor: "#8e8e8e",
+                                  borderWidth: 0.5,
+                                  borderRadius: 5,
+                                  paddingHorizontal: 10,
+                                  paddingVertical: 5,
+                                }}
+                                value={note}
+                                onChangeText={setNote}
+                                placeholder="Enter your Note"
+                                multiline
+                              />
+                            </View>
                             <View style={{ marginBottom: 30 }}>
                               {orderError && (
                                 <Text style={{ margin: 10, color: "red" }}>
