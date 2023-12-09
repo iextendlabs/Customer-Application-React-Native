@@ -58,6 +58,10 @@ export default function Main() {
         setLoading(false);
         dispatch(updateServices(data.services));
         dispatch(updateZone(data.staffZones));
+        await AsyncStorage.setItem(
+          "@whatsappNumber",
+          String(data.whatsapp_number)
+        );
       } else {
         setError("Please try again.");
       }

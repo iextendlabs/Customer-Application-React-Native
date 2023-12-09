@@ -1,4 +1,4 @@
-import { View, Text, Image, ScrollView } from "react-native";
+import { View, Text, Image, ScrollView, TouchableOpacity } from "react-native";
 import React, { useState } from "react";
 import CustomTextInput from "../Common/CustomTextInput";
 import CommonButton from "../Common/CommonButton";
@@ -22,6 +22,8 @@ const Signup = () => {
   const [notValidPassword, setNotValidPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [termsChecked, setTermsChecked] = useState(false);
+
   const isValidEmail = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
@@ -70,6 +72,12 @@ const Signup = () => {
       }
     }
 
+    if (!termsChecked) {
+      setError("Please agree to the Terms & Conditions.");
+      setLoading(false);
+      return;
+    }
+
     try {
       const response = await axios.post(SignupUrl, {
         name: name,
@@ -93,7 +101,14 @@ const Signup = () => {
         };
         navigation.reset({
           index: 0,
-          routes: [{ name: (route.params && route.params.target) ? route.params.target : "Main" }],
+          routes: [
+            {
+              name:
+                route.params && route.params.target
+                  ? route.params.target
+                  : "Main",
+            },
+          ],
         });
       } else if (response.status === 201) {
         setError(response.data.errors.email);
@@ -109,8 +124,8 @@ const Signup = () => {
     return Splash();
   }
   return (
-    <ScrollView style={{ flex: 1, backgroundColor: "#FFCACC"  }}>
-      <View style={{ flex: 1}}>
+    <ScrollView style={{ flex: 1, backgroundColor: "#FFCACC" }}>
+      <View style={{ flex: 1 }}>
         <Image
           source={require("../images/logo.png")}
           style={{
@@ -196,6 +211,50 @@ const Signup = () => {
             The password and confirm-password must match.
           </Text>
         )}
+
+        <View
+          style={{ flexDirection: "row", alignItems: "center", marginTop: 10, marginLeft:30 }}
+        >
+          <TouchableOpacity
+            onPress={() => setTermsChecked(!termsChecked)}
+            style={{
+              width: 20,
+              height: 20,
+              borderRadius: 5,
+              borderWidth: 1,
+              borderColor: "#000",
+              marginRight: 5,
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            {termsChecked && (
+              <View
+                style={{
+                  width: 12,
+                  height: 12,
+                  backgroundColor: "#000",
+                  borderRadius: 3,
+                }}
+              />
+            )}
+          </TouchableOpacity>
+          <Text style={{ fontSize: 14, color: "#000" }}>
+            I agree to the{" "}
+            <Text
+              style={{
+                fontSize: 14,
+                alignSelf: "center",
+                marginTop: 5,
+                color: "#00a1fc",
+                textDecorationLine: "underline",
+              }}
+              onPress={() => {navigation.navigate("TermsCondition")}}
+            >
+              Terms and Conditions
+            </Text>
+          </Text>
+        </View>
         <CommonButton
           title={"Signup"}
           bgColor={"#000"}

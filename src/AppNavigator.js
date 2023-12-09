@@ -27,6 +27,7 @@ import {
 import Details from "./Bottom/Details";
 import { ImageBackground } from "react-native";
 import Booking from "./Bottom/Booking";
+import TermsCondition from "./Common/TermsCondition";
 
 export default function AppNavigator() {
   const cartReduxData = useSelector((state) => state.cart);
@@ -168,6 +169,11 @@ export default function AppNavigator() {
           options={{ title: "Reschedule Booking" }}
           name="RescheduleOrder"
           component={RescheduleOrder}
+        />
+        <Stack.Screen
+          options={{ title: "Terms & Condition" }}
+          name="TermsCondition"
+          component={TermsCondition}
         />
       </Stack.Navigator>
     </NavigationContainer>

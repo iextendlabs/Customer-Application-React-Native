@@ -1,10 +1,11 @@
-import { Alert,TouchableOpacity,View,Image,Linking } from "react-native";
+import { Alert, TouchableOpacity, View, Image, Linking } from "react-native";
 import React, { useEffect, useState } from "react";
 import { Provider } from "react-redux";
 import MainContainer from "./src/MainContainer";
 import store from "./src/redux/store/Store";
 import NetInfo from "@react-native-community/netinfo";
 // import messaging from "@react-native-firebase/messaging";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const App = () => {
   const [isConnected, setIsConnected] = useState(true);
@@ -87,18 +88,21 @@ const App = () => {
     }
   }, [isConnected]);
 
-  const openWhatsAppMessage = () => {
-    const whatsappUrl = `whatsapp://send?phone=+9710562871241`;
+  const openWhatsAppMessage = async () => {
+    try {
+      const whatsappNumber = await AsyncStorage.getItem("@whatsappNumber");
+      const whatsappUrl = `whatsapp://send?phone=${whatsappNumber}`;
 
-    Linking.canOpenURL(whatsappUrl)
-      .then((supported) => {
-        if (!supported) {
-          console.log("WhatsApp is not installed on the device");
-        } else {
-          return Linking.openURL(whatsappUrl);
-        }
-      })
-      .catch((err) => console.error('An error occurred', err));
+      Linking.canOpenURL(whatsappUrl)
+        .then((supported) => {
+          if (!supported) {
+            console.log("WhatsApp is not installed on the device");
+          } else {
+            return Linking.openURL(whatsappUrl);
+          }
+        })
+        .catch((err) => console.error("An error occurred", err));
+    } catch {}
   };
 
   return (
