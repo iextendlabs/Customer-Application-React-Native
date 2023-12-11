@@ -48,6 +48,7 @@ export default function RescheduleOrder() {
   const [orderTotal, setOrderTotal] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [note, setNote] = useState(null);
+  const [couponDiscount, setCouponDiscount] = useState(null);
 
   useEffect(() => {
     getOrders();
@@ -74,6 +75,7 @@ export default function RescheduleOrder() {
         setOrderTotal(data.order.total_amount);
         setSelectedArea(data.order.area);
         setSelectedStaffCharges(data.orderTotal.staff_charges);
+        setCouponDiscount(data.orderTotal.discount)
         setNote(data.order.order_comment);
         setLoading(false);
       } else {
@@ -132,7 +134,8 @@ export default function RescheduleOrder() {
     setOrderTotal(
       parseFloat(servicesTotal) +
         parseFloat(staff_charges) +
-        parseFloat(transportCharges)
+        parseFloat(transportCharges) - 
+        couponDiscount
     );
   };
 
@@ -474,6 +477,7 @@ export default function RescheduleOrder() {
         }}
       >
         <Text style={{ padding: 10 }}>Product Total: AED {servicesTotal}</Text>
+        <Text style={{ padding: 10 }}>Coupon Discount: AED {couponDiscount}</Text>
         <Text style={{ padding: 10 }}>
           Staff Charges: AED {selectedStaffCharge ? selectedStaffCharge : 0}
         </Text>

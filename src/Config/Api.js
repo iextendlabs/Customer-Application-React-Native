@@ -2,6 +2,7 @@ const BaseUrl = "https://test.lipslay.com/";
 
 const LoginUrl = BaseUrl + "api/customerLogin";
 const SignupUrl = BaseUrl + "api/customerSignup";
+const applyCouponAffiliateUrl = BaseUrl + "api/applyCouponAffiliate";
 const appIndex = BaseUrl + "api/appIndex";
 const availableTimeSlotUrl = BaseUrl + "api/availableTimeSlot?";
 const getOrdersUrl = BaseUrl + "api/getOrders?";
@@ -24,4 +25,5 @@ export {
   filterServicesUrl,
   getServiceUrl,
   UpdateCustomerInfoUrl,
+  applyCouponAffiliateUrl
 };

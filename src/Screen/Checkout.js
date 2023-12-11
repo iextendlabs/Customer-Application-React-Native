@@ -11,7 +11,12 @@ import {
   TextInput,
 } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
-import { BaseUrl, availableTimeSlotUrl, AddOrderUrl } from "../Config/Api";
+import {
+  BaseUrl,
+  availableTimeSlotUrl,
+  AddOrderUrl,
+  applyCouponAffiliateUrl,
+} from "../Config/Api";
 import { useNavigation } from "@react-navigation/native";
 import { Calendar } from "react-native-calendars";
 import axios from "axios";
@@ -21,6 +26,7 @@ import { clearCart } from "../redux/actions/Actions";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Splash from "../Screen/Splash";
 import StarRating from "../Common/StarRating";
+import CustomTextInput from "../Common/CustomTextInput";
 
 export default function Checkout() {
   const dispatch = useDispatch();
@@ -43,7 +49,7 @@ export default function Checkout() {
   const [transportCharges, setTransportCharges] = useState(null);
   const [selectedStaff, setSelectedStaff] = useState(null);
   const [selectedStaffId, setSelectedStaffId] = useState(null);
-  const [selectedStaffCharge, setSelectedStaffCharges] = useState(null);
+  const [selectedStaffCharges, setSelectedStaffCharges] = useState(null);
   const [availableStaff, setAvailableStaff] = useState([]);
   const [availableSlot, setAvailableSlot] = useState([]);
   const [selectedSlot, setSelectedSlot] = useState(null);
@@ -61,6 +67,14 @@ export default function Checkout() {
   const [orderTotal, setOrderTotal] = useState(null);
   const [modalVisible, setModalVisible] = useState(true);
   const [note, setNote] = useState(null);
+  const [affiliate, setAffiliate] = useState("");
+  const [coupon, setCoupon] = useState("");
+  const [notValidCoupon, setNotValidCoupon] = useState(false);
+  const [notValidAffiliate, setNotValidAffiliate] = useState(false);
+  const [affiliateId, setAffiliateId] = useState(false);
+  const [couponId, setCouponId] = useState(false);
+  const [couponDiscount, setCouponDiscount] = useState(null);
+  const [applyCouponAffiliate, setApplyCouponAffiliate] = useState("");
 
   useEffect(() => {
     // If personalInformationData is available, set values from it
@@ -204,7 +218,8 @@ export default function Checkout() {
     setOrderTotal(
       getServicesTotal() +
         parseFloat(staff_charges) +
-        parseFloat(transportCharges)
+        parseFloat(transportCharges) -
+        couponDiscount
     );
   };
 
@@ -228,6 +243,8 @@ export default function Checkout() {
         gender: gender,
         service_ids: cartDataIds,
         order_comment: note,
+        affiliate_id: affiliateId,
+        coupon_id: couponId,
       });
       console.log(response.data);
       if (response.status === 200) {
@@ -248,6 +265,72 @@ export default function Checkout() {
       // setError("These credentials do not match our records.");
     }
     setLoading(false);
+  };
+
+  const applyCode = async () => {
+    setLoading(true);
+    setNotValidAffiliate("");
+    setNotValidCoupon("");
+    setAffiliateId("");
+    setCouponId("");
+    setCouponDiscount("");
+    setOrderTotal("");
+    try {
+      const response = await axios.post(applyCouponAffiliateUrl, {
+        coupon: coupon,
+        affiliate: affiliate,
+      });
+
+      if (response.status === 200) {
+        const couponData = response.data.coupon;
+        setAffiliateId(response.data.affiliate_id);
+        setCouponId(couponData.id);
+
+        let discount = 0;
+
+        if (couponData.type === "Percentage") {
+          discount = (getServicesTotal() * couponData.discount) / 100;
+        } else {
+          discount = couponData.discount; // Fixed variable name from $discount to discount
+        }
+        setCouponDiscount(discount);
+
+        setOrderTotal(
+          servicesTotal +
+            parseFloat(selectedStaffCharges) +
+            parseFloat(transportCharges) -
+            discount
+        );
+        setApplyCouponAffiliate("Your codes Apply Successfully.");
+
+        setTimeout(() => {
+          setApplyCouponAffiliate("");
+        }, 2000);
+      } else if (response.status === 201) {
+        const errors = response.data.errors;
+
+        if (errors.affiliate) {
+          setNotValidAffiliate(errors.affiliate[0]); // Assuming affiliate is an array
+        }
+
+        if (errors.coupon) {
+          setNotValidCoupon(errors.coupon[0]); // Assuming coupon is an array
+        }
+
+        setOrderError(response.data.msg);
+      } else {
+        setError("Order failed. Please try again.");
+      }
+    } catch (error) {
+      console.log(servicesTotal, selectedStaffCharges, transportCharges);
+      setOrderTotal(
+        servicesTotal +
+          parseFloat(selectedStaffCharges) +
+          parseFloat(transportCharges)
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   const renderServices = () => (
@@ -310,6 +393,51 @@ export default function Checkout() {
       >
         <Text style={{ fontWeight: "800" }}>Total :</Text>
         <Text>AED {getServicesTotal()}</Text>
+      </View>
+      <View style={{ marginBottom: 10 }}>
+        {applyCouponAffiliate && (
+          <Text style={{ marginTop: 10, marginLeft: 40, color: "green" }}>
+            {applyCouponAffiliate}
+          </Text>
+        )}
+        <CustomTextInput
+          placeholder={"Enter Coupon Code"}
+          icon={require("../images/voucher.png")}
+          value={coupon}
+          onChangeText={(txt) => {
+            setCoupon(txt);
+          }}
+        />
+
+        {notValidCoupon && (
+          <Text style={{ marginTop: 10, marginLeft: 40, color: "red" }}>
+            {notValidCoupon}
+          </Text>
+        )}
+
+        <CustomTextInput
+          placeholder={"Enter Affiliate Code"}
+          icon={require("../images/affiliate.png")}
+          value={affiliate}
+          onChangeText={(txt) => {
+            setAffiliate(txt);
+          }}
+        />
+
+        {notValidAffiliate && (
+          <Text style={{ marginTop: 10, marginLeft: 40, color: "red" }}>
+            {notValidAffiliate}
+          </Text>
+        )}
+
+        <CommonButton
+          title={"Apply Coupon and Affiliate"}
+          bgColor={"#FF000080"}
+          textColor={"#fff"}
+          onPress={() => {
+            applyCode();
+          }}
+        />
       </View>
     </View>
   );
@@ -813,7 +941,10 @@ export default function Checkout() {
           Total Services Charges: AED {getServicesTotal()}
         </Text>
         <Text style={{ padding: 10 }}>
-          Staff Charges: AED {selectedStaffCharge ? selectedStaffCharge : 0}
+          Coupon Discount: AED {couponDiscount ? couponDiscount : 0}
+        </Text>
+        <Text style={{ padding: 10 }}>
+          Staff Charges: AED {selectedStaffCharges ? selectedStaffCharges : 0}
         </Text>
         <Text
           style={{
@@ -877,8 +1008,8 @@ export default function Checkout() {
                                       <TextInput
                                         style={{
                                           height: 100,
-                                          width:"80%",
-                                          alignSelf:"center",
+                                          width: "80%",
+                                          alignSelf: "center",
                                           borderColor: "#8e8e8e",
                                           borderWidth: 0.5,
                                           borderRadius: 5,
@@ -894,7 +1025,10 @@ export default function Checkout() {
                                     <View style={{ marginBottom: 30 }}>
                                       {orderError && (
                                         <Text
-                                          style={{ margin: 10, color: "red" }}
+                                          style={{
+                                            margin: 10,
+                                            color: "red",
+                                          }}
                                         >
                                           {orderError}
                                         </Text>

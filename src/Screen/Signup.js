@@ -15,11 +15,13 @@ const Signup = () => {
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [affiliate, setAffiliate] = useState("");
   const [badEmail, setBadEmail] = useState(false);
   const [badName, setBadName] = useState(false);
   const [badPassword, setBadPassword] = useState(false);
   const [badConfirmPassword, setBadConfirmPassword] = useState(false);
   const [notValidPassword, setNotValidPassword] = useState(false);
+  const [notValidAffiliate, setNotValidAffiliate] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [termsChecked, setTermsChecked] = useState(false);
@@ -30,6 +32,7 @@ const Signup = () => {
   };
   const handleSignup = async () => {
     setError("");
+    setNotValidAffiliate("");
     setLoading(true);
     if (name === "") {
       setBadName(true);
@@ -83,6 +86,7 @@ const Signup = () => {
         name: name,
         email: email,
         password: password,
+        affiliate: affiliate,
       });
 
       if (response.status === 200) {
@@ -112,6 +116,7 @@ const Signup = () => {
         });
       } else if (response.status === 201) {
         setError(response.data.errors.email);
+        setNotValidAffiliate(response.data.errors.affiliate);
       } else {
         setError("Signup failed. Please try again.");
       }
@@ -212,8 +217,28 @@ const Signup = () => {
           </Text>
         )}
 
+        <CustomTextInput
+          placeholder={"Enter Affiliate Code"}
+          icon={require("../images/affiliate.png")}
+          value={affiliate}
+          onChangeText={(txt) => {
+            setAffiliate(txt);
+          }}
+        />
+
+        {notValidAffiliate && (
+          <Text style={{ marginTop: 10, marginLeft: 40, color: "red" }}>
+            {notValidAffiliate}
+          </Text>
+        )}
+
         <View
-          style={{ flexDirection: "row", alignItems: "center", marginTop: 10, marginLeft:30 }}
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            marginTop: 10,
+            marginLeft: 30,
+          }}
         >
           <TouchableOpacity
             onPress={() => setTermsChecked(!termsChecked)}
@@ -249,7 +274,9 @@ const Signup = () => {
                 color: "#00a1fc",
                 textDecorationLine: "underline",
               }}
-              onPress={() => {navigation.navigate("TermsCondition")}}
+              onPress={() => {
+                navigation.navigate("TermsCondition");
+              }}
             >
               Terms and Conditions
             </Text>

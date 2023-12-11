@@ -85,6 +85,7 @@ export default function OrderDetailModel({ visible, order, onClose }) {
               <Text>Staff: {order.staff_name}</Text>
               <Text>Appointment Date: {order.date}</Text>
               <Text>Slot: {order.time_slot_value}</Text>
+              <Text>Order Status: {order.status}</Text>
             </View>
           </View>
           <View style={styles.sectionContainer}>
@@ -92,6 +93,9 @@ export default function OrderDetailModel({ visible, order, onClose }) {
             <View style={styles.orderSummaryContainer}>
               <Text style={[styles.orderSummaryText, { marginTop: 10 }]}>
                 Sub Total: AED {orderTotal.sub_total}
+              </Text>
+              <Text style={[styles.orderSummaryText]}>
+                Coupon Discount: AED {orderTotal.discount}
               </Text>
               <Text style={styles.orderSummaryText}>
                 Staff Charges: AED {orderTotal.staff_charges}
