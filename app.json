@@ -31,14 +31,21 @@
           "apiKey": "AIzaSyBJ0A4bxdhZ4FWomyO-tSEa4Qn0KY1jpT8"
         }
       },
-      "package": "com.hamza0003.Customerapp"
+      "package": "com.hamza0003.Customerapp",
+      "permissions": [
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION"
+      ]
     },
-    "web": {
-      "favicon": "./assets/favicon.png"
-    },
+    "web": {},
     "extra": {
       "eas": {
-        "projectId": "17cc5928-514c-4894-a150-447f2383e16a"
+        "projectId": "11b2a292-16ba-4160-a92e-45954046a190"
+      },
+      "extra": {
+        "eas": {
+          "projectId": "17cc5928-514c-4894-a150-447f2383e16a"
+        }
       }
     }
   }

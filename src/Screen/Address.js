@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { ScrollView, Text, View } from "react-native";
+import { ScrollView, Text, View, Modal, TouchableOpacity } from "react-native";
+import MapModal from "./MapModal"; // Create a MapModal component
 import CustomTextInput from "../Common/CustomTextInput";
 import CommonButton from "../Common/CommonButton";
 import { useNavigation } from "@react-navigation/native";
@@ -24,6 +25,8 @@ export default function Address() {
   const address = useSelector((state) => state.address);
   const zones = useSelector((state) => state.zones);
   const [loading, setLoading] = useState(false);
+  const [mapModalVisible, setMapModalVisible] = useState(false);
+  const [selectedLocation, setSelectedLocation] = useState(null);
 
   useEffect(() => {
     if (address && address.length > 0) {
@@ -91,15 +94,15 @@ export default function Address() {
       setLoading(false);
     } else {
       setLoading(false);
-
       setError("Fill up all fields.");
     }
   };
 
-  if (loading) {
-    return Splash();
-  }
-  
+  const handleLocationSelect = (location) => {
+    setSelectedLocation(location);
+    setMapModalVisible(false);
+  };
+
   return (
     <ScrollView style={{ flex: 1, backgroundColor: "#FFCACC" }}>
       <View style={{ flex: 1 }}>
@@ -168,6 +171,21 @@ export default function Address() {
             </Picker>
           )}
         </View>
+        <View style={{ marginBottom: 20 }}>
+          <TouchableOpacity onPress={() => setMapModalVisible(true)}>
+            <Text style={{ color: "#000", fontSize: 18, alignSelf: "center" }}>
+              Select Location on Map
+            </Text>
+          </TouchableOpacity>
+        </View>
+        <Modal
+          visible={mapModalVisible}
+          animationType="slide"
+          transparent={true}
+          onRequestClose={() => setMapModalVisible(false)}
+        >
+          <MapModal onSelectLocation={handleLocationSelect} />
+        </Modal>
         <View style={{ marginBottom: 40 }}>
           <CommonButton
             title={"Save"}
