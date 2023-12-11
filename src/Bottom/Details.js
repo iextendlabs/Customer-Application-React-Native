@@ -206,7 +206,7 @@ export default function Details() {
               style={styles.addToCartButton}
               onPress={handleAddToCart}
             >
-              <Text style={styles.addToCartButtonText}>Add to Cart</Text>
+              <Text style={styles.addToCartButtonText}>Book Now</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.wishButton}
