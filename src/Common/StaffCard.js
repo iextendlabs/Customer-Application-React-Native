@@ -1,62 +1,73 @@
-import { StyleSheet, Text, View, Image } from "react-native";
+import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
 import React from "react";
 import { BaseUrl } from "../Config/Api";
 import StarRating from "../Common/StarRating";
+import { useNavigation } from "@react-navigation/native";
 
 export default function StaffCard({ item }) {
+  const navigation = useNavigation();
   return (
-    <View
-      style={{
-        width: 130,
-        height: 225,
-        borderRadius: 10,
-        elevation: 5,
-        backgroundColor: "#fdedee",
-        margin: 5,
+    <TouchableOpacity
+      onPress={() => {
+        navigation.navigate("Staff", {
+          staff_id: item.id,
+        });
       }}
     >
       <View
         style={{
-          marginTop: 10,
-          justifyContent: "center",
-          alignItems: "center",
+          width: 130,
+          height: 225,
+          borderRadius: 10,
+          elevation: 5,
+          backgroundColor: "#fdedee",
+          margin: 5,
         }}
       >
-        <Image
-          source={{
-            uri: BaseUrl + "staff-images/" + item.staff.image,
-          }}
-          defaultSource={require("../images/logo.png")}
+        <View
           style={{
-            width: 100,
-            height: 100,
-            borderRadius: 50,
-          }}
-        />
-      </View>
-      <View
-        style={{
-          marginTop: 10,
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <Text
-          style={{
-            fontSize: 15,
-            fontWeight: 700,
+            marginTop: 10,
+            justifyContent: "center",
+            alignItems: "center",
           }}
         >
-          {item.name}
-        </Text>
-        <Text  style={{ height: 25, marginTop: 5 }}>{item.staff.sub_title}</Text>
-        <Text style={{ height: 25, marginTop: 5 }}>
-          {item.staff.charges > 0 && "Charges: AED" + item.staff.charges}
-        </Text>
-        <StarRating rating={item.rating} size={12} />
-
+          <Image
+            source={{
+              uri: BaseUrl + "staff-images/" + item.staff.image,
+            }}
+            defaultSource={require("../images/logo.png")}
+            style={{
+              width: 100,
+              height: 100,
+              borderRadius: 50,
+            }}
+          />
+        </View>
+        <View
+          style={{
+            marginTop: 10,
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <Text
+            style={{
+              fontSize: 15,
+              fontWeight: 700,
+            }}
+          >
+            {item.name}
+          </Text>
+          <Text style={{ height: 25, marginTop: 5 }}>
+            {item.staff.sub_title}
+          </Text>
+          <Text style={{ height: 25, marginTop: 5 }}>
+            {item.staff.charges > 0 && "Charges: AED" + item.staff.charges}
+          </Text>
+          <StarRating rating={item.rating} size={12} />
+        </View>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 }
 

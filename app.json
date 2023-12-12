@@ -40,12 +40,7 @@
     "web": {},
     "extra": {
       "eas": {
-        "projectId": "11b2a292-16ba-4160-a92e-45954046a190"
-      },
-      "extra": {
-        "eas": {
-          "projectId": "17cc5928-514c-4894-a150-447f2383e16a"
-        }
+        "projectId": "17cc5928-514c-4894-a150-447f2383e16a"
       }
     }
   }

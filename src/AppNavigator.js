@@ -28,6 +28,7 @@ import Details from "./Bottom/Details";
 import { ImageBackground } from "react-native";
 import Booking from "./Bottom/Booking";
 import TermsCondition from "./Common/TermsCondition";
+import Staff from "./Common/Staff";
 
 export default function AppNavigator() {
   const cartReduxData = useSelector((state) => state.cart);
@@ -174,6 +175,11 @@ export default function AppNavigator() {
           options={{ title: "Terms & Condition" }}
           name="TermsCondition"
           component={TermsCondition}
+        />
+        <Stack.Screen
+          options={{ title: "Our Team" }}
+          name="Staff"
+          component={Staff}
         />
       </Stack.Navigator>
     </NavigationContainer>
