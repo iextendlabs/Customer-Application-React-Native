@@ -77,6 +77,10 @@ export default function Checkout() {
   const [applyCouponAffiliate, setApplyCouponAffiliate] = useState("");
 
   useEffect(() => {
+    setServicesTotal(getServicesTotal());
+  }, []);
+
+  useEffect(() => {
     // If personalInformationData is available, set values from it
     if (personalInformationData && personalInformationData.length > 0) {
       const info = personalInformationData[0];
@@ -104,6 +108,8 @@ export default function Checkout() {
       setSelectedStaffId(booking.selectedStaffId || null);
       setSelectedSlotId(booking.selectedSlotId || null);
       setSelectedSlot(booking.selectedSlot || null);
+      setSelectedStaffCharges(booking.selectedStaffCharge || null);
+      setTransportCharges(booking.transportCharges || null);
       if (booking.selectedDate && booking.selectedArea) {
         fetchAvailableTimeSlots(
           booking.selectedDate,
@@ -112,6 +118,20 @@ export default function Checkout() {
           booking.selectedSlot
         );
       }
+
+      setServicesTotal(getServicesTotal());
+      console.log(
+        getServicesTotal(),
+        parseFloat(booking.selectedStaffCharge),
+        parseFloat(booking.transportCharges),
+        couponDiscount
+      );
+      setOrderTotal(
+        getServicesTotal() +
+          parseFloat(booking.selectedStaffCharge) +
+          parseFloat(booking.transportCharges) -
+          couponDiscount
+      );
     }
   }, [bookingData]);
 
@@ -213,10 +233,8 @@ export default function Checkout() {
       staff_charges = parseFloat(item.staff.charges);
     }
     setSelectedStaffCharges(staff_charges);
-    // setAvailableStaff([]);
-    setServicesTotal(getServicesTotal());
     setOrderTotal(
-      getServicesTotal() +
+      servicesTotal +
         parseFloat(staff_charges) +
         parseFloat(transportCharges) -
         couponDiscount
@@ -975,7 +993,7 @@ export default function Checkout() {
           Total Services Charges: AED {getServicesTotal()}
         </Text>
         <Text style={{ padding: 10 }}>
-          Coupon Discount: AED {couponDiscount ? couponDiscount : 0}
+          Coupon Discount: AED -{couponDiscount ? couponDiscount : 0}
         </Text>
         <Text style={{ padding: 10 }}>
           Staff Charges: AED {selectedStaffCharges ? selectedStaffCharges : 0}

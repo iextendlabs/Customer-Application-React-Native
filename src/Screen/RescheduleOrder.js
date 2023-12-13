@@ -477,7 +477,7 @@ export default function RescheduleOrder() {
         }}
       >
         <Text style={{ padding: 10 }}>Product Total: AED {servicesTotal}</Text>
-        <Text style={{ padding: 10 }}>Coupon Discount: AED {couponDiscount}</Text>
+        <Text style={{ padding: 10 }}>Coupon Discount: AED -{couponDiscount}</Text>
         <Text style={{ padding: 10 }}>
           Staff Charges: AED {selectedStaffCharge ? selectedStaffCharge : 0}
         </Text>

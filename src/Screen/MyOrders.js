@@ -100,7 +100,7 @@ Order Status: ${order.status}
 
 **Order Summary:**
 Sub Total: AED ${order.order_total.sub_total}
-Coupon Discount: AED ${order.order_total.discount}
+Coupon Discount: AED -${order.order_total.discount}
 Staff Charges: AED ${order.order_total.staff_charges}
 Transport Charges: AED ${order.order_total.transport_charges}
 Total Order Charges: AED ${order.total_amount}

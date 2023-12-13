@@ -95,7 +95,7 @@ export default function OrderDetailModel({ visible, order, onClose }) {
                 Sub Total: AED {orderTotal.sub_total}
               </Text>
               <Text style={[styles.orderSummaryText]}>
-                Coupon Discount: AED {orderTotal.discount}
+                Coupon Discount: AED -{orderTotal.discount}
               </Text>
               <Text style={styles.orderSummaryText}>
                 Staff Charges: AED {orderTotal.staff_charges}

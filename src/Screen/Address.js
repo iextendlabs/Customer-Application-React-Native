@@ -10,7 +10,7 @@ import { Picker } from "@react-native-picker/picker";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useDispatch, useSelector } from "react-redux";
 import { addAddress, deleteAddress } from "../redux/actions/Actions";
-import Splash from "./Splash";
+// import * as Location from 'expo-location';
 
 export default function Address() {
   const dispatch = useDispatch();
@@ -27,6 +27,13 @@ export default function Address() {
   const [loading, setLoading] = useState(false);
   const [mapModalVisible, setMapModalVisible] = useState(false);
   const [selectedLocation, setSelectedLocation] = useState(null);
+
+  const [location, setLocation] = useState(null);
+  const [errorMsg, setErrorMsg] = useState(null);
+
+  // useEffect(() => {
+  //   getPermissions();
+  // }, []);
 
   useEffect(() => {
     if (address && address.length > 0) {
@@ -103,6 +110,18 @@ export default function Address() {
     setMapModalVisible(false);
   };
 
+  // const getPermissions = async () => {
+  //   let { status } = await Location.requestForegroundPermissionsAsync();
+  //   if (status !== "granted") {
+  //     setErrorMsg("Permission to access location was denied");
+  //     return;
+  //   }
+
+  //   let location = await Location.getCurrentPositionAsync({});
+  //   console.log("Location:");
+  //   console.log(location);
+  //   setLocation(location);
+  // };
   return (
     <ScrollView style={{ flex: 1, backgroundColor: "#FFCACC" }}>
       <View style={{ flex: 1 }}>

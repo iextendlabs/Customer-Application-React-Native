@@ -85,6 +85,8 @@ export default function Booking() {
       setSelectedStaffId(booking.selectedStaffId || null);
       setSelectedSlot(booking.selectedSlot || null);
       setSelectedSlotId(booking.selectedSlotId || null);
+      setSelectedStaffCharges(booking.selectedStaffCharge || null);
+      setTransportCharges(booking.transportCharges || null);
       if (booking.selectedDate && booking.selectedArea) {
         fetchAvailableTimeSlots(
           booking.selectedDate,
@@ -700,7 +702,7 @@ export default function Booking() {
                                           title={
                                             cartData.length > 0
                                               ? "Checkout"
-                                              : "Add Services to Cart"
+                                              : "Select Services"
                                           }
                                           bgColor={"#000"}
                                           textColor={"#fff"}
@@ -713,6 +715,8 @@ export default function Booking() {
                                               selectedArea: selectedArea,
                                               selectedSlot: selectedSlot,
                                               selectedSlotId: selectedSlotId,
+                                              selectedStaffCharge:selectedStaffCharge,
+                                              transportCharges:transportCharges
                                             };
 
                                             dispatch(
