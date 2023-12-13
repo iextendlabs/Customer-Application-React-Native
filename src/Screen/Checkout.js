@@ -268,68 +268,102 @@ export default function Checkout() {
   };
 
   const applyCode = async () => {
-    setLoading(true);
-    setNotValidAffiliate("");
-    setNotValidCoupon("");
-    setAffiliateId("");
-    setCouponId("");
-    setCouponDiscount("");
-    setOrderTotal("");
-    try {
-      const response = await axios.post(applyCouponAffiliateUrl, {
-        coupon: coupon,
-        affiliate: affiliate,
-      });
+    if (coupon !== "" || affiliate !== "") {
+      setLoading(true);
+      try {
+        const response = await axios.post(applyCouponAffiliateUrl, {
+          coupon: coupon,
+          affiliate: affiliate,
+        });
 
-      if (response.status === 200) {
-        const couponData = response.data.coupon;
-        setAffiliateId(response.data.affiliate_id);
-        setCouponId(couponData.id);
+        if (response.status === 200) {
+          const couponData = response.data.coupon;
+          if (response.data.affiliate_id) {
+            setAffiliateId(response.data.affiliate_id);
+          } else {
+            setAffiliateId("");
+          }
+          if (couponData) {
+            setCouponId(couponData.id);
 
-        let discount = 0;
+            let discount = 0;
 
-        if (couponData.type === "Percentage") {
-          discount = (getServicesTotal() * couponData.discount) / 100;
+            if (couponData.type === "Percentage") {
+              discount = (getServicesTotal() * couponData.discount) / 100;
+            } else {
+              discount = couponData.discount; // Fixed variable name from $discount to discount
+            }
+            setCouponDiscount(discount);
+
+            setOrderTotal(
+              servicesTotal +
+                parseFloat(selectedStaffCharges) +
+                parseFloat(transportCharges) -
+                discount
+            );
+          } else {
+            setCouponId("");
+            setCouponDiscount("");
+            setOrderTotal(
+              servicesTotal +
+                parseFloat(selectedStaffCharges) +
+                parseFloat(transportCharges)
+            );
+          }
+          setApplyCouponAffiliate("Your codes Apply Successfully.");
+
+          setTimeout(() => {
+            setApplyCouponAffiliate("");
+          }, 2000);
+        } else if (response.status === 201) {
+          const errors = response.data.errors;
+
+          if (errors.affiliate) {
+            setAffiliateId("");
+            setNotValidAffiliate(errors.affiliate[0]); // Assuming affiliate is an array
+          }
+
+          if (errors.coupon) {
+            setCouponId("");
+            setCouponDiscount("");
+            setOrderTotal(
+              servicesTotal +
+                parseFloat(selectedStaffCharges) +
+                parseFloat(transportCharges)
+            );
+            setNotValidCoupon(errors.coupon[0]); // Assuming coupon is an array
+          }
+
+          setTimeout(() => {
+            setNotValidAffiliate("");
+            setNotValidCoupon("");
+          }, 2000);
         } else {
-          discount = couponData.discount; // Fixed variable name from $discount to discount
+          setError("Order failed. Please try again.");
         }
-        setCouponDiscount(discount);
-
+      } catch (error) {
         setOrderTotal(
           servicesTotal +
             parseFloat(selectedStaffCharges) +
-            parseFloat(transportCharges) -
-            discount
+            parseFloat(transportCharges)
         );
-        setApplyCouponAffiliate("Your codes Apply Successfully.");
-
-        setTimeout(() => {
-          setApplyCouponAffiliate("");
-        }, 2000);
-      } else if (response.status === 201) {
-        const errors = response.data.errors;
-
-        if (errors.affiliate) {
-          setNotValidAffiliate(errors.affiliate[0]); // Assuming affiliate is an array
-        }
-
-        if (errors.coupon) {
-          setNotValidCoupon(errors.coupon[0]); // Assuming coupon is an array
-        }
-
-        setOrderError(response.data.msg);
-      } else {
-        setError("Order failed. Please try again.");
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      console.log(servicesTotal, selectedStaffCharges, transportCharges);
+    } else {
+      setAffiliateId("");
+      setCouponId("");
+      setCouponDiscount("");
       setOrderTotal(
         servicesTotal +
           parseFloat(selectedStaffCharges) +
           parseFloat(transportCharges)
       );
-    } finally {
-      setLoading(false);
+      console.log(servicesTotal, selectedStaffCharges, transportCharges);
+      setNotValidAffiliate("Please Enter Code!");
+      setTimeout(() => {
+        setNotValidAffiliate("");
+      }, 2000);
     }
   };
 
@@ -360,7 +394,7 @@ export default function Checkout() {
                     <Text
                       style={{
                         textDecorationLine: "line-through",
-                        color: "#999",
+                        color: "red",
                       }}
                     >
                       {item.price}

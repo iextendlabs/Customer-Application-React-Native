@@ -21,7 +21,6 @@ import Splash from "../Screen/Splash";
 import { updateServices, updateZone } from "../redux/actions/Actions";
 import CommonButton from "../Common/CommonButton";
 import StaffCard from "../Common/StaffCard";
-import FlashMessage, { showMessage } from "react-native-flash-message";
 
 export default function Main() {
   const navigation = useNavigation();
@@ -254,16 +253,6 @@ export default function Main() {
           )}
         </View>
       </ScrollView>
-      <FlashMessage
-        position="bottom"
-        style={{
-          borderRadius: 8,
-          padding: 30,
-          marginHorizontal: 50,
-          marginBottom: 50,
-          alignItems: "center",
-        }}
-      />
       <Footer />
     </View>
   );

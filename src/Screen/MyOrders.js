@@ -4,18 +4,21 @@ import {
   View,
   FlatList,
   TouchableOpacity,
+  Linking,
+  Share,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { getOrdersUrl } from "../Config/Api";
+import { getOrdersUrl, orderPDFDownloadUrl } from "../Config/Api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import Splash from "../Screen/Splash";
 import { useDispatch, useSelector } from "react-redux";
 import { addItemToCart, clearCart } from "../redux/actions/Actions";
 import OrderDetailModal from "./OrderDetailModel";
 
 export default function MyOrders() {
+  const route = useRoute();
   const dispatch = useDispatch();
   const navigation = useNavigation();
   const [orders, setOrders] = useState([]);
@@ -23,6 +26,13 @@ export default function MyOrders() {
   const [orderDetailModalVisible, setOrderDetailModalVisible] = useState(false);
   const [loading, setLoading] = useState(false);
   const cartData = useSelector((state) => state.cart);
+
+  useEffect(() => {
+    // Clear state when navigating from RescheduleOrder
+    if (route.params && route.params.clearState) {
+      getOrders();
+    }
+  }, [route.params]);
 
   useEffect(() => {
     getOrders();
@@ -74,6 +84,46 @@ export default function MyOrders() {
     setOrderDetailModalVisible(true);
   };
 
+  const handleDownloadPDF = async (order_id) => {
+    const url = `${orderPDFDownloadUrl}${order_id}`;
+    Linking.openURL(url);
+  };
+
+  const handleShare = async (order) => {
+    try {
+      const message = `
+**Appointment:**
+Staff: ${order.staff_name}
+Appointment Date: ${order.date}
+Slot: ${order.time_slot_value}
+Order Status: ${order.status}
+
+**Order Summary:**
+Sub Total: AED ${order.order_total.sub_total}
+Coupon Discount: AED ${order.order_total.discount}
+Staff Charges: AED ${order.order_total.staff_charges}
+Transport Charges: AED ${order.order_total.transport_charges}
+Total Order Charges: AED ${order.total_amount}
+`;
+
+      const result = await Share.share({
+        message,
+      });
+
+      if (result.action === Share.sharedAction) {
+        if (result.activityType) {
+          // Shared with activity type of result.activityType
+        } else {
+          // Shared
+        }
+      } else if (result.action === Share.dismissedAction) {
+        // Dismissed
+      }
+    } catch (error) {
+      console.error("Error sharing:", error.message);
+    }
+  };
+
   if (loading) {
     return Splash();
   }
@@ -109,13 +159,10 @@ export default function MyOrders() {
                 borderColor: "#8e8e8e",
                 padding: 10,
                 marginBottom: 10,
-                alignSelf: "center",
-                justifyContent: "space-between",
-                flexDirection: "row",
-                alignItems: "center",
+                flexDirection: "column",
               }}
             >
-              <View style={{ flex: 3 }}>
+              <View>
                 <Text style={styles.orderTitle}>Order ID: {item.id}</Text>
                 <Text>Total Amount: {item.total_amount}</Text>
                 <Text>Status: {item.status}</Text>
@@ -123,59 +170,60 @@ export default function MyOrders() {
                 <Text>Staff: {item.staff_name}</Text>
                 <Text>Time Slot: {item.time_slot_value}</Text>
               </View>
-              {item.status === "Pending" && (
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "center",
+                  marginTop: 10,
+                }}
+              >
+                {item.status === "Pending" && (
+                  <TouchableOpacity
+                    style={styles.buttons}
+                    onPress={() => {
+                      navigation.navigate("RescheduleOrder", {
+                        order_id: item.id,
+                      });
+                    }}
+                  >
+                    <Text>Reschedule</Text>
+                  </TouchableOpacity>
+                )}
+                {item.status === "Complete" && (
+                  <TouchableOpacity
+                    style={styles.buttons}
+                    onPress={() => {
+                      reOrder(item);
+                    }}
+                  >
+                    <Text>ReOrder</Text>
+                  </TouchableOpacity>
+                )}
                 <TouchableOpacity
-                  style={{
-                    flex: 1.2,
-                    borderWidth: 0.2,
-                    borderRadius: 4,
-                    padding: 7,
-                    marginRight: 5,
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
+                  style={styles.buttons}
                   onPress={() => {
-                    navigation.navigate("RescheduleOrder", {
-                      order_id: item.id,
-                    });
-                  }}
-                >
-                  <Text>Reschedule</Text>
-                </TouchableOpacity>
-              )}
-              {item.status === "Complete" && (
-                <TouchableOpacity
-                  style={{
-                    flex: 1,
-                    borderWidth: 0.2,
-                    borderRadius: 4,
-                    padding: 7,
-                    marginRight: 5,
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                  onPress={() => {
-                    reOrder(item);
-                  }}
-                >
-                  <Text>ReOrder</Text>
-                </TouchableOpacity>
-              )}
-                <TouchableOpacity
-                  style={{
-                    flex: 0.5,
-                    borderWidth: 0.2,
-                    borderRadius: 4,
-                    padding: 7,
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                  onPress={() => {
-                    handleOrderDetail(item)
+                    handleOrderDetail(item);
                   }}
                 >
                   <Text>View</Text>
                 </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.buttons}
+                  onPress={() => {
+                    handleDownloadPDF(item.id);
+                  }}
+                >
+                  <Text>PDF Download</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.buttons}
+                  onPress={() => {
+                    handleShare(item);
+                  }}
+                >
+                  <Text>Share</Text>
+                </TouchableOpacity>
+              </View>
             </View>
           )}
         />
@@ -194,5 +242,14 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "bold",
     marginBottom: 5,
+  },
+
+  buttons: {
+    borderWidth: 0.2,
+    borderRadius: 4,
+    marginRight: 5,
+    padding: 7,
+    alignItems: "center",
+    justifyContent: "center",
   },
 });

@@ -48,7 +48,7 @@ export default function CartItem({ item, onRemoveFromCart, onAddToCart , onAddTo
             <>
               
               <Text
-                style={{ textDecorationLine: "line-through", color: "#999" }}
+                style={{ textDecorationLine: "line-through", color: "red" }}
               >
                 {item.price}
               </Text>

@@ -12,7 +12,7 @@ import { useNavigation } from "@react-navigation/native";
 import StarRating from "./StarRating";
 import { useDispatch, useSelector } from "react-redux";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import FlashMessage, { showMessage } from "react-native-flash-message";
+import { showMessage } from "react-native-flash-message";
 import { addItemToCart, addItemToWishlist } from "../redux/actions/Actions";
 
 export default function ProductItem({ item }) {
@@ -147,7 +147,7 @@ export default function ProductItem({ item }) {
           {item.discount ? (
             <>
               <Text
-                style={{ textDecorationLine: "line-through", color: "#999" }}
+                style={{ textDecorationLine: "line-through", color: "red" }}
               >
                 {item.price}
               </Text>

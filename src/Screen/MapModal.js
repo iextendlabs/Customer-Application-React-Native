@@ -45,8 +45,6 @@ export default function MapModal({ onSelectLocation }) {
             onPress={(event) =>
               setSelectedLocation(event.nativeEvent.coordinate)
             }
-            onError={(error) => console.error("MapView Error:", error)}
-
           >
             {selectedLocation && (
               <Marker
@@ -56,7 +54,6 @@ export default function MapModal({ onSelectLocation }) {
               />
             )}
           </MapView>
-
           <TouchableOpacity
             onPress={handleSaveLocation}
             style={{

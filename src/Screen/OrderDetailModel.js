@@ -176,7 +176,7 @@ const styles = StyleSheet.create({
   },
   strikeThroughText: {
     textDecorationLine: "line-through",
-    color: "#999",
+    color: "red",
   },
   discountText: {
     marginRight: 5,

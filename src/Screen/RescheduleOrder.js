@@ -506,7 +506,7 @@ export default function RescheduleOrder() {
       });
 
       if (response.status === 200) {
-        navigation.goBack();
+        navigation.navigate("MyOrders", { clearState: true });
       } else {
         setError("Order failed. Please try again.");
       }

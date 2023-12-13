@@ -3,6 +3,7 @@ import React from "react";
 import { useSelector } from "react-redux";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation, useRoute } from "@react-navigation/native";
+import FlashMessage from "react-native-flash-message";
 
 export default function Footer() {
   const wishlistData = useSelector((state) => state.wishlist);
@@ -19,6 +20,22 @@ export default function Footer() {
     }
   };
 
+  const openWhatsAppMessage = async () => {
+    try {
+      const whatsappNumber = await AsyncStorage.getItem("@whatsappNumber");
+      const whatsappUrl = `whatsapp://send?phone=${whatsappNumber}`;
+
+      Linking.canOpenURL(whatsappUrl)
+        .then((supported) => {
+          if (!supported) {
+            console.log("WhatsApp is not installed on the device");
+          } else {
+            return Linking.openURL(whatsappUrl);
+          }
+        })
+        .catch((err) => console.error("An error occurred", err));
+    } catch {}
+  };
   return (
     <View style={{ flex: 1 }}>
       <View
@@ -188,6 +205,25 @@ export default function Footer() {
           />
         </TouchableOpacity>
       </View>
+      <TouchableOpacity
+        onPress={openWhatsAppMessage}
+        style={{ position: "absolute", bottom: 80, right: 20 }}
+      >
+        <Image
+          source={require("../images/whatsapp-chat.png")}
+          style={{ width: 50, height: 50 }}
+        />
+      </TouchableOpacity>
+      <FlashMessage
+        position="bottom"
+        style={{
+          borderRadius: 8,
+          padding: 30,
+          marginHorizontal: 50,
+          marginBottom: 50,
+          alignItems: "center",
+        }}
+      />
     </View>
   );
 }

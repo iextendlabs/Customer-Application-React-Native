@@ -11,15 +11,14 @@ import Footer from "../Common/Footer";
 import Header from "../Common/Header";
 import { useRoute } from "@react-navigation/native";
 import { useEffect, useState } from "react";
-import Splash from "../Screen/Splash";
 import { BaseUrl, getServiceUrl } from "../Config/Api";
 import { addItemToCart, addItemToWishlist } from "../redux/actions/Actions";
 import { useDispatch, useSelector } from "react-redux";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import HTML from "react-native-render-html";
-import FlashMessage, { showMessage } from "react-native-flash-message";
 import StarRating from "../Common/StarRating";
+import { showMessage } from "react-native-flash-message";
 
 const styles = StyleSheet.create({
   container: {
@@ -47,7 +46,7 @@ const styles = StyleSheet.create({
   },
   originalPrice: {
     textDecorationLine: "line-through",
-    color: "#999",
+    color: "red",
   },
 
   duration: {
@@ -94,7 +93,6 @@ export default function Details() {
     duration: 1500,
     margin: 20,
   };
-
   const saveToAsyncStorage = async (key, data) => {
     try {
       await AsyncStorage.setItem(key, JSON.stringify(data));
@@ -102,6 +100,7 @@ export default function Details() {
       console.error(`Error saving to ${key}:`, error);
     }
   };
+
   const onAddToCart = async (item) => {
     const isItemInCart = cartData.some((cartItem) => cartItem.id === item.id);
 
@@ -224,16 +223,6 @@ export default function Details() {
           </ScrollView>
         </>
       )}
-      <FlashMessage
-        position="bottom"
-        style={{
-          borderRadius: 8,
-          padding: 30,
-          marginHorizontal: 50,
-          marginBottom: 50,
-          alignItems: "center",
-        }}
-      />
       <Footer />
     </View>
   );
