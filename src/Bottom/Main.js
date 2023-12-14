@@ -129,7 +129,7 @@ export default function Main() {
       <Text style={{ marginTop: 8, textAlign: "center" }}>{item.title}</Text>
     </TouchableOpacity>
   );
-  const renderCategoryItem = ({ item }) => <CategoryItem item={item} />;
+  const renderCategoryItem = ({ item }) => <CategoryItem item={item}  key={item.id}/>;
   return (
     <View style={{ flex: 1, backgroundColor: "#FFCACC" }}>
       <Header title={"LipSlay Home Saloon"} />
@@ -206,7 +206,7 @@ export default function Main() {
           <FlatList
             data={categories}
             numColumns={3}
-            keyExtractor={(item) => item.id}
+            keyExtractor={(item) => item.id.toString()}
             renderItem={renderCategoryItem}
           />
         </View>
@@ -226,7 +226,7 @@ export default function Main() {
             data={selectedServices}
             showsHorizontalScrollIndicator={false}
             horizontal
-            keyExtractor={(item, index) => index.toString()}
+            keyExtractor={(item, index) => item.id.toString()}
             renderItem={({ item }) => <OfferProductItem item={item} />}
           />
         </View>
@@ -247,7 +247,7 @@ export default function Main() {
               data={staffs}
               horizontal
               showsHorizontalScrollIndicator={false}
-              keyExtractor={(item, index) => index.toString()}
+              keyExtractor={(item, index) => item.id.toString()}
               renderItem={({ item }) => <StaffCard item={item} />}
             />
           )}

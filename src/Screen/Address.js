@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { ScrollView, Text, View, Modal, TouchableOpacity } from "react-native";
-// import MapModal from "./MapModal"; // Create a MapModal component
 import CustomTextInput from "../Common/CustomTextInput";
 import CommonButton from "../Common/CommonButton";
 import { useNavigation } from "@react-navigation/native";
@@ -10,7 +9,7 @@ import { Picker } from "@react-native-picker/picker";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useDispatch, useSelector } from "react-redux";
 import { addAddress, deleteAddress } from "../redux/actions/Actions";
-// import * as Location from 'expo-location';
+import * as Location from "expo-location";
 
 export default function Address() {
   const dispatch = useDispatch();
@@ -25,15 +24,15 @@ export default function Address() {
   const address = useSelector((state) => state.address);
   const zones = useSelector((state) => state.zones);
   const [loading, setLoading] = useState(false);
-  const [mapModalVisible, setMapModalVisible] = useState(false);
-  const [selectedLocation, setSelectedLocation] = useState(null);
 
+  const [longitude, setLongitude] = useState(null);
+  const [latitude, setLatitude] = useState(null);
   const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
 
-  // useEffect(() => {
-  //   getPermissions();
-  // }, []);
+  useEffect(() => {
+    getPermissions();
+  }, []);
 
   useEffect(() => {
     if (address && address.length > 0) {
@@ -44,6 +43,8 @@ export default function Address() {
       setArea(addressData.area || "");
       setLandmark(addressData.landmark || "");
       setCity(addressData.city || "");
+      setLatitude(addressData.latitude || "");
+      setLongitude(addressData.longitude || "");
     }
   }, [address]);
 
@@ -66,7 +67,10 @@ export default function Address() {
         area: area,
         landmark: landmark,
         city: city,
+        latitude: latitude,
+        longitude: longitude,
       };
+
       await AsyncStorage.removeItem("@addressData");
 
       await AsyncStorage.setItem("@addressData", JSON.stringify(addressInfo));
@@ -105,26 +109,78 @@ export default function Address() {
     }
   };
 
-  const handleLocationSelect = (location) => {
-    setSelectedLocation(location);
-    setMapModalVisible(false);
+  const getPermissions = async () => {
+    let { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== "granted") {
+      setErrorMsg("Permission to access location was denied");
+      return;
+    }
+
+    let location = await Location.getCurrentPositionAsync({});
+    console.log("Location:");
+    console.log(location);
+    setLocation(location);
+    setLongitude(location.coords.longitude);
+    setLatitude(location.coords.latitude);
   };
 
-  // const getPermissions = async () => {
-  //   let { status } = await Location.requestForegroundPermissionsAsync();
-  //   if (status !== "granted") {
-  //     setErrorMsg("Permission to access location was denied");
-  //     return;
-  //   }
+  const reverseGeocode = async () => {
+    try {
+      const response = await axios.get(
+        `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=AIzaSyBJ0A4bxdhZ4FWomyO-tSEa4Qn0KY1jpT8`
+      );
 
-  //   let location = await Location.getCurrentPositionAsync({});
-  //   console.log("Location:");
-  //   console.log(location);
-  //   setLocation(location);
-  // };
+      if (response.data.status === "OK" && response.data.results.length > 0) {
+        const addressInfo = response.data.results[0];
+
+        const building =
+          addressInfo.address_components.find((component) =>
+            component.types.includes("premise")
+          )?.long_name || "";
+        const villa =
+          addressInfo.address_components.find((component) =>
+            component.types.includes("subpremise")
+          )?.long_name || "";
+        const street =
+          addressInfo.address_components.find((component) =>
+            component.types.includes("route")
+          )?.long_name || "";
+        const area =
+          addressInfo.address_components.find((component) =>
+            component.types.includes("sublocality")
+          )?.long_name || "";
+        const landmark = "";
+        const city =
+          addressInfo.address_components.find((component) =>
+            component.types.includes("locality")
+          )?.long_name || "";
+
+        setBuilding(building);
+        setVilla(villa);
+        setStreet(street);
+        setArea(area);
+        setLandmark(landmark);
+        setCity(city);
+      } else {
+        setError("No address found");
+      }
+    } catch (error) {
+      console.error("Error fetching address:", error);
+      setError("Error fetching address");
+    }
+  };
+
   return (
     <ScrollView style={{ flex: 1, backgroundColor: "#FFCACC" }}>
       <View style={{ flex: 1 }}>
+        <View>
+          <CommonButton
+            title={"Use Current Location"}
+            bgColor={"#FF000080"}
+            textColor={"#fff"}
+            onPress={() => reverseGeocode()}
+          />
+        </View>
         {error && (
           <Text style={{ marginTop: 10, marginLeft: 40, color: "red" }}>
             {error}
@@ -190,21 +246,6 @@ export default function Address() {
             </Picker>
           )}
         </View>
-        {/* <View style={{ marginBottom: 20 }}>
-          <TouchableOpacity onPress={() => setMapModalVisible(true)}>
-            <Text style={{ color: "#000", fontSize: 18, alignSelf: "center" }}>
-              Select Location on Map
-            </Text>
-          </TouchableOpacity>
-        </View>
-        <Modal
-          visible={mapModalVisible}
-          animationType="slide"
-          transparent={true}
-          onRequestClose={() => setMapModalVisible(false)}
-        >
-          <MapModal onSelectLocation={handleLocationSelect} />
-        </Modal> */}
         <View style={{ marginBottom: 40 }}>
           <CommonButton
             title={"Save"}

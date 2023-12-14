@@ -75,6 +75,8 @@ export default function Checkout() {
   const [couponId, setCouponId] = useState(false);
   const [couponDiscount, setCouponDiscount] = useState(null);
   const [applyCouponAffiliate, setApplyCouponAffiliate] = useState("");
+  const [longitude, setLongitude] = useState(null);
+  const [latitude, setLatitude] = useState(null);
 
   useEffect(() => {
     setServicesTotal(getServicesTotal());
@@ -154,6 +156,8 @@ export default function Checkout() {
     setSelectedFlatVilla(item.villa);
     setSelectedStreet(item.street);
     setSelectedCity(item.city);
+    setLatitude(item.latitude);
+    setLongitude(item.longitude);
 
     if (selectedDate) {
       fetchAvailableTimeSlots(selectedDate, item.area);
@@ -263,6 +267,8 @@ export default function Checkout() {
         order_comment: note,
         affiliate_id: affiliateId,
         coupon_id: couponId,
+        latitude: latitude,
+        longitude: longitude,
       });
       console.log(response.data);
       if (response.status === 200) {
