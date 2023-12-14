@@ -67,6 +67,7 @@ export default function Main() {
     } catch (error) {
       setError("An error occurred while fetching data.");
     }
+    setLoading(false);
   };
 
   const moveToNextSlide = () => {
@@ -129,130 +130,142 @@ export default function Main() {
       <Text style={{ marginTop: 8, textAlign: "center" }}>{item.title}</Text>
     </TouchableOpacity>
   );
-  const renderCategoryItem = ({ item }) => <CategoryItem item={item}  key={item.id}/>;
+  const renderCategoryItem = ({ item }) => (
+    <CategoryItem item={item} key={item.id} />
+  );
   return (
     <View style={{ flex: 1, backgroundColor: "#FFCACC" }}>
       <Header title={"LipSlay Home Saloon"} />
-      <ScrollView showsVerticalScrollIndicator={false}>
-        <View>
-          {sliderImages.length > 0 && (
-            <FlatList
-              ref={flatListRef}
-              data={sliderImages}
-              horizontal
-              pagingEnabled
-              showsHorizontalScrollIndicator={false}
-              keyExtractor={(item, index) => index.toString()}
-              onScroll={(e) => {
-                const x = e.nativeEvent.contentOffset.x;
-                setCurrentIndex(Math.round(x / width));
-              }}
-              renderItem={({ item }) => (
-                <View
-                  style={{
-                    width: width,
-                    justifyContent: "center",
-                    alignItems: "center",
-                  }}
-                >
-                  <Image
-                    source={{
-                      uri: BaseUrl + "slider-images/" + item,
-                    }}
+      {error ? (
+        <View
+          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+        >
+          <Text>Please check your internet connection and try again.</Text>
+        </View>
+      ) : (
+        <ScrollView showsVerticalScrollIndicator={false}>
+          <View>
+            {sliderImages.length > 0 && (
+              <FlatList
+                ref={flatListRef}
+                data={sliderImages}
+                horizontal
+                pagingEnabled
+                showsHorizontalScrollIndicator={false}
+                keyExtractor={(item, index) => index.toString()}
+                onScroll={(e) => {
+                  const x = e.nativeEvent.contentOffset.x;
+                  setCurrentIndex(Math.round(x / width));
+                }}
+                renderItem={({ item }) => (
+                  <View
                     style={{
-                      width: "90%",
-                      height: 200,
-                      borderRadius: 10,
+                      width: width,
+                      justifyContent: "center",
+                      alignItems: "center",
                     }}
-                  />
-                </View>
-              )}
+                  >
+                    <Image
+                      source={{
+                        uri: BaseUrl + "slider-images/" + item,
+                      }}
+                      style={{
+                        width: "90%",
+                        height: 200,
+                        borderRadius: 10,
+                      }}
+                    />
+                  </View>
+                )}
+              />
+            )}
+            <View
+              style={{
+                flexDirection: "row",
+                width: width,
+                justifyContent: "center",
+                alignItems: "center",
+                marginTop: 10,
+              }}
+            >
+              {sliderImages.map((item, index) => (
+                <View
+                  key={index.toString()}
+                  style={{
+                    width: currentIndex === index ? 40 : 8,
+                    height: 8,
+                    borderRadius: currentIndex === index ? 5 : 4,
+                    backgroundColor:
+                      currentIndex === index ? "#ff9ca0" : "#fff",
+                    marginLeft: 5,
+                  }}
+                ></View>
+              ))}
+            </View>
+          </View>
+
+          <CommonButton
+            title={"Check Booking"}
+            bgColor={"#FF000080"}
+            textColor={"#fff"}
+            onPress={() => {
+              checkAuthentication("Booking");
+            }}
+          />
+
+          <View style={{ flex: 1, padding: 16 }}>
+            <FlatList
+              data={categories}
+              numColumns={3}
+              keyExtractor={(item) => item.id.toString()}
+              renderItem={renderCategoryItem}
             />
-          )}
-          <View
+          </View>
+          <Text
             style={{
-              flexDirection: "row",
-              width: width,
-              justifyContent: "center",
-              alignItems: "center",
-              marginTop: 10,
+              marginTop: 14,
+              color: "#000",
+              fontSize: 25,
+              fontWeight: "700",
+              alignSelf: "center",
             }}
           >
-            {sliderImages.map((item, index) => (
-              <View
-                key={index.toString()}
-                style={{
-                  width: currentIndex === index ? 40 : 8,
-                  height: 8,
-                  borderRadius: currentIndex === index ? 5 : 4,
-                  backgroundColor: currentIndex === index ? "#ff9ca0" : "#fff",
-                  marginLeft: 5,
-                }}
-              ></View>
-            ))}
-          </View>
-        </View>
-
-        <CommonButton
-          title={"Check Booking"}
-          bgColor={"#FF000080"}
-          textColor={"#fff"}
-          onPress={() => {
-            checkAuthentication("Booking");
-          }}
-        />
-
-        <View style={{ flex: 1, padding: 16 }}>
-          <FlatList
-            data={categories}
-            numColumns={3}
-            keyExtractor={(item) => item.id.toString()}
-            renderItem={renderCategoryItem}
-          />
-        </View>
-        <Text
-          style={{
-            marginTop: 14,
-            color: "#000",
-            fontSize: 25,
-            fontWeight: "700",
-            alignSelf: "center",
-          }}
-        >
-          Offers
-        </Text>
-        <View>
-          <FlatList
-            data={selectedServices}
-            showsHorizontalScrollIndicator={false}
-            horizontal
-            keyExtractor={(item, index) => item.id.toString()}
-            renderItem={({ item }) => <OfferProductItem item={item} />}
-          />
-        </View>
-        <Text
-          style={{
-            marginTop: 14,
-            color: "#000",
-            fontSize: 25,
-            fontWeight: "700",
-            alignSelf: "center",
-          }}
-        >
-          Our Team
-        </Text>
-        <View style={{ marginBottom: 70 }}>
-          {staffs.length > 0 && (
+            Offers
+          </Text>
+          <View>
             <FlatList
-              data={staffs}
-              horizontal
+              data={selectedServices}
               showsHorizontalScrollIndicator={false}
+              horizontal
               keyExtractor={(item, index) => item.id.toString()}
-              renderItem={({ item }) => <StaffCard item={item} />}
+              renderItem={({ item }) => <OfferProductItem item={item} />}
             />
-          )}
-        </View>
-      </ScrollView>
+          </View>
+          <Text
+            style={{
+              marginTop: 14,
+              color: "#000",
+              fontSize: 25,
+              fontWeight: "700",
+              alignSelf: "center",
+            }}
+          >
+            Our Team
+          </Text>
+          <View style={{ marginBottom: 70 }}>
+            {staffs.length > 0 && (
+              <FlatList
+                data={staffs}
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                keyExtractor={(item, index) => item.id.toString()}
+                renderItem={({ item }) => <StaffCard item={item} />}
+              />
+            )}
+          </View>
+        </ScrollView>
+      )}
+
       <Footer />
     </View>
   );

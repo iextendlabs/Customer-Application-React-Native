@@ -389,6 +389,8 @@ export default function Checkout() {
       setTimeout(() => {
         setNotValidAffiliate("");
       }, 2000);
+      setLoading(false);
+
     }
   };
 
@@ -425,7 +427,7 @@ export default function Checkout() {
                       {item.price}
                     </Text>
                     <Text style={{ marginRight: 5, color: "#333" }}>
-                      {item.discount}
+                      {" "+item.discount}
                     </Text>
                   </>
                 ) : (

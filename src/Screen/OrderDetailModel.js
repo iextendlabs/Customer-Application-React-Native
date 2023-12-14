@@ -27,7 +27,7 @@ const OrderServiceItem = ({ service }) => (
         {service.discount ? (
           <>
             <Text style={styles.strikeThroughText}>{service.price}</Text>
-            <Text style={styles.discountText}>{service.discount}</Text>
+            <Text style={styles.discountText}>{" "+service.discount}</Text>
           </>
         ) : (
           service.price

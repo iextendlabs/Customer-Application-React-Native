@@ -53,7 +53,7 @@ export default function CartItem({ item, onRemoveFromCart, onAddToCart , onAddTo
                 {item.price}
               </Text>
               <Text style={{ marginRight: 5, color: "#333" }}>
-                {item.discount}
+                {" "+item.discount}
               </Text>
             </>
           ) : (

@@ -107,6 +107,7 @@ export default function Address() {
       setLoading(false);
       setError("Fill up all fields.");
     }
+    setLoading(false);
   };
 
   const getPermissions = async () => {
@@ -162,11 +163,17 @@ export default function Address() {
         setLandmark(landmark);
         setCity(city);
       } else {
-        setError("No address found");
+        setError("No address found. Please Fill up Form!");
+        setTimeout(() => {
+          setError("");
+        }, 2000);
       }
     } catch (error) {
       console.error("Error fetching address:", error);
-      setError("Error fetching address");
+      setError("Error fetching address. Please Fill up Form!");
+      setTimeout(() => {
+        setError("");
+      }, 2000);
     }
   };
 

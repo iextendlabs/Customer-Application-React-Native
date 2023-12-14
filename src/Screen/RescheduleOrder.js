@@ -84,6 +84,7 @@ export default function RescheduleOrder() {
     } catch (error) {
       setError("An error occurred while fetching data.");
     }
+    setLoading(false);
   };
 
   const handleDateSelect = (date) => {
@@ -120,6 +121,7 @@ export default function RescheduleOrder() {
     } finally {
       setLoading(false);
     }
+    setLoading(false);
   };
 
   const selectStaff = (item) => {

@@ -149,10 +149,10 @@ export default function ProductItem({ item }) {
               <Text
                 style={{ textDecorationLine: "line-through", color: "red" }}
               >
-                {item.price}
+                {item.price} 
               </Text>
               <Text style={{ marginRight: 5, color: "#333" }}>
-                {item.discount}
+                {" "+item.discount}
               </Text>
             </>
           ) : (

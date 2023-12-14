@@ -54,6 +54,7 @@ export default function Cart() {
       console.error("Error checking authentication:", error);
       setLoading(false);
     }
+    setLoading(false);
   };
 
   const onAddToWishList = async (item) => {

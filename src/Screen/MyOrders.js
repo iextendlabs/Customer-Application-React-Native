@@ -25,11 +25,16 @@ export default function MyOrders() {
   const [selectedOrder, setSelectedOrder] = useState([]);
   const [orderDetailModalVisible, setOrderDetailModalVisible] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [msg, setMsg] = useState(null);
   const cartData = useSelector((state) => state.cart);
 
   useEffect(() => {
     // Clear state when navigating from RescheduleOrder
     if (route.params && route.params.clearState) {
+      setMsg("Order Rescheduled Successfully.");
+      setTimeout(() => {
+        setMsg("");
+      }, 2000);
       getOrders();
     }
   }, [route.params]);
@@ -53,6 +58,7 @@ export default function MyOrders() {
     } catch (error) {
       setError("An error occurred while fetching data.");
     }
+    setLoading(false);
   };
 
   const saveToAsyncStorage = async (key, data) => {
@@ -130,6 +136,11 @@ Total Order Charges: AED ${order.total_amount}
 
   return (
     <View style={{ flex: 1, padding: 5, backgroundColor: "#FFCACC" }}>
+      {msg && (
+        <Text style={{ marginTop: 10, marginLeft: 40,fontSize:18, color: "green" }}>
+          {msg}
+        </Text>
+      )}
       {orders.length === 0 ? (
         <View
           style={{ flex: 1, justifyContent: "center", alignItems: "center" }}

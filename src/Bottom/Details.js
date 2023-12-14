@@ -181,7 +181,7 @@ export default function Details() {
               {service.discount ? (
                 <>
                   <Text style={styles.originalPrice}>{service.price}</Text>
-                  <Text style={styles.discountedPrice}>{service.discount}</Text>
+                  <Text style={styles.discountedPrice}>{" "+service.discount}</Text>
                 </>
               ) : (
                 service.price
