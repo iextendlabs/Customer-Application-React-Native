@@ -71,8 +71,8 @@ export default function Checkout() {
   const [coupon, setCoupon] = useState("");
   const [notValidCoupon, setNotValidCoupon] = useState(false);
   const [notValidAffiliate, setNotValidAffiliate] = useState(false);
-  const [affiliateId, setAffiliateId] = useState(false);
-  const [couponId, setCouponId] = useState(false);
+  const [affiliateId, setAffiliateId] = useState('');
+  const [couponId, setCouponId] = useState('');
   const [couponDiscount, setCouponDiscount] = useState(null);
   const [applyCouponAffiliate, setApplyCouponAffiliate] = useState("");
   const [longitude, setLongitude] = useState(null);
@@ -270,7 +270,7 @@ export default function Checkout() {
         latitude: latitude,
         longitude: longitude,
       });
-      console.log(response.data);
+
       if (response.status === 200) {
         await AsyncStorage.removeItem("@cartData");
         dispatch(clearCart());
@@ -279,6 +279,7 @@ export default function Checkout() {
           staff: response.data.staff,
           slot: response.data.slot,
           total_amount: response.data.total_amount,
+          order_id: response.data.order_id,
         });
       } else if (response.status === 201) {
         setOrderError(response.data.msg);
@@ -459,7 +460,7 @@ export default function Checkout() {
           </Text>
         )}
         <CustomTextInput
-          placeholder={"Enter Coupon Code"}
+          placeholder={"Enter Coupon Code (optional)"}
           icon={require("../images/voucher.png")}
           value={coupon}
           onChangeText={(txt) => {
@@ -474,7 +475,7 @@ export default function Checkout() {
         )}
 
         <CustomTextInput
-          placeholder={"Enter Affiliate Code"}
+          placeholder={"Enter Affiliate Code (optional)"}
           icon={require("../images/affiliate.png")}
           value={affiliate}
           onChangeText={(txt) => {
@@ -489,7 +490,7 @@ export default function Checkout() {
         )}
 
         <CommonButton
-          title={"Apply Coupon and Affiliate"}
+          title={"Apply"}
           bgColor={"#FF000080"}
           textColor={"#fff"}
           onPress={() => {

@@ -78,7 +78,7 @@ export default function ProductItem({ item }) {
     <View
       style={{
         width: "47%",
-        height: 300,
+        height: 285,
         elevation: 5,
         margin: 5,
         paddingBottom: 10,
@@ -180,7 +180,7 @@ export default function ProductItem({ item }) {
             onAddToCart(item);
           }}
         >
-          <Text style={{ color: "#fff", fontWeight: "700" }}>Add to Cart</Text>
+          <Text style={{ color: "#fff", fontWeight: "700" }}>Book Now</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={{
