@@ -16,6 +16,7 @@ import Splash from "../Screen/Splash";
 import { useDispatch, useSelector } from "react-redux";
 import { addItemToCart, clearCart } from "../redux/actions/Actions";
 import OrderDetailModal from "./OrderDetailModel";
+import WriteReviewModal from "./WriteReviewModal";
 
 export default function MyOrders() {
   const route = useRoute();
@@ -25,6 +26,8 @@ export default function MyOrders() {
   const [displayedOrders, setDisplayedOrders] = useState([]);
   const [selectedOrder, setSelectedOrder] = useState([]);
   const [orderDetailModalVisible, setOrderDetailModalVisible] = useState(false);
+  const [selectedOrderId, setSelectedOrderId] = useState([]);
+  const [writeReviewModalVisible, setWriteReviewModalVisible] = useState(false);
   const [loading, setLoading] = useState(false);
   const [msg, setMsg] = useState(null);
   const cartData = useSelector((state) => state.cart);
@@ -86,11 +89,17 @@ export default function MyOrders() {
 
   const closeModal = () => {
     setOrderDetailModalVisible(false);
+    setWriteReviewModalVisible(false);
   };
 
   const handleOrderDetail = (order) => {
     setSelectedOrder(order);
     setOrderDetailModalVisible(true);
+  };
+
+  const handleWriteReview = (order_id) => {
+    setSelectedOrderId(order_id);
+    setWriteReviewModalVisible(true);
   };
 
   const handleDownloadPDF = async (order_id) => {
@@ -263,6 +272,24 @@ Total Order Charges: AED ${order.total_amount}
                     <Text>Share</Text>
                   </TouchableOpacity>
                 </View>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "center",
+                    marginTop: 10,
+                  }}
+                >
+                  {item.status === "Complete" && (
+                    <TouchableOpacity
+                      style={styles.buttons}
+                      onPress={() => {
+                        handleWriteReview(item.id);
+                      }}
+                    >
+                      <Text>Write Review</Text>
+                    </TouchableOpacity>
+                  )}
+                </View>
               </View>
             )}
           />
@@ -270,6 +297,11 @@ Total Order Charges: AED ${order.total_amount}
         <OrderDetailModal
           visible={orderDetailModalVisible}
           order={selectedOrder}
+          onClose={closeModal}
+        />
+        <WriteReviewModal
+          visible={writeReviewModalVisible}
+          order_id={selectedOrderId}
           onClose={closeModal}
         />
       </View>
