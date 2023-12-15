@@ -1002,7 +1002,7 @@ export default function Checkout() {
           Total Services Charges: AED {getServicesTotal()}
         </Text>
         <Text style={{ padding: 10 }}>
-          Coupon Discount: AED -{couponDiscount ? couponDiscount : 0}
+          Coupon Discount: AED {couponDiscount ? couponDiscount : 0}
         </Text>
         <Text style={{ padding: 10 }}>
           Staff Charges: AED {selectedStaffCharges ? selectedStaffCharges : 0}

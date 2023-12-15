@@ -88,6 +88,7 @@ export default function MyOrders() {
   };
 
   const closeModal = () => {
+    getOrders();
     setOrderDetailModalVisible(false);
     setWriteReviewModalVisible(false);
   };
@@ -118,7 +119,7 @@ Order Status: ${order.status}
 
 **Order Summary:**
 Sub Total: AED ${order.order_total.sub_total}
-Coupon Discount: AED -${order.order_total.discount}
+Coupon Discount: AED ${order.order_total.discount}
 Staff Charges: AED ${order.order_total.staff_charges}
 Transport Charges: AED ${order.order_total.transport_charges}
 Total Order Charges: AED ${order.total_amount}
@@ -279,7 +280,7 @@ Total Order Charges: AED ${order.total_amount}
                     marginTop: 10,
                   }}
                 >
-                  {item.status === "Complete" && (
+                  {item.status === "Complete" && item.review === null && ( 
                     <TouchableOpacity
                       style={styles.buttons}
                       onPress={() => {
