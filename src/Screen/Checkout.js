@@ -493,7 +493,7 @@ export default function Checkout() {
 
         <CommonButton
           title={"Apply"}
-          bgColor={"#FF000080"}
+          bgColor={"#fd245f"}
           textColor={"#fff"}
           onPress={() => {
             applyCode();

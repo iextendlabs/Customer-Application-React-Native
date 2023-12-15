@@ -206,7 +206,7 @@ export default function Main() {
 
           <CommonButton
             title={"Check Booking"}
-            bgColor={"#FF000080"}
+            bgColor={"#fd245f"}
             textColor={"#fff"}
             onPress={() => {
               checkAuthentication("Booking");

@@ -22,20 +22,22 @@ export default function MyOrders() {
   const dispatch = useDispatch();
   const navigation = useNavigation();
   const [orders, setOrders] = useState([]);
+  const [displayedOrders, setDisplayedOrders] = useState([]);
   const [selectedOrder, setSelectedOrder] = useState([]);
   const [orderDetailModalVisible, setOrderDetailModalVisible] = useState(false);
   const [loading, setLoading] = useState(false);
   const [msg, setMsg] = useState(null);
   const cartData = useSelector((state) => state.cart);
+  const [selectedTab, setSelectedTab] = useState(0);
 
   useEffect(() => {
     // Clear state when navigating from RescheduleOrder
     if (route.params && route.params.clearState) {
       setMsg("Order Rescheduled Successfully.");
+      getOrders();
       setTimeout(() => {
         setMsg("");
-      }, 2000);
-      getOrders();
+      }, 3000);
     }
   }, [route.params]);
 
@@ -51,6 +53,7 @@ export default function MyOrders() {
       if (response.status === 200) {
         let data = response.data;
         setOrders(data.orders);
+        setDisplayedOrders(data.orders);
         setLoading(false);
       } else {
         setError("Please try again.");
@@ -130,120 +133,191 @@ Total Order Charges: AED ${order.total_amount}
     }
   };
 
+  const handleTabPress = (tabIndex) => {
+    if (tabIndex === 0) {
+      // Show all orders
+      setDisplayedOrders(orders);
+    } else if (tabIndex === 1) {
+      // Show top 10 recent orders
+      const topRecentOrders = orders.slice(0, 10);
+      setDisplayedOrders(topRecentOrders);
+    }
+    setSelectedTab(tabIndex);
+  };
+
   if (loading) {
     return Splash();
   }
 
   return (
-    <View style={{ flex: 1, padding: 5, backgroundColor: "#FFCACC" }}>
-      {msg && (
-        <Text style={{ marginTop: 10, marginLeft: 40,fontSize:18, color: "green" }}>
-          {msg}
-        </Text>
-      )}
-      {orders.length === 0 ? (
-        <View
-          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
-        >
+    <View style={{ flex: 1, backgroundColor: "#FFCACC" }}>
+      <View
+        style={{
+          flex: 1,
+          padding: 5,
+          marginTop: 70,
+        }}
+      >
+        {msg && (
           <Text
             style={{
-              alignItems: "center",
-              fontWeight: 600,
-              marginTop: 20,
-              fontSize: 20,
-              color: "#000",
+              marginLeft: 40,
+              fontSize: 18,
+              color: "green",
             }}
           >
-            No Orders Available
+            {msg}
           </Text>
-        </View>
-      ) : (
-        <FlatList
-          data={orders}
-          showsVerticalScrollIndicator={false} // Remove horizontal prop
-          keyExtractor={(item) => item.id.toString()}
-          renderItem={({ item }) => (
-            <View
+        )}
+        {displayedOrders.length === 0 ? (
+          <View
+            style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+          >
+            <Text
               style={{
-                borderWidth: 0.5,
-                width: "100%",
-                borderColor: "#8e8e8e",
-                padding: 10,
-                marginBottom: 10,
-                flexDirection: "column",
+                alignItems: "center",
+                fontWeight: 600,
+                marginTop: 20,
+                fontSize: 20,
+                color: "#000",
               }}
             >
-              <View>
-                <Text style={styles.orderTitle}>Order ID: {item.id}</Text>
-                <Text>Total Amount: {item.total_amount}</Text>
-                <Text>Status: {item.status}</Text>
-                <Text>Date: {item.date}</Text>
-                <Text>Staff: {item.staff_name}</Text>
-                <Text>Time Slot: {item.time_slot_value}</Text>
-              </View>
+              No Orders Available
+            </Text>
+          </View>
+        ) : (
+          <FlatList
+            data={displayedOrders}
+            showsVerticalScrollIndicator={false} // Remove horizontal prop
+            keyExtractor={(item) => item.id.toString()}
+            renderItem={({ item }) => (
               <View
                 style={{
-                  flexDirection: "row",
-                  justifyContent: "center",
-                  marginTop: 10,
+                  borderWidth: 0.5,
+                  width: "100%",
+                  borderColor: "#8e8e8e",
+                  padding: 10,
+                  marginBottom: 10,
+                  flexDirection: "column",
                 }}
               >
-                {item.status === "Pending" && (
+                <View>
+                  <Text style={styles.orderTitle}>Order ID: {item.id}</Text>
+                  <Text>Total Amount: {item.total_amount}</Text>
+                  <Text>Status: {item.status}</Text>
+                  <Text>Date: {item.date}</Text>
+                  <Text>Staff: {item.staff_name}</Text>
+                  <Text>Time Slot: {item.time_slot_value}</Text>
+                </View>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "center",
+                    marginTop: 10,
+                  }}
+                >
+                  {item.status === "Pending" && (
+                    <TouchableOpacity
+                      style={styles.buttons}
+                      onPress={() => {
+                        navigation.navigate("RescheduleOrder", {
+                          order_id: item.id,
+                        });
+                      }}
+                    >
+                      <Text>Reschedule</Text>
+                    </TouchableOpacity>
+                  )}
+                  {item.status === "Complete" && (
+                    <TouchableOpacity
+                      style={styles.buttons}
+                      onPress={() => {
+                        reOrder(item);
+                      }}
+                    >
+                      <Text>ReOrder</Text>
+                    </TouchableOpacity>
+                  )}
                   <TouchableOpacity
                     style={styles.buttons}
                     onPress={() => {
-                      navigation.navigate("RescheduleOrder", {
-                        order_id: item.id,
-                      });
+                      handleOrderDetail(item);
                     }}
                   >
-                    <Text>Reschedule</Text>
+                    <Text>View</Text>
                   </TouchableOpacity>
-                )}
-                {item.status === "Complete" && (
                   <TouchableOpacity
                     style={styles.buttons}
                     onPress={() => {
-                      reOrder(item);
+                      handleDownloadPDF(item.id);
                     }}
                   >
-                    <Text>ReOrder</Text>
+                    <Text>PDF Download</Text>
                   </TouchableOpacity>
-                )}
-                <TouchableOpacity
-                  style={styles.buttons}
-                  onPress={() => {
-                    handleOrderDetail(item);
-                  }}
-                >
-                  <Text>View</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={styles.buttons}
-                  onPress={() => {
-                    handleDownloadPDF(item.id);
-                  }}
-                >
-                  <Text>PDF Download</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={styles.buttons}
-                  onPress={() => {
-                    handleShare(item);
-                  }}
-                >
-                  <Text>Share</Text>
-                </TouchableOpacity>
+                  <TouchableOpacity
+                    style={styles.buttons}
+                    onPress={() => {
+                      handleShare(item);
+                    }}
+                  >
+                    <Text>Share</Text>
+                  </TouchableOpacity>
+                </View>
               </View>
-            </View>
-          )}
+            )}
+          />
+        )}
+        <OrderDetailModal
+          visible={orderDetailModalVisible}
+          order={selectedOrder}
+          onClose={closeModal}
         />
-      )}
-      <OrderDetailModal
-        visible={orderDetailModalVisible}
-        order={selectedOrder}
-        onClose={closeModal}
-      />
+      </View>
+      <View
+        style={{
+          width: "100%",
+          height: 50,
+          position: "absolute",
+          top: 0,
+          flexDirection: "row",
+          alignItems: "center",
+          marginTop: 13,
+        }}
+      >
+        <TouchableOpacity
+          style={{
+            width: "45%",
+            height: "95%",
+            justifyContent: "center",
+            alignItems: "center",
+            borderColor: "#8e8e8e",
+            margin: 13,
+            borderRadius: 10,
+            backgroundColor: selectedTab == 0 ? "#fd245f" : "#ff5d89",
+          }}
+          onPress={() => {
+            handleTabPress(0);
+          }}
+        >
+          <Text style={{ color: "#fff" }}>All</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={{
+            width: "45%",
+            height: "95%",
+            justifyContent: "center",
+            alignItems: "center",
+            borderColor: "#8e8e8e",
+            backgroundColor:  selectedTab == 1 ? "#fd245f" : "#ff5d89",
+            borderRadius: 10,
+          }}
+          onPress={() => {
+            handleTabPress(1);
+          }}
+        >
+          <Text style={{ color: "#fff" }}>Recent</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
