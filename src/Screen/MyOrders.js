@@ -40,13 +40,20 @@ export default function MyOrders() {
       getOrders();
       setTimeout(() => {
         setMsg("");
-      }, 3000);
+      }, 4000);
     }
   }, [route.params]);
 
   useEffect(() => {
     getOrders();
   }, []);
+
+  const handleSaveReview = () => {
+    setMsg("Review saved successfully."); 
+    setTimeout(() => {
+      setMsg("");
+    }, 4000);
+  };
 
   const getOrders = async () => {
     const user = await AsyncStorage.getItem("@user_id");
@@ -304,6 +311,7 @@ Total Order Charges: AED ${order.total_amount}
           visible={writeReviewModalVisible}
           order_id={selectedOrderId}
           onClose={closeModal}
+          onSaveReview={handleSaveReview}
         />
       </View>
       <View

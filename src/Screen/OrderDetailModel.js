@@ -27,7 +27,7 @@ const OrderServiceItem = ({ service }) => (
         {service.discount ? (
           <>
             <Text style={styles.strikeThroughText}>{service.price}</Text>
-            <Text style={styles.discountText}>{" "+service.discount}</Text>
+            <Text style={styles.discountText}>{" " + service.discount}</Text>
           </>
         ) : (
           service.price
@@ -124,11 +124,12 @@ export default function OrderDetailModel({ visible, order, onClose }) {
 const styles = StyleSheet.create({
   scrollViewContainer: {
     flex: 1,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    marginTop: 50,
   },
   modalContainer: {
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
   },
   modalContent: {
     backgroundColor: "#fdedee",

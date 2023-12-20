@@ -7,10 +7,14 @@ import {
   ScrollView,
   TextInput,
   TouchableOpacity,
+  Image,
 } from "react-native";
 import CommonButton from "../Common/CommonButton";
 import { writeReviewUrl } from "../Config/Api";
 import axios from "axios";
+import * as ImagePicker from "expo-image-picker";
+import * as VideoPicker from "expo-image-picker";
+import { Video } from "expo-av";
 
 const CustomStarRating = ({ rating, onStarPress }) => {
   const renderStar = (position) => {
@@ -30,12 +34,21 @@ const CustomStarRating = ({ rating, onStarPress }) => {
   );
 };
 
-export default function WriteReviewModal({ visible, order_id, onClose }) {
+export default function WriteReviewModal({
+  visible,
+  order_id,
+  onClose,
+  onSaveReview,
+}) {
   const [rating, setRating] = useState(0);
   const [userName, setUserName] = useState("");
   const [reviewContent, setReviewContent] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [images, setImages] = useState([]);
+  const [video, setVideo] = useState(null);
+  const [isImagePickerOpen, setIsImagePickerOpen] = useState(false);
+  const [isVideoPickerOpen, setIsVideoPickerOpen] = useState(false);
 
   const handleStarPress = (selectedRating) => {
     setRating(selectedRating);
@@ -45,33 +58,125 @@ export default function WriteReviewModal({ visible, order_id, onClose }) {
     setRating(0);
     setUserName("");
     setReviewContent("");
+    setImages([]);
     onClose();
   };
 
+  const selectImage = async () => {
+    setIsImagePickerOpen(true);
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+      multiple: true,
+    });
+    setIsImagePickerOpen(false);
+    if (!result.canceled) {
+      const selectedImages = result.assets.filter(
+        (asset) =>
+          typeof asset.uri === "string" &&
+          (asset.uri.endsWith("jpeg") ||
+            asset.uri.endsWith("png") ||
+            asset.uri.endsWith("jpg"))
+      );
+
+      if (selectedImages.length > 0) {
+        setImages([...images, ...selectedImages]);
+        setError("");
+      } else {
+        setError("Please select valid image files.");
+      }
+    }
+  };
+
+  const selectVideo = async () => {
+    setIsVideoPickerOpen(true);
+    let result = await VideoPicker.launchImageLibraryAsync({
+      mediaTypes: VideoPicker.MediaTypeOptions.Videos,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+    setIsVideoPickerOpen(false);
+    if (!result.canceled) {
+      if (
+        typeof result.assets[0].uri === "string" &&
+        result.assets[0].uri.endsWith("mp4")
+      ) {
+        setVideo(result);
+        setError("");
+      } else {
+        setError("Please select a valid video file.");
+      }
+    }
+  };
+
+  const removeImage = (index) => {
+    const updatedImages = [...images];
+    updatedImages.splice(index, 1);
+    setImages(updatedImages);
+  };
+
+  const removeVideo = () => {
+    setVideo(null);
+  };
   const handleSaveReview = async () => {
     setLoading(true);
     setError("");
 
-    if (userName.trim() !== "" && reviewContent.trim() !== "" && rating !== 0) {
+    if (
+      userName.trim() !== "" &&
+      reviewContent.trim() !== "" &&
+      rating !== 0 &&
+      order_id !== ""
+    ) {
       try {
-        const response = await axios.post(writeReviewUrl, {
-          user_name: userName,
-          rating: rating,
-          content: reviewContent,
-          order_id: order_id,
+        const formData = new FormData();
+        formData.append("user_name", userName);
+        formData.append("rating", rating);
+        formData.append("content", reviewContent);
+        formData.append("order_id", order_id);
+
+        images.forEach((image, index) => {
+          formData.append(`image[]`, {
+            uri: image.uri,
+            type: "image/jpeg",
+            name: `image_${index + 1}.jpg`,
+          });
         });
+
+        if (video) {
+          formData.append("review_video", {
+            uri: video.assets[0].uri,
+            type: "video/mp4",
+            name: "video.mp4",
+          });
+        }
+
+        const response = await axios.post(writeReviewUrl, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
+
         if (response.status === 200) {
-          console.log(response.data.msg);
           setLoading(false);
+          onSaveReview();
           handleModalClose();
         } else {
           setError("Please try again.");
           setLoading(false);
         }
-      } catch (error) {}
+      } catch (error) {
+        console.error("Error:", error);
+        setError("Please try again.");
+        setLoading(false);
+      }
     } else {
       setError("Fill up all fields.");
     }
+
     setLoading(false);
   };
 
@@ -98,6 +203,68 @@ export default function WriteReviewModal({ visible, order_id, onClose }) {
             onChangeText={(text) => setReviewContent(text)}
             multiline
           />
+          {images.length > 0 ? (
+            <>
+              {images.map((img, index) => (
+                <View key={index} style={styles.imageContainer}>
+                  <Image
+                    source={{ uri: img.uri }}
+                    style={styles.selectedImage}
+                  />
+                  <TouchableOpacity
+                    style={styles.removeButton}
+                    onPress={() => removeImage(index)}
+                  >
+                    <Text style={styles.removeButtonText}>Remove</Text>
+                  </TouchableOpacity>
+                </View>
+              ))}
+              <TouchableOpacity
+                style={styles.button}
+                onPress={selectImage}
+                disabled={isImagePickerOpen}
+              >
+                <Text style={styles.buttonText}>Add More Images</Text>
+              </TouchableOpacity>
+            </>
+          ) : (
+            <TouchableOpacity
+              style={styles.button}
+              onPress={selectImage}
+              disabled={isImagePickerOpen}
+            >
+              <Text style={styles.buttonText}>Choose Image</Text>
+            </TouchableOpacity>
+          )}
+
+          {video && (
+            <View style={styles.videoContainer}>
+              <Video
+                source={{ uri: video.assets["0"].uri }}
+                rate={1.0}
+                volume={1.0}
+                isMuted={false}
+                resizeMode="cover"
+                shouldPlay={false}
+                isLooping
+                style={styles.selectedVideo}
+              />
+              <TouchableOpacity
+                style={styles.removeButton}
+                onPress={() => removeVideo()}
+              >
+                <Text style={styles.removeButtonText}>Remove</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+
+          <TouchableOpacity
+            style={styles.button}
+            onPress={selectVideo}
+            disabled={isVideoPickerOpen}
+          >
+            <Text style={styles.buttonText}>Choose Video</Text>
+          </TouchableOpacity>
 
           <View style={styles.ratingContainer}>
             <CustomStarRating rating={rating} onStarPress={handleStarPress} />
@@ -108,8 +275,11 @@ export default function WriteReviewModal({ visible, order_id, onClose }) {
             onPress={() => {
               handleSaveReview();
             }}
+            disabled={loading}
           >
-            <Text style={styles.buttonText}>{loading ? "Submitting..." : "Submit"}</Text>
+            <Text style={styles.buttonText}>
+              {loading ? "Submitting..." : "Submit"}
+            </Text>
           </TouchableOpacity>
 
           <CommonButton
@@ -127,12 +297,12 @@ export default function WriteReviewModal({ visible, order_id, onClose }) {
 const styles = StyleSheet.create({
   scrollViewContainer: {
     flex: 1,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    marginTop: 50,
   },
   modalContainer: {
-    flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
   },
   modalContent: {
     backgroundColor: "#fdedee",
@@ -185,5 +355,36 @@ const styles = StyleSheet.create({
   },
   filledStar: {
     color: "#ff6566",
+  },
+  selectedImage: {
+    width: 100,
+    height: 100,
+    borderRadius: 5,
+    margin: 10,
+  },
+  selectedVideo: {
+    width: "95%",
+    height: 200,
+    borderRadius: 7,
+    margin: 10,
+  },
+  imageContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  removeButton: {
+    marginLeft: 10,
+    backgroundColor: "#ff6566",
+    padding: 5,
+    borderRadius: 5,
+  },
+  removeButtonText: {
+    color: "#fff",
+  },
+  videoContainer: {
+    flexDirection: "column",
+    alignItems: "flex-end",
+    marginBottom: 10,
   },
 });
