@@ -5,6 +5,8 @@ import {
   Image,
   StyleSheet,
   TouchableOpacity,
+  useWindowDimensions,
+  Share,
 } from "react-native";
 import React from "react";
 import Footer from "../Common/Footer";
@@ -67,7 +69,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   wishButton: {
-    backgroundColor: "#ff0437",
+    backgroundColor: "#fd245f",
     padding: 10,
     borderRadius: 5,
     alignItems: "center",
@@ -76,6 +78,23 @@ const styles = StyleSheet.create({
   description: {
     fontSize: 16,
     lineHeight: 24,
+  },
+  faqHeader: {
+    backgroundColor: "#fd245f",
+    padding: 10,
+    borderRadius: 5,
+    marginBottom: 5,
+  },
+  faqQuestion: {
+    color: "#FFF",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  faqBody: {
+    padding: 10,
+    backgroundColor: "#fdedee",
+    borderRadius: 5,
+    marginBottom: 5,
   },
 });
 export default function Details() {
@@ -86,6 +105,30 @@ export default function Details() {
   const [description, setDescription] = useState("Loading...");
   const cartData = useSelector((state) => state.cart);
   const wishlistData = useSelector((state) => state.wishlist);
+  const [faqs, setFaqs] = useState([]);
+  const [openFaq, setOpenFaq] = useState(null);
+  const windowDimensions = useWindowDimensions();
+  const handleShare = async () => {
+    try {
+      const discountedPrice = service.discount
+      ? service.discount
+      : service.price;
+
+      const message = `
+**Service:** ${service.name}
+**Price:** AED ${discountedPrice} ${service.discount ? '(Discounted)' : ''}
+**Duration:** ${service.duration}
+**URL:** ${BaseUrl + "serviceDetail/" + service.id}
+`;
+
+      await Share.share({
+        message,
+      });
+      
+    } catch (error) {
+      console.error("Error sharing:", error.message);
+    }
+  };
   const toastOptions = {
     type: "info",
     backgroundColor: "#fff",
@@ -145,6 +188,7 @@ export default function Details() {
     if (response.status === 200) {
       let data = response.data;
       setDescription(data.services.description);
+      setFaqs(data.faqs);
     }
 
     setLoading(false);
@@ -181,7 +225,9 @@ export default function Details() {
               {service.discount ? (
                 <>
                   <Text style={styles.originalPrice}>{service.price}</Text>
-                  <Text style={styles.discountedPrice}>{" "+service.discount}</Text>
+                  <Text style={styles.discountedPrice}>
+                    {" " + service.discount}
+                  </Text>
                 </>
               ) : (
                 service.price
@@ -213,12 +259,53 @@ export default function Details() {
             >
               <Text style={styles.addToCartButtonText}>Save to Wishlist</Text>
             </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.addToCartButton}
+              onPress={handleShare}
+            >
+              <Text style={styles.addToCartButtonText}>Share</Text>
+            </TouchableOpacity>
             <View style={{ alignItems: "center" }}>
               <StarRating rating={service.rating} size={17} />
             </View>
 
-            <View style={{ marginBottom: 80 }}>
-              <HTML source={{ html: description }} />
+            <View>
+              <HTML
+                source={{ html: description }}
+                contentWidth={windowDimensions.width}
+              />
+            </View>
+            <View style={{ marginBottom: 100 }}>
+              <Text
+                style={{
+                  fontSize: 20,
+                  fontWeight: "bold",
+                  marginBottom: 10,
+                  alignSelf: "center",
+                }}
+              >
+                Frequently Asked Questions
+              </Text>
+              {faqs.map((faq) => (
+                <View key={faq.id}>
+                  <TouchableOpacity
+                    style={styles.faqHeader}
+                    onPress={() =>
+                      setOpenFaq(openFaq === faq.id ? null : faq.id)
+                    }
+                  >
+                    <Text style={styles.faqQuestion}>{faq.question}</Text>
+                  </TouchableOpacity>
+                  {openFaq === faq.id && (
+                    <View key={`${faq.id}-answer`} style={styles.faqBody}>
+                      <HTML
+                        source={{ html: faq.answer }}
+                        contentWidth={windowDimensions.width}
+                      />
+                    </View>
+                  )}
+                </View>
+              ))}
             </View>
           </ScrollView>
         </>

@@ -41,7 +41,7 @@ export default function Header({ title, onPress, isProfile }) {
           textAlign: "center",
         }}
       >
-        Best In the Town Services
+        Live your best life
       </Text>
       )}
     </View>

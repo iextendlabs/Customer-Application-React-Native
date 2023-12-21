@@ -135,7 +135,7 @@ export default function Main() {
   );
   return (
     <View style={{ flex: 1, backgroundColor: "#FFCACC" }}>
-      <Header title={"LipSlay Home Saloon"} />
+      <Header title={"LipSlay Home Services"} />
       {error ? (
         <View
           style={{ flex: 1, justifyContent: "center", alignItems: "center" }}

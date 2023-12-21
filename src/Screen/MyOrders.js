@@ -132,19 +132,10 @@ Transport Charges: AED ${order.order_total.transport_charges}
 Total Order Charges: AED ${order.total_amount}
 `;
 
-      const result = await Share.share({
+      await Share.share({
         message,
       });
 
-      if (result.action === Share.sharedAction) {
-        if (result.activityType) {
-          // Shared with activity type of result.activityType
-        } else {
-          // Shared
-        }
-      } else if (result.action === Share.dismissedAction) {
-        // Dismissed
-      }
     } catch (error) {
       console.error("Error sharing:", error.message);
     }
