@@ -697,7 +697,7 @@ export default function Booking() {
                                   {renderSlot()}
                                   {selectedSlot && (
                                     <>
-                                      <View style={{ marginBottom: 30 }}>
+                                      <View>
                                         <CommonButton
                                           title={
                                             cartData.length > 0

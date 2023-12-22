@@ -252,7 +252,7 @@ export default function Main() {
           >
             Our Team
           </Text>
-          <View style={{ marginBottom: 70 }}>
+          <View>
             {staffs.length > 0 && (
               <FlatList
                 data={staffs}

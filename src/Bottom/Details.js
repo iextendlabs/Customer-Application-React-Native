@@ -111,12 +111,12 @@ export default function Details() {
   const handleShare = async () => {
     try {
       const discountedPrice = service.discount
-      ? service.discount
-      : service.price;
+        ? service.discount
+        : service.price;
 
       const message = `
 **Service:** ${service.name}
-**Price:** AED ${discountedPrice} ${service.discount ? '(Discounted)' : ''}
+**Price:** AED ${discountedPrice} ${service.discount ? "(Discounted)" : ""}
 **Duration:** ${service.duration}
 **URL:** ${BaseUrl + "serviceDetail/" + service.id}
 `;
@@ -124,7 +124,6 @@ export default function Details() {
       await Share.share({
         message,
       });
-      
     } catch (error) {
       console.error("Error sharing:", error.message);
     }
@@ -275,38 +274,40 @@ export default function Details() {
                 contentWidth={windowDimensions.width}
               />
             </View>
-            <View style={{ marginBottom: 100 }}>
-              <Text
-                style={{
-                  fontSize: 20,
-                  fontWeight: "bold",
-                  marginBottom: 10,
-                  alignSelf: "center",
-                }}
-              >
-                Frequently Asked Questions
-              </Text>
-              {faqs.map((faq) => (
-                <View key={faq.id}>
-                  <TouchableOpacity
-                    style={styles.faqHeader}
-                    onPress={() =>
-                      setOpenFaq(openFaq === faq.id ? null : faq.id)
-                    }
-                  >
-                    <Text style={styles.faqQuestion}>{faq.question}</Text>
-                  </TouchableOpacity>
-                  {openFaq === faq.id && (
-                    <View key={`${faq.id}-answer`} style={styles.faqBody}>
-                      <HTML
-                        source={{ html: faq.answer }}
-                        contentWidth={windowDimensions.width}
-                      />
-                    </View>
-                  )}
-                </View>
-              ))}
-            </View>
+            {faqs.length > 0 && (
+              <View>
+                <Text
+                  style={{
+                    fontSize: 20,
+                    fontWeight: "bold",
+                    marginBottom: 10,
+                    alignSelf: "center",
+                  }}
+                >
+                  Frequently Asked Questions
+                </Text>
+                {faqs.map((faq) => (
+                  <View key={faq.id}>
+                    <TouchableOpacity
+                      style={styles.faqHeader}
+                      onPress={() =>
+                        setOpenFaq(openFaq === faq.id ? null : faq.id)
+                      }
+                    >
+                      <Text style={styles.faqQuestion}>{faq.question}</Text>
+                    </TouchableOpacity>
+                    {openFaq === faq.id && (
+                      <View key={`${faq.id}-answer`} style={styles.faqBody}>
+                        <HTML
+                          source={{ html: faq.answer }}
+                          contentWidth={windowDimensions.width}
+                        />
+                      </View>
+                    )}
+                  </View>
+                ))}
+              </View>
+            )}
           </ScrollView>
         </>
       )}
