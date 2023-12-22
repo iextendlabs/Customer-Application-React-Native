@@ -30,19 +30,12 @@ export default function Footer() {
   const openWhatsAppMessage = async () => {
     try {
       const whatsappNumber = await AsyncStorage.getItem("@whatsappNumber");
-      const whatsappUrl = `whatsapp://send?phone=${whatsappNumber}`;
-
-      Linking.canOpenURL(whatsappUrl)
-        .then((supported) => {
-          if (!supported) {
-            console.log("WhatsApp is not installed on the device");
-          } else {
-            return Linking.openURL(whatsappUrl);
-          }
-        })
-        .catch((err) => console.error("An error occurred", err));
-    } catch {}
+      Linking.openURL(`https://wa.me/${whatsappNumber}`);
+    } catch (error) {
+      console.error("Error opening WhatsApp:", error);
+    }
   };
+
   return (
     <View style={{ flex: 1 }}>
       <View

@@ -1,4 +1,4 @@
-import { View, Text, Image, ScrollView } from "react-native";
+import { View, Text, Image, ScrollView, TouchableOpacity } from "react-native";
 import React, { useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import CustomTextInput from "../Common/CustomTextInput";
@@ -17,8 +17,8 @@ const Login = () => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
   const route = useRoute();
-  const [email, setEmail] = useState("admin@gmail.com");
-  const [password, setPassword] = useState("test");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [badEmail, setBadEmail] = useState(false);
   const [badPassword, setBadPassword] = useState(false);
   const [error, setError] = useState("");
@@ -44,7 +44,7 @@ const Login = () => {
       };
     }
 
-    return () => {};
+    return () => { };
   }, [navigation]);
 
   const handleLogin = async () => {
@@ -220,6 +220,22 @@ const Login = () => {
         >
           Create New Account?
         </Text>
+        <TouchableOpacity
+          style={{
+            width: 200,
+            height: 50,
+            marginTop: 20,
+            justifyContent: "center",
+            alignSelf: "center",
+            borderWidth: 0.5,
+            borderColor: "#8e8e8e",
+          }}
+          onPress={() => {
+            navigation.navigate('Main');
+          }}
+        >
+          <Text style={{ alignSelf: "center" }}>Go To Home</Text>
+        </TouchableOpacity>
       </View>
     </ScrollView>
   );

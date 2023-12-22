@@ -229,7 +229,7 @@ export default function Address() {
           label={"City"}
         />
         <Text style={{ width: "85%", alignSelf: "center", padding: 10 }}>
-          Area:
+          Zone:
         </Text>
         <View
           style={{

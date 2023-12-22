@@ -11,7 +11,7 @@ import {
 import React from "react";
 import Footer from "../Common/Footer";
 import Header from "../Common/Header";
-import { useRoute } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import { useEffect, useState } from "react";
 import { BaseUrl, getServiceUrl } from "../Config/Api";
 import { addItemToCart, addItemToWishlist } from "../redux/actions/Actions";
@@ -20,7 +20,6 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import HTML from "react-native-render-html";
 import StarRating from "../Common/StarRating";
-import { showMessage } from "react-native-flash-message";
 
 const styles = StyleSheet.create({
   container: {
@@ -98,6 +97,7 @@ const styles = StyleSheet.create({
   },
 });
 export default function Details() {
+  const navigation = useNavigation();
   const dispatch = useDispatch();
   const route = useRoute();
   const [loading, setLoading] = useState(false);
@@ -108,6 +108,8 @@ export default function Details() {
   const [faqs, setFaqs] = useState([]);
   const [openFaq, setOpenFaq] = useState(null);
   const windowDimensions = useWindowDimensions();
+  const [msg, setMsg] = useState(null);
+
   const handleShare = async () => {
     try {
       const discountedPrice = service.discount
@@ -128,13 +130,7 @@ export default function Details() {
       console.error("Error sharing:", error.message);
     }
   };
-  const toastOptions = {
-    type: "info",
-    backgroundColor: "#fff",
-    color: "#000",
-    duration: 1500,
-    margin: 20,
-  };
+
   const saveToAsyncStorage = async (key, data) => {
     try {
       await AsyncStorage.setItem(key, JSON.stringify(data));
@@ -149,16 +145,15 @@ export default function Details() {
     if (!isItemInCart) {
       dispatch(addItemToCart(item));
       saveToAsyncStorage("@cartData", [...cartData, item]);
-      showMessage({
-        message: "Added to Cart.",
-        ...toastOptions,
-      });
+      navigation.navigate("Cart");
+      setMsg("Added to Cart.");
     } else {
-      showMessage({
-        message: "Item is already in the cart.",
-        ...toastOptions,
-      });
+      setMsg("Item is already in the cart.");
     }
+
+    setTimeout(() => {
+      setMsg("");
+    }, 4000);
   };
 
   const onAddToWishList = async (item) => {
@@ -169,16 +164,15 @@ export default function Details() {
     if (!isItemInWishlist) {
       dispatch(addItemToWishlist(item));
       saveToAsyncStorage("@wishlistData", [...wishlistData, item]);
-      showMessage({
-        message: "Added to WisthList.",
-        ...toastOptions,
-      });
+      navigation.navigate("Wishlist");
+      setMsg("Added to WisthList.");
     } else {
-      showMessage({
-        message: "Item is already in the Wishlist.",
-        ...toastOptions,
-      });
+      setMsg("Item is already in the Wishlist.");
     }
+
+    setTimeout(() => {
+      setMsg("");
+    }, 4000);
   };
 
   const getDetails = async (id) => {
@@ -258,6 +252,18 @@ export default function Details() {
             >
               <Text style={styles.addToCartButtonText}>Save to Wishlist</Text>
             </TouchableOpacity>
+            {msg && (
+              <Text
+                style={{
+                  marginLeft: 20,
+                  marginBottom: 20,
+                  fontSize: 18,
+                  color: "green",
+                }}
+              >
+                {msg}
+              </Text>
+            )}
             <TouchableOpacity
               style={styles.addToCartButton}
               onPress={handleShare}

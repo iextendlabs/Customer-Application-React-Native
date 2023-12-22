@@ -130,9 +130,9 @@ export default function Checkout() {
       );
       setOrderTotal(
         getServicesTotal() +
-          parseFloat(booking.selectedStaffCharge) +
-          parseFloat(booking.transportCharges) -
-          couponDiscount
+        parseFloat(booking.selectedStaffCharge) +
+        parseFloat(booking.transportCharges) -
+        couponDiscount
       );
     }
   }, [bookingData]);
@@ -239,9 +239,9 @@ export default function Checkout() {
     setSelectedStaffCharges(staff_charges);
     setOrderTotal(
       servicesTotal +
-        parseFloat(staff_charges) +
-        parseFloat(transportCharges) -
-        couponDiscount
+      parseFloat(staff_charges) +
+      parseFloat(transportCharges) -
+      couponDiscount
     );
   };
 
@@ -322,17 +322,17 @@ export default function Checkout() {
 
             setOrderTotal(
               servicesTotal +
-                parseFloat(selectedStaffCharges) +
-                parseFloat(transportCharges) -
-                discount
+              parseFloat(selectedStaffCharges) +
+              parseFloat(transportCharges) -
+              discount
             );
           } else {
             setCouponId("");
             setCouponDiscount("");
             setOrderTotal(
               servicesTotal +
-                parseFloat(selectedStaffCharges) +
-                parseFloat(transportCharges)
+              parseFloat(selectedStaffCharges) +
+              parseFloat(transportCharges)
             );
           }
           setApplyCouponAffiliate("Your codes Apply Successfully.");
@@ -353,8 +353,8 @@ export default function Checkout() {
             setCouponDiscount("");
             setOrderTotal(
               servicesTotal +
-                parseFloat(selectedStaffCharges) +
-                parseFloat(transportCharges)
+              parseFloat(selectedStaffCharges) +
+              parseFloat(transportCharges)
             );
             setNotValidCoupon(errors.coupon[0]); // Assuming coupon is an array
           }
@@ -369,8 +369,8 @@ export default function Checkout() {
       } catch (error) {
         setOrderTotal(
           servicesTotal +
-            parseFloat(selectedStaffCharges) +
-            parseFloat(transportCharges)
+          parseFloat(selectedStaffCharges) +
+          parseFloat(transportCharges)
         );
       } finally {
         setLoading(false);
@@ -381,8 +381,8 @@ export default function Checkout() {
       setCouponDiscount("");
       setOrderTotal(
         servicesTotal +
-          parseFloat(selectedStaffCharges) +
-          parseFloat(transportCharges)
+        parseFloat(selectedStaffCharges) +
+        parseFloat(transportCharges)
       );
       console.log(servicesTotal, selectedStaffCharges, transportCharges);
       setNotValidAffiliate("Please Enter Code!");
@@ -427,7 +427,7 @@ export default function Checkout() {
                       {item.price}
                     </Text>
                     <Text style={{ marginRight: 5, color: "#333" }}>
-                      {" "+item.discount}
+                      {" " + item.discount}
                     </Text>
                   </>
                 ) : (
@@ -646,6 +646,55 @@ export default function Checkout() {
               {selectedAddress}
             </Text>
           </View>
+          {selectedAddress && (
+            <>
+              <View
+                style={{
+                  width: "100%",
+                  justifyContent: "space-between",
+                  height: 40,
+                  flexDirection: "row",
+                  alignItems: "center",
+                }}
+              >
+
+                <Text style={{ marginLeft: 10, fontWeight: "800" }}>Selected Zone</Text>
+                <TouchableOpacity
+                  style={{
+                    borderWidth: 0.2,
+                    borderRadius: 4,
+                    padding: 7,
+                    marginRight: 20,
+                    alignSelf: "center",
+                    justifyContent: "center",
+                  }}
+                  onPress={() => {
+                    navigation.navigate("Address");
+                  }}
+                >
+                  <Text>Change</Text>
+                </TouchableOpacity>
+              </View>
+
+              <View
+                style={{
+                  marginLeft: 20,
+                  marginRight: 20,
+                  fontSize: 16,
+                }}
+              >
+                <Text
+                  style={{
+                    marginLeft: 20,
+                    marginRight: 20,
+                    fontSize: 16,
+                  }}
+                >
+                  {selectedArea}
+                </Text>
+              </View>
+            </>
+          )}
         </View>
       ) : (
         <View>
@@ -817,7 +866,7 @@ export default function Checkout() {
                 <View
                   style={{
                     width: "100%",
-                    height: 70,
+                    height: 80,
                     flexDirection: "row",
                     marginTop: 10,
                     justifyContent: "space-between",
@@ -860,7 +909,7 @@ export default function Checkout() {
                 <View
                   style={{
                     width: "100%",
-                    height: 70,
+                    height: 80,
                     flexDirection: "row",
                     marginTop: 10,
                     justifyContent: "space-between",
@@ -1102,6 +1151,22 @@ export default function Checkout() {
                                           handleSave();
                                         }}
                                       />
+                                      <TouchableOpacity
+                                        style={{
+                                          width: 200,
+                                          height: 50,
+                                          marginTop: 20,
+                                          justifyContent: "center",
+                                          alignSelf: "center",
+                                          borderWidth: 0.5,
+                                          borderColor: "#8e8e8e",
+                                        }}
+                                        onPress={() => {
+                                          navigation.navigate('Main');
+                                        }}
+                                      >
+                                        <Text style={{ alignSelf: "center" }}>Go To Home</Text>
+                                      </TouchableOpacity>
                                     </View>
                                   </>
                                 )}

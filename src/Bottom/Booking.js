@@ -332,6 +332,55 @@ export default function Booking() {
               {selectedAddress}
             </Text>
           </View>
+          {selectedAddress && (
+            <>
+              <View
+                style={{
+                  width: "100%",
+                  justifyContent: "space-between",
+                  height: 40,
+                  flexDirection: "row",
+                  alignItems: "center",
+                }}
+              >
+
+                <Text style={{ marginLeft: 10, fontWeight: "800" }}>Selected Zone</Text>
+                <TouchableOpacity
+                  style={{
+                    borderWidth: 0.2,
+                    borderRadius: 4,
+                    padding: 7,
+                    marginRight: 20,
+                    alignSelf: "center",
+                    justifyContent: "center",
+                  }}
+                  onPress={() => {
+                    navigation.navigate("Address");
+                  }}
+                >
+                  <Text>Change</Text>
+                </TouchableOpacity>
+              </View>
+
+              <View
+                style={{
+                  marginLeft: 20,
+                  marginRight: 20,
+                  fontSize: 16,
+                }}
+              >
+                <Text
+                  style={{
+                    marginLeft: 20,
+                    marginRight: 20,
+                    fontSize: 16,
+                  }}
+                >
+                  {selectedArea}
+                </Text>
+              </View>
+            </>
+          )}
         </View>
       ) : (
         <View>
@@ -501,7 +550,7 @@ export default function Booking() {
                 <View
                   style={{
                     width: "100%",
-                    height: 70,
+                    height: 80,
                     flexDirection: "row",
                     marginTop: 10,
                     justifyContent: "space-between",
@@ -547,7 +596,7 @@ export default function Booking() {
                 <View
                   style={{
                     width: "100%",
-                    height: 70,
+                    height: 80,
                     flexDirection: "row",
                     marginTop: 10,
                     justifyContent: "space-between",
@@ -715,8 +764,8 @@ export default function Booking() {
                                               selectedArea: selectedArea,
                                               selectedSlot: selectedSlot,
                                               selectedSlotId: selectedSlotId,
-                                              selectedStaffCharge:selectedStaffCharge,
-                                              transportCharges:transportCharges
+                                              selectedStaffCharge: selectedStaffCharge,
+                                              transportCharges: transportCharges
                                             };
 
                                             dispatch(
@@ -731,6 +780,22 @@ export default function Booking() {
                                             setLoading(false);
                                           }}
                                         />
+                                        <TouchableOpacity
+                                          style={{
+                                            width: 200,
+                                            height: 50,
+                                            marginTop: 20,
+                                            justifyContent: "center",
+                                            alignSelf: "center",
+                                            borderWidth: 0.5,
+                                            borderColor: "#8e8e8e",
+                                          }}
+                                          onPress={() => {
+                                            navigation.navigate('Main');
+                                          }}
+                                        >
+                                          <Text style={{ alignSelf: "center" }}>Go To Home</Text>
+                                        </TouchableOpacity>
                                       </View>
                                     </>
                                   )}
