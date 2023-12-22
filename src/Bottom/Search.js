@@ -73,7 +73,7 @@ export default function Search() {
           isSearch={true}
         />
         {services.length > 0 ? (
-          <View style={{ marginTop: 10 }}>
+          <View style={{ marginTop: 10, marginBottom: 70 }}>
             <FlatList
               data={services}
               showsVerticalScrollIndicator={false}

@@ -126,6 +126,7 @@ export default function Cart() {
                 width: "85%",
                 borderRadius: 10,
                 alignSelf: "center",
+                marginBottom: 80,
               }}
               onPress={() => {
                 checkAuthentication();

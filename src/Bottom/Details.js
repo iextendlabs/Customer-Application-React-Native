@@ -275,7 +275,7 @@ export default function Details() {
               />
             </View>
             {faqs.length > 0 && (
-              <View>
+              <View style={{ marginBottom: 100 }}>
                 <Text
                   style={{
                     fontSize: 20,

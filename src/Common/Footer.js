@@ -44,7 +44,7 @@ export default function Footer() {
     } catch {}
   };
   return (
-    <View style={{ flex: 1, marginTop:80 }}>
+    <View style={{ flex: 1 }}>
       <View
         style={{
           width: "100%",
