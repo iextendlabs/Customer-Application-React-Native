@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   ScrollView,
   Dimensions,
+  TouchableWithoutFeedback
 } from "react-native";
 import axios from "axios";
 import Header from "../Common/Header";
@@ -112,7 +113,7 @@ export default function Main() {
       }}
       onPress={() => {
         navigation.navigate("Search", {
-          category: item,
+          category: item.id,
         });
       }}
     >
@@ -157,26 +158,47 @@ export default function Main() {
                   const x = e.nativeEvent.contentOffset.x;
                   setCurrentIndex(Math.round(x / width));
                 }}
-                renderItem={({ item }) => (
-                  <View
-                    style={{
-                      width: width,
-                      justifyContent: "center",
-                      alignItems: "center",
-                    }}
-                  >
-                    <Image
-                      source={{
-                        uri: BaseUrl + "slider-images/" + item,
-                      }}
+                renderItem={({ item }) => {
+                  const [type, id, filename] = item.split('_');
+
+                  return (
+                    <View
                       style={{
-                        width: "90%",
-                        height: 200,
-                        borderRadius: 10,
+                        width: width,
+                        justifyContent: "center",
+                        alignItems: "center",
                       }}
-                    />
-                  </View>
-                )}
+                    >
+                      <TouchableWithoutFeedback onPress={() => {
+                        console.log(type);
+                        if (type === 'category') {
+                          navigation.navigate("Search", {
+                            category: id,
+                          });
+                        } else if (type === 'service') {
+                          const filteredService = services.find(service => service.id === parseInt(id, 10));
+
+                          if (filteredService) {
+                            navigation.navigate("Details", {
+                              service: filteredService,
+                            });
+                          }
+                        }
+                      }}>
+                        <Image
+                          source={{
+                            uri: BaseUrl + "slider-images/" + filename,
+                          }}
+                          style={{
+                            width: "90%",
+                            height: 200,
+                            borderRadius: 10,
+                          }}
+                        />
+                      </TouchableWithoutFeedback>
+                    </View>
+                  );
+                }}
               />
             )}
             <View
@@ -203,7 +225,6 @@ export default function Main() {
               ))}
             </View>
           </View>
-
           <CommonButton
             title={"Check Booking"}
             bgColor={"#fd245f"}

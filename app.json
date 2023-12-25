@@ -31,10 +31,10 @@
         "INTERNET",
         "ACCESS_WIFI_STATE",
         "CAMERA",
-        "READ_EXTERNAL_STORAGE" ,       
+        "READ_EXTERNAL_STORAGE",
         "WRITE_EXTERNAL_STORAGE",
         "ACCESS_FINE_LOCATION",
-        "ACCESS_COARSE_LOCATION"      
+        "ACCESS_COARSE_LOCATION"
       ],
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
@@ -50,7 +50,7 @@
     "web": {},
     "extra": {
       "eas": {
-        "projectId": "11b2a292-16ba-4160-a92e-45954046a190"
+        "projectId": "04ed7562-d065-454d-9604-a31458f0d1e8"
       }
     }
   }

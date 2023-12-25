@@ -27,8 +27,8 @@ export default function Search() {
 
   useEffect(() => {
     if (route.params && route.params.category) {
-      setCategory(route.params.category.id);
-      getServicesByCategory(route.params.category.id);
+      setCategory(route.params.category);
+      getServicesByCategory(route.params.category);
     }
   }, [route.params?.category]);
   useEffect(() => {
