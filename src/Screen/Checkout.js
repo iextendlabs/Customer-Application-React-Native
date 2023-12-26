@@ -37,6 +37,7 @@ export default function Checkout() {
   );
   const bookingData = useSelector((state) => state.booking);
   const cartDataIds = cartData.map((item) => item.id);
+  const couponData = useSelector((state) => state.coupon);
   const addressData = useSelector((state) => state.address);
   const [selectedAddress, setSelectedAddress] = useState(null);
   const [selectedDate, setSelectedDate] = useState(null);
@@ -82,8 +83,31 @@ export default function Checkout() {
     setServicesTotal(getServicesTotal());
   }, []);
 
+  
   useEffect(() => {
-    // If personalInformationData is available, set values from it
+    if (couponData && couponData.length > 0) {
+      const couponInfo = couponData[0];
+      setCoupon(couponInfo.code);
+      setCouponId(couponInfo.id);
+
+      let discount = 0;
+
+      if (couponInfo.type === "Percentage") {
+        discount = (getServicesTotal() * couponInfo.discount) / 100;
+      } else {
+        discount = couponInfo.discount; // Fixed variable name from $discount to discount
+      }
+      setCouponDiscount(discount);
+
+      setOrderTotal(
+        servicesTotal +
+        parseFloat(selectedStaffCharges) +
+        parseFloat(transportCharges) -
+        discount
+      );
+    }
+  }, [couponData]);
+  useEffect(() => {
     if (personalInformationData && personalInformationData.length > 0) {
       const info = personalInformationData[0];
       setName(info.name || null);
@@ -95,7 +119,6 @@ export default function Checkout() {
   }, [personalInformationData]);
 
   useEffect(() => {
-    // If personalInformationData is available, set values from it
     if (addressData && addressData.length > 0) {
       selectAddress(addressData[0]);
     }

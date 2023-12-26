@@ -183,7 +183,7 @@ export default function Address() {
         <View>
           <CommonButton
             title={"Use Current Location"}
-            bgColor={"#FF000080"}
+            bgColor={"#fd245f"}
             textColor={"#fff"}
             onPress={() => reverseGeocode()}
           />

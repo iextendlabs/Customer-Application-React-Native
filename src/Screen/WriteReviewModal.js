@@ -284,7 +284,7 @@ export default function WriteReviewModal({
 
           <CommonButton
             title={"Close"}
-            bgColor={"#ff6566"}
+            bgColor={"#fd245f"}
             textColor={"#fff"}
             onPress={handleModalClose}
           />
@@ -334,7 +334,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   button: {
-    backgroundColor: "#ff6566",
+    backgroundColor: "#fd245f",
     padding: 10,
     borderRadius: 5,
     marginBottom: 10,
@@ -354,7 +354,7 @@ const styles = StyleSheet.create({
     marginRight: 5,
   },
   filledStar: {
-    color: "#ff6566",
+    color: "#fd245f",
   },
   selectedImage: {
     width: 100,
@@ -375,7 +375,7 @@ const styles = StyleSheet.create({
   },
   removeButton: {
     marginLeft: 10,
-    backgroundColor: "#ff6566",
+    backgroundColor: "#fd245f",
     padding: 5,
     borderRadius: 5,
   },

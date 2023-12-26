@@ -34,6 +34,7 @@ export default function Profile() {
       dispatch(clearAddress());
       dispatch(clearPersonalInformation());
       await AsyncStorage.removeItem("@personalInformation");
+      await AsyncStorage.removeItem("@couponData");
       await AsyncStorage.removeItem("@addressData");
       navigation.reset({
         index: 0,
@@ -106,6 +107,21 @@ export default function Profile() {
         }}
       >
         <Text>My Bookings</Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={{
+          width: "90%",
+          alignSelf: "center",
+          height: 50,
+          borderBottomWidth: 0.3,
+          borderBottomColor: "#8e8e8e",
+          justifyContent: "center",
+        }}
+        onPress={() => {
+          navigation.navigate("MyVoucher");
+        }}
+      >
+        <Text>My Voucher</Text>
       </TouchableOpacity>
       <TouchableOpacity
         onPress={() => {

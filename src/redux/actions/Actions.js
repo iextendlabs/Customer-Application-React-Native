@@ -12,12 +12,18 @@ import {
   REMOVE_FROM_CART,
   REMOVE_FROM_WISHLIST,
   UPDATE_BOOKING,
+  UPDATE_COUPON,
   UPDATE_SERVICES,
   UPDATE_ZONE
 } from "../ActionTypes";
 
 export const updateServices = (data) => ({
   type: UPDATE_SERVICES,
+  payload: data,
+});
+
+export const updateCoupon = (data) => ({
+  type: UPDATE_COUPON,
   payload: data,
 });
 

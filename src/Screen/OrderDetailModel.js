@@ -111,7 +111,7 @@ export default function OrderDetailModel({ visible, order, onClose }) {
           </View>
           <CommonButton
             title={"Close"}
-            bgColor={"#ff6566"}
+            bgColor={"#fd245f"}
             textColor={"#fff"}
             onPress={handleModalClose}
           />

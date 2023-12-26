@@ -216,7 +216,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   selectedGender: {
-    backgroundColor: "#ADD8E6",
+    backgroundColor: "#ff5d89",
     borderRadius: 5,
     padding: 5,
   },

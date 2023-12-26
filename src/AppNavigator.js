@@ -11,6 +11,7 @@ import Search from "./Bottom/Search";
 import Wishlist from "./Bottom/Wishlist";
 import Address from "./Screen/Address";
 import Checkout from "./Screen/Checkout";
+import MyVoucher from "./Screen/MyVoucher";
 import PersonalInformation from "./Screen/PersonalInformation";
 import OrderSuccess from "./Screen/OrderSuccess";
 import MyOrders from "./Screen/MyOrders";
@@ -23,6 +24,7 @@ import {
   addItemToWishlist,
   addAddress,
   addPersonalInformation,
+  updateCoupon,
 } from "./redux/actions/Actions";
 import Details from "./Bottom/Details";
 import { ImageBackground } from "react-native";
@@ -75,6 +77,14 @@ export default function AppNavigator() {
       const addressData = JSON.parse(addressDataJson);
       if (addressData) {
         dispatch(addAddress(addressData));
+      }
+
+      const couponDataJson = await AsyncStorage.getItem(
+        "@couponData"
+      );
+      const couponData = JSON.parse(couponDataJson);
+      if (couponData) {
+        dispatch(updateCoupon(couponData));
       }
     } catch (error) {
       console.error("Error updating Redux state:", error);
@@ -180,6 +190,11 @@ export default function AppNavigator() {
           options={{ title: "Our Team" }}
           name="Staff"
           component={Staff}
+        />
+        <Stack.Screen
+          options={{ title: "My Voucher" }}
+          name="MyVoucher"
+          component={MyVoucher}
         />
       </Stack.Navigator>
     </NavigationContainer>
