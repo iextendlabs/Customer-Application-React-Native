@@ -7,6 +7,7 @@ import {
   CLEAR_CART,
   CLEAR_PERSONAL_INFORMATION,
   CLEAR_WISHLIST,
+  ClEAR_COUPON,
   DELETE_ADDRESS,
   DELETE_PERSONAL_INFORMATION,
   REMOVE_FROM_CART,
@@ -25,6 +26,10 @@ export const updateServices = (data) => ({
 export const updateCoupon = (data) => ({
   type: UPDATE_COUPON,
   payload: data,
+});
+
+export const clearCoupon = () => ({
+  type: ClEAR_COUPON
 });
 
 export const updateBooking = (data) => ({

@@ -22,7 +22,7 @@ import { Calendar } from "react-native-calendars";
 import axios from "axios";
 import { Picker } from "@react-native-picker/picker";
 import CommonButton from "../Common/CommonButton";
-import { clearCart } from "../redux/actions/Actions";
+import { clearCart, clearCoupon } from "../redux/actions/Actions";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Splash from "../Screen/Splash";
 import StarRating from "../Common/StarRating";
@@ -83,28 +83,11 @@ export default function Checkout() {
     setServicesTotal(getServicesTotal());
   }, []);
 
-  
+
   useEffect(() => {
     if (couponData && couponData.length > 0) {
       const couponInfo = couponData[0];
-      setCoupon(couponInfo.code);
-      setCouponId(couponInfo.id);
-
-      let discount = 0;
-
-      if (couponInfo.type === "Percentage") {
-        discount = (getServicesTotal() * couponInfo.discount) / 100;
-      } else {
-        discount = couponInfo.discount; // Fixed variable name from $discount to discount
-      }
-      setCouponDiscount(discount);
-
-      setOrderTotal(
-        servicesTotal +
-        parseFloat(selectedStaffCharges) +
-        parseFloat(transportCharges) -
-        discount
-      );
+      applyCode(couponInfo.code);
     }
   }, [couponData]);
   useEffect(() => {
@@ -315,7 +298,7 @@ export default function Checkout() {
     setLoading(false);
   };
 
-  const applyCode = async () => {
+  const applyCode = async (coupon=null , affiliate=null) => {
     if (coupon !== "" || affiliate !== "") {
       setLoading(true);
       try {
@@ -379,15 +362,21 @@ export default function Checkout() {
               parseFloat(selectedStaffCharges) +
               parseFloat(transportCharges)
             );
-            setNotValidCoupon(errors.coupon[0]); // Assuming coupon is an array
+            if (couponData && couponData.length > 0) {
+              dispatch(clearCoupon());
+              await AsyncStorage.removeItem("@couponData");
+              setNotValidCoupon("Your Selected Voucher is Expired.");
+            }else{
+              setNotValidCoupon(errors.coupon[0]);
+            }
           }
 
           setTimeout(() => {
             setNotValidAffiliate("");
             setNotValidCoupon("");
-          }, 2000);
+          }, 5000);
         } else {
-          setError("Order failed. Please try again.");
+          setError("Code failed. Please try again.");
         }
       } catch (error) {
         setOrderTotal(
@@ -407,10 +396,9 @@ export default function Checkout() {
         parseFloat(selectedStaffCharges) +
         parseFloat(transportCharges)
       );
-      console.log(servicesTotal, selectedStaffCharges, transportCharges);
-      setNotValidAffiliate("Please Enter Code!");
+      setNotValidCoupon("Please Enter Code!");
       setTimeout(() => {
-        setNotValidAffiliate("");
+        setNotValidCoupon("");
       }, 2000);
       setLoading(false);
 
@@ -484,6 +472,11 @@ export default function Checkout() {
             {applyCouponAffiliate}
           </Text>
         )}
+        {notValidCoupon && (
+          <Text style={{ marginTop: 10, marginLeft: 40, color: "red" }}>
+            {notValidCoupon}
+          </Text>
+        )}
         <CustomTextInput
           placeholder={"Enter Coupon Code (optional)"}
           icon={require("../images/voucher.png")}
@@ -493,9 +486,9 @@ export default function Checkout() {
           }}
         />
 
-        {notValidCoupon && (
+        {notValidAffiliate && (
           <Text style={{ marginTop: 10, marginLeft: 40, color: "red" }}>
-            {notValidCoupon}
+            {notValidAffiliate}
           </Text>
         )}
 
@@ -508,18 +501,12 @@ export default function Checkout() {
           }}
         />
 
-        {notValidAffiliate && (
-          <Text style={{ marginTop: 10, marginLeft: 40, color: "red" }}>
-            {notValidAffiliate}
-          </Text>
-        )}
-
         <CommonButton
           title={"Apply"}
           bgColor={"#fd245f"}
           textColor={"#fff"}
           onPress={() => {
-            applyCode();
+            applyCode(coupon,affiliate);
           }}
         />
       </View>

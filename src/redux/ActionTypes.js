@@ -14,3 +14,4 @@ export const UPDATE_SERVICES = 'UPDATE_SERVICES';
 export const UPDATE_ZONE = 'UPDATE_ZONE';
 export const UPDATE_BOOKING = 'UPDATE_BOOKING';
 export const UPDATE_COUPON = 'UPDATE_COUPON';
+export const ClEAR_COUPON = 'ClEAR_COUPON';
