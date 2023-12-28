@@ -87,6 +87,7 @@ export default function Checkout() {
   useEffect(() => {
     if (couponData && couponData.length > 0) {
       const couponInfo = couponData[0];
+      setCoupon(couponInfo.code);
       applyCode(couponInfo.code);
     }
   }, [couponData]);
@@ -345,7 +346,7 @@ export default function Checkout() {
 
           setTimeout(() => {
             setApplyCouponAffiliate("");
-          }, 2000);
+          }, 7000);
         } else if (response.status === 201) {
           const errors = response.data.errors;
 
@@ -374,7 +375,7 @@ export default function Checkout() {
           setTimeout(() => {
             setNotValidAffiliate("");
             setNotValidCoupon("");
-          }, 5000);
+          }, 10000);
         } else {
           setError("Code failed. Please try again.");
         }
@@ -581,7 +582,7 @@ export default function Checkout() {
                 color: "#000",
               }}
             >
-              No Personal Information Saved Yet!
+              To Proccess the Order, Need Contact Information!
             </Text>
             <TouchableOpacity
               style={{
@@ -727,7 +728,7 @@ export default function Checkout() {
                 color: "#000",
               }}
             >
-              No Addresses Saved Yet!
+              No Addresses Given Yet!
             </Text>
             <TouchableOpacity
               style={{

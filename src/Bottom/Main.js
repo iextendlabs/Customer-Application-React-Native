@@ -38,8 +38,15 @@ export default function Main() {
   const flatListRef = useRef(null);
 
   useEffect(() => {
+    // Fetch data effect
     getData();
   }, []);
+  
+  useEffect(() => {
+    const intervalId = setInterval(moveToNextSlide, 1500);
+  
+    return () => clearInterval(intervalId);
+  }, [sliderImages, currentIndex, flatListRef]);
 
   const getData = async () => {
     setLoading(true);
