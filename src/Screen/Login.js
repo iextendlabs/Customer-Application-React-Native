@@ -12,6 +12,7 @@ import Splash from "../Screen/Splash";
 import { useDispatch } from "react-redux";
 import { addPersonalInformation, addAddress } from "../redux/actions/Actions";
 import { BackHandler } from "react-native";
+import messaging from "@react-native-firebase/messaging";
 
 const Login = () => {
   const dispatch = useDispatch();
@@ -23,6 +24,7 @@ const Login = () => {
   const [badPassword, setBadPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [fcmToken, setFcmToken] = useState("");
 
   useEffect(() => {
     if (route.params && route.params.back) {
@@ -47,6 +49,22 @@ const Login = () => {
     return () => { };
   }, [navigation]);
 
+  try {
+
+    const unsubscribeOnTokenRefreshed = messaging().onTokenRefresh((fcmToken) => {
+      // Save the FCM token to your server or user's device storage
+      console.log('FCM Token:', fcmToken);
+    });
+
+    messaging()
+      .getToken()
+      .then(fcmToken => {
+        setFcmToken(fcmToken);
+      });
+  } catch (error) {
+    
+  }
+
   const handleLogin = async () => {
     setError("");
     setLoading(true);
@@ -69,6 +87,7 @@ const Login = () => {
       const response = await axios.post(LoginUrl, {
         username: email,
         password: password,
+        fcmToken: fcmToken,
       });
       const data = response.data;
       if (response.status === 200) {
