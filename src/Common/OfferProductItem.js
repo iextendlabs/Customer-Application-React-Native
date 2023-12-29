@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   ScrollView,
 } from "react-native";
-import React from "react";
+import React, { useState } from "react";
 import { BaseUrl } from "../Config/Api";
 import { useNavigation } from "@react-navigation/native";
 import StarRating from "./StarRating";
@@ -14,18 +14,27 @@ import { useDispatch, useSelector } from "react-redux";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { showMessage } from "react-native-flash-message";
 import { addItemToCart, addItemToWishlist } from "../redux/actions/Actions";
+import MessageModal from "../Screen/MessageModal";
 
 export default function OfferProductItem({ item }) {
   const dispatch = useDispatch();
   const navigation = useNavigation();
   const cartData = useSelector((state) => state.cart);
   const wishlistData = useSelector((state) => state.wishlist);
+  const [messageModalVisible, setMessageModalVisible] = useState(false);
+  const [msg, setMsg] = useState(false);
+
   const toastOptions = {
     type: "info",
     backgroundColor: "#fff",
     color: "#000",
     duration: 1500,
     margin: 20,
+  };
+
+  const handleMessage = (msg) => {
+    setMsg(msg);
+    setMessageModalVisible(true);
   };
 
   const saveToAsyncStorage = async (key, data) => {
@@ -36,12 +45,18 @@ export default function OfferProductItem({ item }) {
     }
   };
 
+  const closeModal = () => {
+    setMessageModalVisible(false);
+  };
+
   const onAddToCart = async (item) => {
     const isItemInCart = cartData.some((cartItem) => cartItem.id === item.id);
 
     if (!isItemInCart) {
       dispatch(addItemToCart(item));
       saveToAsyncStorage("@cartData", [...cartData, item]);
+      handleMessage("Added to Cart.");
+
       showMessage({
         message: "Added to Cart.",
         ...toastOptions,
@@ -150,7 +165,7 @@ export default function OfferProductItem({ item }) {
                 {item.price}
               </Text>
               <Text style={{ marginRight: 5, color: "#333" }}>
-                {" "+item.discount}
+                {" " + item.discount}
               </Text>
             </>
           ) : (
@@ -202,6 +217,11 @@ export default function OfferProductItem({ item }) {
           />
         </TouchableOpacity>
       </View>
+      <MessageModal
+        visible={messageModalVisible}
+        message={msg}
+        onClose={closeModal}
+      />
     </View>
   );
 }

@@ -8,12 +8,14 @@ import {
   CLEAR_PERSONAL_INFORMATION,
   CLEAR_WISHLIST,
   ClEAR_COUPON,
+  ClEAR_NOTIFICATION,
   DELETE_ADDRESS,
   DELETE_PERSONAL_INFORMATION,
   REMOVE_FROM_CART,
   REMOVE_FROM_WISHLIST,
   UPDATE_BOOKING,
   UPDATE_COUPON,
+  UPDATE_NOTIFICATION,
   UPDATE_SERVICES,
   UPDATE_ZONE
 } from "../ActionTypes";
@@ -96,4 +98,13 @@ export const deletePersonalInformation = (index) => ({
 
 export const clearPersonalInformation = () => ({
   type: CLEAR_PERSONAL_INFORMATION
+});
+
+export const updateNotifiaction = (data) => ({
+  type: UPDATE_NOTIFICATION,
+  payload: data,
+});
+
+export const clearNotifiaction = () => ({
+  type: ClEAR_NOTIFICATION
 });

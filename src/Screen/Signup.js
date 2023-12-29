@@ -7,6 +7,7 @@ import { SignupUrl } from "../Config/Api";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Splash from "../Screen/Splash";
+import messaging from "@react-native-firebase/messaging";
 
 const Signup = () => {
   const route = useRoute();
@@ -25,11 +26,29 @@ const Signup = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [termsChecked, setTermsChecked] = useState(false);
+  const [fcmToken, setFcmToken] = useState("");
+
+  try {
+
+    const unsubscribeOnTokenRefreshed = messaging().onTokenRefresh((fcmToken) => {
+      // Save the FCM token to your server or user's device storage
+      console.log('FCM Token:', fcmToken);
+    });
+
+    messaging()
+      .getToken()
+      .then(fcmToken => {
+        setFcmToken(fcmToken);
+      });
+  } catch (error) {
+    
+  }
 
   const isValidEmail = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
   };
+
   const handleSignup = async () => {
     setError("");
     setNotValidAffiliate("");
@@ -87,6 +106,7 @@ const Signup = () => {
         email: email,
         password: password,
         affiliate: affiliate,
+        fcmToken: fcmToken,
       });
 
       if (response.status === 200) {
@@ -125,6 +145,7 @@ const Signup = () => {
     }
     setLoading(false);
   };
+
   if (loading) {
     return Splash();
   }

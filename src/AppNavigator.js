@@ -16,6 +16,7 @@ import PersonalInformation from "./Screen/PersonalInformation";
 import OrderSuccess from "./Screen/OrderSuccess";
 import MyOrders from "./Screen/MyOrders";
 import RescheduleOrder from "./Screen/RescheduleOrder";
+import Notification from "./Screen/Notification";
 const Stack = createStackNavigator();
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useSelector, useDispatch } from "react-redux";
@@ -25,6 +26,7 @@ import {
   addAddress,
   addPersonalInformation,
   updateCoupon,
+  updateNotifiaction,
 } from "./redux/actions/Actions";
 import Details from "./Bottom/Details";
 import { ImageBackground } from "react-native";
@@ -85,6 +87,14 @@ export default function AppNavigator() {
       const couponData = JSON.parse(couponDataJson);
       if (couponData) {
         dispatch(updateCoupon(couponData));
+      }
+
+      const notificationsDataJson = await AsyncStorage.getItem(
+        "@notifications"
+      );
+      const notificationsData = JSON.parse(notificationsDataJson);
+      if (notificationsData) {
+        dispatch(updateNotifiaction(notificationsData));
       }
     } catch (error) {
       console.error("Error updating Redux state:", error);
@@ -195,6 +205,11 @@ export default function AppNavigator() {
           options={{ title: "My Voucher" }}
           name="MyVoucher"
           component={MyVoucher}
+        />
+        <Stack.Screen
+          options={{ title: "Notification" }}
+          name="Notification"
+          component={Notification}
         />
       </Stack.Navigator>
     </NavigationContainer>

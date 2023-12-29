@@ -43,7 +43,7 @@ export default function Main() {
   }, []);
   
   useEffect(() => {
-    const intervalId = setInterval(moveToNextSlide, 1500);
+    const intervalId = setInterval(moveToNextSlide, 3000);
   
     return () => clearInterval(intervalId);
   }, [sliderImages, currentIndex, flatListRef]);
@@ -93,7 +93,7 @@ export default function Main() {
   };
 
   useEffect(() => {
-    const intervalId = setInterval(moveToNextSlide, 1500);
+    const intervalId = setInterval(moveToNextSlide, 3000);
 
     return () => clearInterval(intervalId);
   }, [currentIndex]);

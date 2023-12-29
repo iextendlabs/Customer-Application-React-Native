@@ -6,26 +6,34 @@ import {
   TouchableOpacity,
   ScrollView,
 } from "react-native";
-import React from "react";
+import React, { useState } from "react";
 import { BaseUrl } from "../Config/Api";
 import { useNavigation } from "@react-navigation/native";
 import StarRating from "./StarRating";
 import { useDispatch, useSelector } from "react-redux";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { showMessage } from "react-native-flash-message";
+// import { showMessage } from "react-native-flash-message";
 import { addItemToCart, addItemToWishlist } from "../redux/actions/Actions";
+import MessageModal from "../Screen/MessageModal";
 
 export default function ProductItem({ item }) {
   const dispatch = useDispatch();
   const navigation = useNavigation();
   const cartData = useSelector((state) => state.cart);
   const wishlistData = useSelector((state) => state.wishlist);
-  const toastOptions = {
-    type: "info",
-    backgroundColor: "#fff",
-    color: "#000",
-    duration: 1500,
-    margin: 20,
+  const [messageModalVisible, setMessageModalVisible] = useState(false);
+  const [msg, setMsg] = useState(false);
+  // const toastOptions = {
+  //   type: "info",
+  //   backgroundColor: "#fff",
+  //   color: "#000",
+  //   duration: 1500,
+  //   margin: 20,
+  // };
+
+  const handleMessage = (msg) => {
+    setMsg(msg);
+    setMessageModalVisible(true);
   };
 
   const saveToAsyncStorage = async (key, data) => {
@@ -42,15 +50,16 @@ export default function ProductItem({ item }) {
     if (!isItemInCart) {
       dispatch(addItemToCart(item));
       saveToAsyncStorage("@cartData", [...cartData, item]);
-      showMessage({
-        message: "Added to Cart.",
-        ...toastOptions,
-      });
+      handleMessage("Added to Cart.");
+      // showMessage({
+      //   message: "Added to Cart.",
+      //   ...toastOptions,
+      // });
     } else {
-      showMessage({
-        message: "Item is already in the cart.",
-        ...toastOptions,
-      });
+      // showMessage({
+      //   message: "Item is already in the cart.",
+      //   ...toastOptions,
+      // });
     }
   };
 
@@ -62,16 +71,20 @@ export default function ProductItem({ item }) {
     if (!isItemInWishlist) {
       dispatch(addItemToWishlist(item));
       saveToAsyncStorage("@wishlistData", [...wishlistData, item]);
-      showMessage({
-        message: "Added to WisthList.",
-        ...toastOptions,
-      });
+      // showMessage({
+      //   message: "Added to WisthList.",
+      //   ...toastOptions,
+      // });
     } else {
-      showMessage({
-        message: "Item is already in the Wishlist.",
-        ...toastOptions,
-      });
+      // showMessage({
+      //   message: "Item is already in the Wishlist.",
+      //   ...toastOptions,
+      // });
     }
+  };
+
+  const closeModal = () => {
+    setMessageModalVisible(false);
   };
 
   return (
@@ -149,10 +162,10 @@ export default function ProductItem({ item }) {
               <Text
                 style={{ textDecorationLine: "line-through", color: "red" }}
               >
-                {item.price} 
+                {item.price}
               </Text>
               <Text style={{ marginRight: 5, color: "#333" }}>
-                {" "+item.discount}
+                {" " + item.discount}
               </Text>
             </>
           ) : (
@@ -204,6 +217,11 @@ export default function ProductItem({ item }) {
           />
         </TouchableOpacity>
       </View>
+      <MessageModal
+        visible={messageModalVisible}
+        message={msg}
+        onClose={closeModal}
+      />
     </View>
   );
 }

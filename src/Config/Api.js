@@ -15,6 +15,7 @@ const UpdateCustomerInfoUrl = BaseUrl + "api/updateCustomerInfo";
 const orderPDFDownloadUrl = BaseUrl + "api/order-download-pdf/";
 const writeReviewUrl = BaseUrl + "api/writeReview";
 const getCustomerCouponUrl = BaseUrl + "api/getCustomerCoupon?";
+const NotificationUrl = BaseUrl + "api/customerNotification?";
 export {
   LoginUrl,
   SignupUrl,
@@ -31,5 +32,6 @@ export {
   applyCouponAffiliateUrl,
   orderPDFDownloadUrl,
   writeReviewUrl,
-  getCustomerCouponUrl
+  getCustomerCouponUrl,
+  NotificationUrl
 };

@@ -4,13 +4,12 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import CustomTextInput from "../Common/CustomTextInput";
 import CommonButton from "../Common/CommonButton";
 import { useNavigation, useRoute } from "@react-navigation/native";
-
 import { LoginUrl } from "../Config/Api";
 import axios from "axios";
 import { useEffect } from "react";
 import Splash from "../Screen/Splash";
 import { useDispatch } from "react-redux";
-import { addPersonalInformation, addAddress } from "../redux/actions/Actions";
+import { addPersonalInformation, addAddress, updateNotifiaction } from "../redux/actions/Actions";
 import { BackHandler } from "react-native";
 import messaging from "@react-native-firebase/messaging";
 
@@ -131,6 +130,10 @@ const Login = () => {
         await AsyncStorage.setItem("@user_name", String(userName));
         await AsyncStorage.setItem("@user_email", String(userEmail));
 
+        dispatch(
+          updateNotifiaction(data.notifications)
+        );
+        await AsyncStorage.setItem("@notifications", JSON.stringify(data.notifications));
         const headers = {
           Authorization: `Bearer ${accessToken}`,
         };

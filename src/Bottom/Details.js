@@ -20,6 +20,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import HTML from "react-native-render-html";
 import StarRating from "../Common/StarRating";
+import MessageModal from "../Screen/MessageModal";
 
 const styles = StyleSheet.create({
   container: {
@@ -109,6 +110,17 @@ export default function Details() {
   const [openFaq, setOpenFaq] = useState(null);
   const windowDimensions = useWindowDimensions();
   const [msg, setMsg] = useState(null);
+  const [messageModalVisible, setMessageModalVisible] = useState(false);
+  const [alertMsg, setAlertMsg] = useState(false);
+
+  const handleMessage = (msg) => {
+    setMsg(msg);
+    setMessageModalVisible(true);
+  };
+
+  const closeModal = () => {
+    setMessageModalVisible(false);
+  };
 
   const handleShare = async () => {
     try {
@@ -145,8 +157,8 @@ export default function Details() {
     if (!isItemInCart) {
       dispatch(addItemToCart(item));
       saveToAsyncStorage("@cartData", [...cartData, item]);
-      navigation.navigate("Cart");
-      setMsg("Added to Cart.");
+      handleMessage("Added to Cart.");
+
     } else {
       setMsg("Item is already in the cart.");
     }
@@ -164,7 +176,6 @@ export default function Details() {
     if (!isItemInWishlist) {
       dispatch(addItemToWishlist(item));
       saveToAsyncStorage("@wishlistData", [...wishlistData, item]);
-      navigation.navigate("Wishlist");
       setMsg("Added to WisthList.");
     } else {
       setMsg("Item is already in the Wishlist.");
@@ -318,6 +329,11 @@ export default function Details() {
         </>
       )}
       <Footer />
+      <MessageModal
+        visible={messageModalVisible}
+        message={msg}
+        onClose={closeModal}
+      />
     </View>
   );
 }
