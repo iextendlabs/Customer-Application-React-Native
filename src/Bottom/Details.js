@@ -114,7 +114,7 @@ export default function Details() {
   const [alertMsg, setAlertMsg] = useState(false);
 
   const handleMessage = (msg) => {
-    setMsg(msg);
+    setAlertMsg(msg);
     setMessageModalVisible(true);
   };
 
@@ -212,18 +212,18 @@ export default function Details() {
       <Header title={service ? service.name : "Details"} />
       {service && (
         <>
-          <Image
-            source={{
-              uri: BaseUrl + "service-images/" + service.image,
-            }}
-            defaultSource={require("../images/logo.png")}
-            style={{
-              width: "100%",
-              height: 200,
-              resizeMode: "cover",
-            }}
-          />
           <ScrollView style={styles.contentContainer}>
+            <Image
+              source={{
+                uri: BaseUrl + "service-images/" + service.image,
+              }}
+              defaultSource={require("../images/logo.png")}
+              style={{
+                width: "100%",
+                height: 200,
+                resizeMode: "cover",
+              }}
+            />
             <Text style={styles.price}>
               AED{" "}
               {service.discount ? (
@@ -331,7 +331,7 @@ export default function Details() {
       <Footer />
       <MessageModal
         visible={messageModalVisible}
-        message={msg}
+        message={alertMsg}
         onClose={closeModal}
       />
     </View>
