@@ -85,7 +85,7 @@ export default function Booking() {
       setSelectedStaffId(booking.selectedStaffId || null);
       setSelectedSlot(booking.selectedSlot || null);
       setSelectedSlotId(booking.selectedSlotId || null);
-      setSelectedStaffCharges(booking.selectedStaffCharge || null);
+      setSelectedStaffCharges(booking.selectedStaffCharge);
       setTransportCharges(booking.transportCharges || null);
       if (booking.selectedDate && booking.selectedArea) {
         fetchAvailableTimeSlots(
@@ -722,7 +722,7 @@ export default function Booking() {
     <View style={{ flex: 1, backgroundColor: "#FFCACC" }}>
       <Header title={"Booking"} />
       <ScrollView>
-        <View style={{ flex: 1, marginBottom: 40 }}>
+        <View style={{ flex: 1, marginBottom: 80 }}>
           {renderPersonalInformation()}
           {name !== null && email !== null && (
             <>

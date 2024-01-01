@@ -142,7 +142,7 @@ export default function Checkout() {
         couponDiscount
       );
     }
-  }, [bookingData]);
+  }, [bookingData,couponDiscount]);
 
   const getServicesTotal = () => {
     return cartData.reduce((total, item) => {
@@ -300,6 +300,7 @@ export default function Checkout() {
   };
 
   const applyCode = async (coupon=null , affiliate=null) => {
+    console.log(coupon, affiliate);
     if (coupon !== "" || affiliate !== "") {
       setLoading(true);
       try {

@@ -52,7 +52,6 @@ export default function MyVoucher() {
         setError("Please try again.");
       }
     } catch (error) {
-      setError("An error occurred while fetching data.");
     }
     setLoading(false);
   };
