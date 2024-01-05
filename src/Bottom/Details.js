@@ -285,46 +285,47 @@ export default function Details() {
               <StarRating rating={service.rating} size={17} />
             </View>
 
-            <View>
+            <View style={{ marginBottom: 100 }}>
               <HTML
                 source={{ html: description }}
                 contentWidth={windowDimensions.width}
               />
+              {faqs.length > 0 && (
+                <View>
+                  <Text
+                    style={{
+                      fontSize: 20,
+                      fontWeight: "bold",
+                      marginBottom: 10,
+                      alignSelf: "center",
+                    }}
+                  >
+                    Frequently Asked Questions
+                  </Text>
+                  {faqs.map((faq) => (
+                    <View key={faq.id}>
+                      <TouchableOpacity
+                        style={styles.faqHeader}
+                        onPress={() =>
+                          setOpenFaq(openFaq === faq.id ? null : faq.id)
+                        }
+                      >
+                        <Text style={styles.faqQuestion}>{faq.question}</Text>
+                      </TouchableOpacity>
+                      {openFaq === faq.id && (
+                        <View key={`${faq.id}-answer`} style={styles.faqBody}>
+                          <HTML
+                            source={{ html: faq.answer }}
+                            contentWidth={windowDimensions.width}
+                          />
+                        </View>
+                      )}
+                    </View>
+                  ))}
+                </View>
+              )}
             </View>
-            {faqs.length > 0 && (
-              <View style={{ marginBottom: 100 }}>
-                <Text
-                  style={{
-                    fontSize: 20,
-                    fontWeight: "bold",
-                    marginBottom: 10,
-                    alignSelf: "center",
-                  }}
-                >
-                  Frequently Asked Questions
-                </Text>
-                {faqs.map((faq) => (
-                  <View key={faq.id}>
-                    <TouchableOpacity
-                      style={styles.faqHeader}
-                      onPress={() =>
-                        setOpenFaq(openFaq === faq.id ? null : faq.id)
-                      }
-                    >
-                      <Text style={styles.faqQuestion}>{faq.question}</Text>
-                    </TouchableOpacity>
-                    {openFaq === faq.id && (
-                      <View key={`${faq.id}-answer`} style={styles.faqBody}>
-                        <HTML
-                          source={{ html: faq.answer }}
-                          contentWidth={windowDimensions.width}
-                        />
-                      </View>
-                    )}
-                  </View>
-                ))}
-              </View>
-            )}
+
           </ScrollView>
         </>
       )}

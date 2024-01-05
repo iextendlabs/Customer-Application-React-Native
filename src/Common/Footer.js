@@ -172,7 +172,7 @@ export default function Footer() {
             alignItems: "center",
           }}
           onPress={() => {
-            checkAuthentication("Booking");
+            navigation.navigate("Booking");
           }}
         >
           <Image

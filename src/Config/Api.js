@@ -1,4 +1,4 @@
-const BaseUrl = "https://lipslay.com/";
+const BaseUrl = "https://test.lipslay.com/";
 
 const LoginUrl = BaseUrl + "api/customerLogin";
 const SignupUrl = BaseUrl + "api/customerSignup";
@@ -16,6 +16,8 @@ const orderPDFDownloadUrl = BaseUrl + "api/order-download-pdf/";
 const writeReviewUrl = BaseUrl + "api/writeReview";
 const getCustomerCouponUrl = BaseUrl + "api/getCustomerCoupon?";
 const NotificationUrl = BaseUrl + "api/customerNotification?";
+const ChatUrl = BaseUrl+'api/customerChat?';
+const AddChatUrl = BaseUrl+'api/addCustomerChat';
 export {
   LoginUrl,
   SignupUrl,
@@ -33,5 +35,7 @@ export {
   orderPDFDownloadUrl,
   writeReviewUrl,
   getCustomerCouponUrl,
-  NotificationUrl
+  NotificationUrl,
+  ChatUrl,
+  AddChatUrl
 };

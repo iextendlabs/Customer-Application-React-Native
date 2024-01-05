@@ -20,6 +20,7 @@ import Splash from "../Screen/Splash";
 import Header from "../Common/Header";
 import Footer from "../Common/Footer";
 import { updateBooking } from "../redux/actions/Actions";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function Booking() {
   const dispatch = useDispatch();
@@ -714,7 +715,16 @@ export default function Booking() {
       )}
     </View>
   );
-
+  
+  const checkAuthentication = async (navigate) => {
+    const user = await AsyncStorage.getItem("@user_id");
+    if (user === "" || user === null) {
+      navigation.navigate("Login", { Navigate: navigate });
+    } else {
+      navigation.navigate(navigate);
+    }
+  };
+  
   if (loading) {
     return Splash();
   }
@@ -772,7 +782,7 @@ export default function Booking() {
                                               updateBooking(bookingInfo)
                                             );
                                             if (cartData.length > 0) {
-                                              navigation.navigate("Checkout");
+                                              checkAuthentication("Checkout");
                                             } else {
                                               navigation.navigate("Main");
                                             }

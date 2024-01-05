@@ -17,6 +17,7 @@ import OrderSuccess from "./Screen/OrderSuccess";
 import MyOrders from "./Screen/MyOrders";
 import RescheduleOrder from "./Screen/RescheduleOrder";
 import Notification from "./Screen/Notification";
+import Chat from "./Screen/Chat";
 const Stack = createStackNavigator();
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useSelector, useDispatch } from "react-redux";
@@ -210,6 +211,11 @@ export default function AppNavigator() {
           options={{ title: "Notification" }}
           name="Notification"
           component={Notification}
+        />
+        <Stack.Screen
+          options={{ title: "Customer Support" }}
+          name="Chat"
+          component={Chat}
         />
       </Stack.Navigator>
     </NavigationContainer>

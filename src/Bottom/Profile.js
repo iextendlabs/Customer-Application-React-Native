@@ -57,7 +57,7 @@ export default function Profile() {
   };
   return (
     <View style={{ flex: 1, backgroundColor: "#FFCACC" }}>
-      <Header title={"Profile"} isProfile={true}/>
+      <Header title={"Profile"} isProfile={true} />
       <Image
         source={require("../images/profile.png")}
         style={{ width: 80, height: 80, alignSelf: "center", marginTop: 30 }}
@@ -130,6 +130,22 @@ export default function Profile() {
         <Text>My Voucher</Text>
       </TouchableOpacity>
       <TouchableOpacity
+        style={{
+          width: "90%",
+          alignSelf: "center",
+          height: 50,
+          borderBottomWidth: 0.3,
+          borderBottomColor: "#8e8e8e",
+          justifyContent: "center",
+        }}
+        onPress={() => {
+          navigation.navigate("Chat");
+        }}
+      >
+        <Text>Customer Support</Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={{ marginBottom: 60 }}
         onPress={() => {
           logout();
         }}

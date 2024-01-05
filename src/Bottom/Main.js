@@ -41,10 +41,10 @@ export default function Main() {
     // Fetch data effect
     getData();
   }, []);
-  
+
   useEffect(() => {
     const intervalId = setInterval(moveToNextSlide, 3000);
-  
+
     return () => clearInterval(intervalId);
   }, [sliderImages, currentIndex, flatListRef]);
 
@@ -77,7 +77,7 @@ export default function Main() {
     }
     setLoading(false);
   };
-
+ 
   const moveToNextSlide = () => {
     if (flatListRef.current) {
       const nextIndex = (currentIndex + 1) % sliderImages.length;
@@ -97,15 +97,6 @@ export default function Main() {
 
     return () => clearInterval(intervalId);
   }, [currentIndex]);
-
-  const checkAuthentication = async (navigate) => {
-    const user = await AsyncStorage.getItem("@user_id");
-    if (user === "" || user === null) {
-      navigation.navigate("Login", { Navigate: navigate });
-    } else {
-      navigation.navigate(navigate);
-    }
-  };
 
   if (loading) {
     return Splash();
@@ -237,7 +228,7 @@ export default function Main() {
             bgColor={"#fd245f"}
             textColor={"#fff"}
             onPress={() => {
-              checkAuthentication("Booking");
+              navigation.navigate("Booking");
             }}
           />
 
