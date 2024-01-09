@@ -18,6 +18,8 @@ import MyOrders from "./Screen/MyOrders";
 import RescheduleOrder from "./Screen/RescheduleOrder";
 import Notification from "./Screen/Notification";
 import Chat from "./Screen/Chat";
+import ForgotPassword from "./Screen/ForgotPassword";
+
 const Stack = createStackNavigator();
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useSelector, useDispatch } from "react-redux";
@@ -216,6 +218,11 @@ export default function AppNavigator() {
           options={{ title: "Customer Support" }}
           name="Chat"
           component={Chat}
+        />
+        <Stack.Screen
+          options={{ title: "Forgot Password" }}
+          name="ForgotPassword"
+          component={ForgotPassword}
         />
       </Stack.Navigator>
     </NavigationContainer>

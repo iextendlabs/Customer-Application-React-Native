@@ -23,11 +23,17 @@ export default function PersonalInformation() {
   const dispatch = useDispatch();
   const navigation = useNavigation();
   const [name, setName] = useState("");
+  const [userId, setUserId] = useState("");
   const [email, setEmail] = useState("");
   const [number, setNumber] = useState("");
   const [whatsapp, setWhatsapp] = useState("");
   const [selectedGender, setSelectedGender] = useState("");
   const [error, setError] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [badPassword, setBadPassword] = useState(false);
+  const [badConfirmPassword, setBadConfirmPassword] = useState(false);
+  const [notValidPassword, setNotValidPassword] = useState(false);
 
   const personalInformationData = useSelector(
     (state) => state.personalInformation
@@ -52,6 +58,7 @@ export default function PersonalInformation() {
     try {
       const storedName = await AsyncStorage.getItem("@user_name");
       const storedEmail = await AsyncStorage.getItem("@user_email");
+      setUserId(await AsyncStorage.getItem("@user_id"));
 
       if (
         !personalInformationData ||
@@ -72,6 +79,9 @@ export default function PersonalInformation() {
 
   const handleSave = async () => {
     setError("");
+    setBadPassword(false);
+    setBadConfirmPassword(false);
+    setNotValidPassword(false);
     if (
       name.trim() !== "" &&
       email.trim() !== "" &&
@@ -86,6 +96,24 @@ export default function PersonalInformation() {
       if (!isValidEmail(email)) {
         setError("Enter a valid email address.");
         return;
+      }
+
+      if (password !== "" || confirmPassword !== "") {
+        if (password === "") {
+          setBadPassword(true);
+          return;
+        }
+
+        if (confirmPassword === "") {
+          setBadConfirmPassword(true);
+          return;
+        }
+
+        if (password !== confirmPassword) {
+
+          setNotValidPassword(true);
+          return;
+        }
       }
 
       const personalInfo = {
@@ -109,21 +137,21 @@ export default function PersonalInformation() {
       } else {
         dispatch(addPersonalInformation(personalInfo));
       }
-      const user_id = await AsyncStorage.getItem("@user_id");
 
       try {
         const response = await axios.post(UpdateCustomerInfoUrl, {
           number: number,
           whatsapp: whatsapp,
           gender: selectedGender,
-          user_id: user_id,
+          user_id: userId,
+          password: password,
         });
         if (response.status === 200) {
           console.log(response.data.msg);
         } else {
           setError("Please try again.");
         }
-      } catch (error) {}
+      } catch (error) { }
 
       navigation.goBack();
     } else {
@@ -170,6 +198,46 @@ export default function PersonalInformation() {
           keyboardType={"numeric"}
           label={'Whatsapp Number'}
         />
+
+        {userId && (
+          <>
+            <CustomTextInput
+              placeholder={"Enter Password"}
+              icon={require("../images/lock.png")}
+              type={"password"}
+              value={password}
+              onChangeText={(txt) => {
+                setPassword(txt);
+              }}
+              label={'Change Password'}
+            />
+            {badPassword === true && (
+              <Text style={{ marginTop: 10, marginLeft: 40, color: "red" }}>
+                Please Enter Password
+              </Text>
+            )}
+            <CustomTextInput
+              placeholder={"Enter Confirm Password"}
+              icon={require("../images/lock.png")}
+              type={"password"}
+              value={confirmPassword}
+              onChangeText={(txt) => {
+                setConfirmPassword(txt);
+              }}
+            />
+            {badConfirmPassword === true && (
+              <Text style={{ marginTop: 10, marginLeft: 40, color: "red" }}>
+                Please Enter Confirm Password
+              </Text>
+            )}
+            {notValidPassword === true && (
+              <Text style={{ marginTop: 10, marginLeft: 40, color: "red" }}>
+                The password and confirm-password must match.
+              </Text>
+            )}
+          </>
+        )}
+
         <View style={{ flexDirection: "row", marginLeft: 40, marginTop: 30 }}>
           <Text style={{ marginRight: 20, marginTop: 5 }}>Gender:</Text>
           <TouchableOpacity

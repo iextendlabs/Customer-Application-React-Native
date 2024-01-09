@@ -18,6 +18,7 @@ const getCustomerCouponUrl = BaseUrl + "api/getCustomerCoupon?";
 const NotificationUrl = BaseUrl + "api/customerNotification?";
 const ChatUrl = BaseUrl+'api/customerChat?';
 const AddChatUrl = BaseUrl+'api/addCustomerChat';
+const PasswordResetUrl = BaseUrl + "api/passwordReset";
 export {
   LoginUrl,
   SignupUrl,
@@ -37,5 +38,6 @@ export {
   getCustomerCouponUrl,
   NotificationUrl,
   ChatUrl,
-  AddChatUrl
+  AddChatUrl,
+  PasswordResetUrl
 };

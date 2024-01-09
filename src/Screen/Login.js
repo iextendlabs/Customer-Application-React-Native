@@ -242,6 +242,20 @@ const Login = () => {
         >
           Create New Account?
         </Text>
+        <Text
+          style={{
+            fontSize: 18,
+            fontWeight: "600",
+            alignSelf: "center",
+            marginTop: 20,
+            textDecorationLine: "underline",
+          }}
+          onPress={() => {
+            navigation.navigate("ForgotPassword");
+          }}
+        >
+          Forgot Your Password?
+        </Text>
         <TouchableOpacity
           style={{
             width: 200,

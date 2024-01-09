@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   useWindowDimensions,
   Share,
+  FlatList
 } from "react-native";
 import React from "react";
 import Footer from "../Common/Footer";
@@ -21,6 +22,8 @@ import axios from "axios";
 import HTML from "react-native-render-html";
 import StarRating from "../Common/StarRating";
 import MessageModal from "../Screen/MessageModal";
+import OfferProductItem from "../Common/OfferProductItem";
+import { Picker } from "@react-native-picker/picker";
 
 const styles = StyleSheet.create({
   container: {
@@ -98,11 +101,16 @@ const styles = StyleSheet.create({
   },
 });
 export default function Details() {
+  const services = useSelector((state) => state.services);
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const route = useRoute();
   const [loading, setLoading] = useState(false);
   const [service, setService] = useState(null);
+  const [addONs, setAddONs] = useState([]);
+  const [variants, setVariants] = useState([]);
+  const [variant, setVariant] = useState([]);
+  const [packages, setPackages] = useState([]);
   const [description, setDescription] = useState("Loading...");
   const cartData = useSelector((state) => state.cart);
   const wishlistData = useSelector((state) => state.wishlist);
@@ -112,6 +120,10 @@ export default function Details() {
   const [msg, setMsg] = useState(null);
   const [messageModalVisible, setMessageModalVisible] = useState(false);
   const [alertMsg, setAlertMsg] = useState(false);
+  const [serviceDuration, setServiceDuration] = useState(null);
+  const [servicePrice, setServicePrice] = useState(null);
+  const [serviceDiscount, setServiceDiscount] = useState(null);
+  const [serviceId, setServiceId] = useState(null);
 
   const handleMessage = (msg) => {
     setAlertMsg(msg);
@@ -193,6 +205,16 @@ export default function Details() {
       let data = response.data;
       setDescription(data.services.description);
       setFaqs(data.faqs);
+      const variantIds = data.variant.map(item => item.variant_id);
+      const variant = services[0].filter(item => variantIds.includes(item.id.toString()));
+      setVariants(variant);
+      const packageIds = data.package.map(item => item.package_id);
+      const packages = services[0].filter(item => packageIds.includes(item.id.toString()));
+      setPackages(packages);
+      const addOnIds = data.addONs.map(item => item.add_on_id);
+      const addOn = services[0].filter(item => addOnIds.includes(item.id.toString()));
+      setAddONs(addOn);
+      console.log(variant);
     }
 
     setLoading(false);
@@ -201,12 +223,40 @@ export default function Details() {
   useEffect(() => {
     if (route.params && route.params.service) {
       setService(route.params.service);
+      setServiceDuration(route.params.service.duration);
+      setServicePrice(route.params.service.price);
+      setServiceDiscount(route.params.service.discount);
+      setServiceId(route.params.service.id);
       getDetails(route.params.service.id);
     }
   }, [route.params?.service]);
 
-  const handleAddToCart = () => onAddToCart(service);
-  const handleAddToWish = () => onAddToWishList(service);
+  const handleVariantChange = (variantId) => {
+    const selectedVariant = variants.find((variant) => variant.id === parseFloat(variantId));
+    if (selectedVariant) {
+      setServicePrice(selectedVariant.price);
+      setServiceDiscount(selectedVariant.discount);
+      setServiceDuration(selectedVariant.duration);
+      setServiceId(selectedVariant.id);
+    } else {
+      setServicePrice(service.price);
+      setServiceDiscount(service.discount);
+      setServiceDuration(service.duration);
+      setServiceId(service.id);
+    }
+  };
+
+
+  const handleAddToCart = () => {
+    const selectedService = services[0].find((services) => services.id === serviceId);
+
+    onAddToCart(selectedService);
+  };
+  const handleAddToWish = () => {
+    const selectedService = services[0].find((services) => services.id === serviceId);
+
+    onAddToWishList(selectedService);
+  };
   return (
     <View style={{ flex: 1, backgroundColor: "#FFCACC" }}>
       <Header title={service ? service.name : "Details"} />
@@ -226,15 +276,15 @@ export default function Details() {
             />
             <Text style={styles.price}>
               AED{" "}
-              {service.discount ? (
+              {serviceDiscount ? (
                 <>
-                  <Text style={styles.originalPrice}>{service.price}</Text>
+                  <Text style={styles.originalPrice}>{servicePrice}</Text>
                   <Text style={styles.discountedPrice}>
-                    {" " + service.discount}
+                    {" " + serviceDiscount}
                   </Text>
                 </>
               ) : (
-                service.price
+                servicePrice
               )}
             </Text>
             <View>
@@ -247,9 +297,44 @@ export default function Details() {
                     height: 15,
                   }}
                 />
-                {service.duration}
+                {serviceDuration}
               </Text>
             </View>
+            {variants.length > 0 && (
+              <>
+                <Text style={{
+                  width: "100%", alignSelf: "center", fontSize: 16,
+                  fontWeight: "bold",
+                  marginBottom: 10,
+                }}>
+                  Variants:
+                </Text>
+                <View
+                  style={{
+                    height: 50,
+                    width: "100%",
+                    alignSelf: "center",
+                    borderWidth: 0.5,
+                    borderColor: "#8e8e8e",
+                    borderRadius: 10,
+                    marginBottom: 10
+                  }}
+                >
+                  <Picker
+                    selectedValue={variant}
+                    onValueChange={(itemValue, itemIndex) => {
+                      setVariant(itemValue);
+                      handleVariantChange(itemValue);
+                    }}
+                  >
+                    <Picker.Item label="Select Variant" value="" />
+                    {variants.map((variant, index) => (
+                      <Picker.Item key={index.toString()} label={variant.name} value={variant.id} />
+                    ))}
+                  </Picker>
+                </View>
+              </>
+            )}
 
             <TouchableOpacity
               style={styles.addToCartButton}
@@ -296,7 +381,7 @@ export default function Details() {
                     style={{
                       fontSize: 20,
                       fontWeight: "bold",
-                      marginBottom: 10,
+                      margin: 10,
                       alignSelf: "center",
                     }}
                   >
@@ -324,17 +409,63 @@ export default function Details() {
                   ))}
                 </View>
               )}
+              {addONs.length > 0 && (
+
+                <View>
+                  <Text
+                    style={{
+                      fontSize: 20,
+                      fontWeight: "bold",
+                      margin: 10,
+                      alignSelf: "center",
+                    }}
+                  >
+                    Add ONs
+                  </Text>
+                  <FlatList
+                    data={addONs}
+                    showsHorizontalScrollIndicator={false}
+                    horizontal
+                    keyExtractor={(item, index) => item.id.toString()}
+                    renderItem={({ item }) => <OfferProductItem item={item} />}
+                  />
+                </View>
+              )}
+
+              {packages.length > 0 && (
+
+                <View>
+                  <Text
+                    style={{
+                      fontSize: 20,
+                      fontWeight: "bold",
+                      margin: 10,
+                      alignSelf: "center",
+                    }}
+                  >
+                    Package Services
+                  </Text>
+                  <FlatList
+                    data={packages}
+                    showsHorizontalScrollIndicator={false}
+                    horizontal
+                    keyExtractor={(item, index) => item.id.toString()}
+                    renderItem={({ item }) => <OfferProductItem item={item} isPackage={true} />}
+                  />
+                </View>
+              )}
             </View>
 
           </ScrollView>
         </>
-      )}
+      )
+      }
       <Footer />
       <MessageModal
         visible={messageModalVisible}
         message={alertMsg}
         onClose={closeModal}
       />
-    </View>
+    </View >
   );
 }

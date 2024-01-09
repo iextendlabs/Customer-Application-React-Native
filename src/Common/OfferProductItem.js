@@ -16,7 +16,7 @@ import { showMessage } from "react-native-flash-message";
 import { addItemToCart, addItemToWishlist } from "../redux/actions/Actions";
 import MessageModal from "../Screen/MessageModal";
 
-export default function OfferProductItem({ item }) {
+export default function OfferProductItem({ item, isPackage }) {
   const dispatch = useDispatch();
   const navigation = useNavigation();
   const cartData = useSelector((state) => state.cart);
@@ -93,7 +93,7 @@ export default function OfferProductItem({ item }) {
     <View
       style={{
         width: 250,
-        height: 285,
+        height: isPackage === true ? 245 : 285,
         elevation: 5,
         margin: 5,
         paddingBottom: 10,
@@ -174,49 +174,52 @@ export default function OfferProductItem({ item }) {
         </Text>
         <Text>{item.duration}</Text>
       </View>
-      <View
-        style={{
-          flexDirection: "row",
-          paddingLeft: 10,
-          paddingRight: 10,
-          justifyContent: "space-between",
-          marginTop: 10,
-        }}
-      >
-        <TouchableOpacity
+      {isPackage !== true && (
+        <View
           style={{
-            padding: 7,
-            borderRadius: 4,
-            backgroundColor: "#fd245f",
-          }}
-          onPress={() => {
-            onAddToCart(item);
+            flexDirection: "row",
+            paddingLeft: 10,
+            paddingRight: 10,
+            justifyContent: "space-between",
+            marginTop: 10,
           }}
         >
-          <Text style={{ color: "#fff", fontWeight: "700" }}>Book Now</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={{
-            width: 30,
-            height: 30,
-            backgroundColor: "#fff",
-            borderRadius: 20,
-            elevation: 5,
-            position: "absolute",
-            right: 10,
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-          onPress={() => {
-            onAddToWishList(item);
-          }}
-        >
-          <Image
-            source={require("../images/wish.png")}
-            style={{ width: 18, height: 18 }}
-          />
-        </TouchableOpacity>
-      </View>
+          <TouchableOpacity
+            style={{
+              padding: 7,
+              borderRadius: 4,
+              backgroundColor: "#fd245f",
+            }}
+            onPress={() => {
+              onAddToCart(item);
+            }}
+          >
+            <Text style={{ color: "#fff", fontWeight: "700" }}>Book Now</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={{
+              width: 30,
+              height: 30,
+              backgroundColor: "#fff",
+              borderRadius: 20,
+              elevation: 5,
+              position: "absolute",
+              right: 10,
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+            onPress={() => {
+              onAddToWishList(item);
+            }}
+          >
+            <Image
+              source={require("../images/wish.png")}
+              style={{ width: 18, height: 18 }}
+            />
+          </TouchableOpacity>
+        </View>
+      )}
+
       <MessageModal
         visible={messageModalVisible}
         message={msg}
