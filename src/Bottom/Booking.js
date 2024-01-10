@@ -31,6 +31,7 @@ export default function Booking() {
   const addressData = useSelector((state) => state.address);
   const bookingData = useSelector((state) => state.booking);
   const cartData = useSelector((state) => state.cart);
+  const zones = useSelector((state) => state.zones);
 
   const [selectedAddress, setSelectedAddress] = useState(null);
   const [selectedDate, setSelectedDate] = useState(null);
@@ -57,6 +58,7 @@ export default function Booking() {
   const [whatsapp, setWhatsapp] = useState(null);
   const [gender, setGender] = useState(null);
   const [modalVisible, setModalVisible] = useState(true);
+  const [isUser, setIsUser] = useState(false);
 
   useEffect(() => {
     if (personalInformationData && personalInformationData.length > 0) {
@@ -80,7 +82,6 @@ export default function Booking() {
     if (bookingData && bookingData.length > 0) {
       setModalVisible(false);
       const booking = bookingData[0];
-      console.log(booking);
       setSelectedDate(booking.selectedDate || null);
       setSelectedStaff(booking.selectedStaff || null);
       setSelectedStaffId(booking.selectedStaffId || null);
@@ -88,6 +89,7 @@ export default function Booking() {
       setSelectedSlotId(booking.selectedSlotId || null);
       setSelectedStaffCharges(booking.selectedStaffCharge);
       setTransportCharges(booking.transportCharges || null);
+      setSelectedArea(booking.selectedArea || null);
       if (booking.selectedDate && booking.selectedArea) {
         fetchAvailableTimeSlots(
           booking.selectedDate,
@@ -98,6 +100,18 @@ export default function Booking() {
       }
     }
   }, [bookingData[0]]);
+
+  useEffect(() => {
+    checkUser();
+  }, [])
+
+  const selectZone = (item) => {
+    setSelectedArea(item);
+
+    if (selectedDate) {
+      fetchAvailableTimeSlots(selectedDate, item);
+    }
+  };
 
   const selectAddress = (item) => {
     setSelectedAddress(
@@ -715,7 +729,7 @@ export default function Booking() {
       )}
     </View>
   );
-  
+
   const checkAuthentication = async (navigate) => {
     const user = await AsyncStorage.getItem("@user_id");
     if (user === "" || user === null) {
@@ -724,95 +738,88 @@ export default function Booking() {
       navigation.navigate(navigate);
     }
   };
-  
+
+  const checkUser = async () => {
+    const user = await AsyncStorage.getItem("@user_id");
+    if (user) {
+      setIsUser(true);
+    }
+  };
+
   if (loading) {
     return Splash();
   }
-  return (
-    <View style={{ flex: 1, backgroundColor: "#FFCACC" }}>
-      <Header title={"Booking"} />
-      <ScrollView>
-        <View style={{ flex: 1, marginBottom: 80 }}>
-          {renderPersonalInformation()}
-          {name !== null && email !== null && (
+
+  const renderContent = () => (
+    <>
+      {renderDate()}
+      {selectedDate && (
+        <>
+          {error ? (
+            <Text style={{ margin: 10, color: "red" }}>
+              {error}
+            </Text>
+          ) : (
             <>
-              {renderAddress()}
-              {selectedAddress && (
+              {availableStaff && (
                 <>
-                  {renderDate()}
-                  {selectedDate && (
+                  {renderStaff()}
+                  {selectedStaff && (
                     <>
-                      {error ? (
-                        <Text style={{ margin: 10, color: "red" }}>
-                          {error}
-                        </Text>
-                      ) : (
+                      {renderSlot()}
+                      {selectedSlot && (
                         <>
-                          {availableStaff && (
-                            <>
-                              {renderStaff()}
-                              {selectedStaff && (
-                                <>
-                                  {renderSlot()}
-                                  {selectedSlot && (
-                                    <>
-                                      <View style={{ marginBottom: 30 }}>
-                                        <CommonButton
-                                          title={
-                                            cartData.length > 0
-                                              ? "Checkout"
-                                              : "Select Services"
-                                          }
-                                          bgColor={"#000"}
-                                          textColor={"#fff"}
-                                          onPress={() => {
-                                            setLoading(true);
-                                            const bookingInfo = {
-                                              selectedDate: selectedDate,
-                                              selectedStaff: selectedStaff,
-                                              selectedStaffId: selectedStaffId,
-                                              selectedArea: selectedArea,
-                                              selectedSlot: selectedSlot,
-                                              selectedSlotId: selectedSlotId,
-                                              selectedStaffCharge: selectedStaffCharge,
-                                              transportCharges: transportCharges
-                                            };
+                          <View style={{ marginBottom: 30 }}>
+                            <CommonButton
+                              title={
+                                cartData.length > 0
+                                  ? "Checkout"
+                                  : "Select Services"
+                              }
+                              bgColor={"#000"}
+                              textColor={"#fff"}
+                              onPress={() => {
+                                setLoading(true);
+                                const bookingInfo = {
+                                  selectedDate: selectedDate,
+                                  selectedStaff: selectedStaff,
+                                  selectedStaffId: selectedStaffId,
+                                  selectedArea: selectedArea,
+                                  selectedSlot: selectedSlot,
+                                  selectedSlotId: selectedSlotId,
+                                  selectedStaffCharge: selectedStaffCharge,
+                                  transportCharges: transportCharges
+                                };
 
-                                            dispatch(
-                                              updateBooking(bookingInfo)
-                                            );
-                                            if (cartData.length > 0) {
-                                              checkAuthentication("Checkout");
-                                            } else {
-                                              navigation.navigate("Main");
-                                            }
+                                dispatch(
+                                  updateBooking(bookingInfo)
+                                );
+                                if (cartData.length > 0) {
+                                  checkAuthentication("Checkout");
+                                } else {
+                                  navigation.navigate("Main");
+                                }
 
-                                            setLoading(false);
-                                          }}
-                                        />
-                                        <TouchableOpacity
-                                          style={{
-                                            width: 200,
-                                            height: 50,
-                                            marginTop: 20,
-                                            justifyContent: "center",
-                                            alignSelf: "center",
-                                            borderWidth: 0.5,
-                                            borderColor: "#8e8e8e",
-                                          }}
-                                          onPress={() => {
-                                            navigation.navigate('Main');
-                                          }}
-                                        >
-                                          <Text style={{ alignSelf: "center" }}>Go To Home</Text>
-                                        </TouchableOpacity>
-                                      </View>
-                                    </>
-                                  )}
-                                </>
-                              )}
-                            </>
-                          )}
+                                setLoading(false);
+                              }}
+                            />
+                            <TouchableOpacity
+                              style={{
+                                width: 200,
+                                height: 50,
+                                marginTop: 20,
+                                justifyContent: "center",
+                                alignSelf: "center",
+                                borderWidth: 0.5,
+                                borderColor: "#8e8e8e",
+                              }}
+                              onPress={() => {
+                                navigation.navigate('Main');
+                              }}
+                            >
+                              <Text style={{ alignSelf: "center" }}>Go To Home</Text>
+                            </TouchableOpacity>
+                          </View>
                         </>
                       )}
                     </>
@@ -821,6 +828,65 @@ export default function Booking() {
               )}
             </>
           )}
+        </>
+      )}
+    </>
+  );
+
+  return (
+    <View style={{ flex: 1, backgroundColor: "#FFCACC" }}>
+      <Header title={"Booking"} />
+      <ScrollView>
+        <View style={{ flex: 1, marginBottom: 80 }}>
+          {isUser === true ? (
+            <>
+              {renderPersonalInformation()}
+              {name !== null && email !== null && (
+                <>
+                  {renderAddress()}
+                  {selectedAddress && (
+                    <>
+                      {renderContent()}
+                    </>
+                  )}
+                </>
+              )}
+            </>
+          ) : (
+            <>
+              <Text style={{ width: "85%", alignSelf: "center", padding: 10 }}>
+                Zone:
+              </Text>
+              <View
+                style={{
+                  height: 50,
+                  width: "85%",
+                  alignSelf: "center",
+                  borderWidth: 0.5,
+                  borderColor: "#8e8e8e",
+                  borderRadius: 10,
+                }}
+              >
+                {zones[0].length > 0 && (
+                  <Picker
+                    selectedValue={selectedArea}
+                    onValueChange={(itemValue, itemIndex) => selectZone(itemValue)}
+                  >
+                    <Picker.Item label="Select Area" value="" />
+                    {zones[0].map((zone, index) => (
+                      <Picker.Item key={index.toString()} label={zone} value={zone} />
+                    ))}
+                  </Picker>
+                )}
+              </View>
+              {selectedArea !== null && (
+                <>
+                  {renderContent()}
+                </>
+              )}
+            </>
+          )}
+
         </View>
       </ScrollView>
       <Footer />

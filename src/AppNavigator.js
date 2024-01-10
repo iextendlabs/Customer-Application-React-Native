@@ -29,7 +29,7 @@ import {
   addAddress,
   addPersonalInformation,
   updateCoupon,
-  updateNotifiaction,
+  updateNotification,
 } from "./redux/actions/Actions";
 import Details from "./Bottom/Details";
 import { ImageBackground } from "react-native";
@@ -97,7 +97,7 @@ export default function AppNavigator() {
       );
       const notificationsData = JSON.parse(notificationsDataJson);
       if (notificationsData) {
-        dispatch(updateNotifiaction(notificationsData));
+        dispatch(updateNotification(notificationsData));
       }
     } catch (error) {
       console.error("Error updating Redux state:", error);

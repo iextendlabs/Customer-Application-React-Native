@@ -9,7 +9,7 @@ import axios from "axios";
 import { useEffect } from "react";
 import Splash from "../Screen/Splash";
 import { useDispatch } from "react-redux";
-import { addPersonalInformation, addAddress, updateNotifiaction } from "../redux/actions/Actions";
+import { addPersonalInformation, addAddress, updateNotification, clearAddress, clearPersonalInformation } from "../redux/actions/Actions";
 import { BackHandler } from "react-native";
 import messaging from "@react-native-firebase/messaging";
 
@@ -91,6 +91,8 @@ const Login = () => {
       const data = response.data;
       if (response.status === 200) {
         if (data.user_info !== null) {
+          dispatch(clearAddress());
+          dispatch(clearPersonalInformation());
           const addressInfo = {
             building: data.user_info.buildingName || "",
             villa: data.user_info.flatVilla || "",
@@ -131,7 +133,7 @@ const Login = () => {
         await AsyncStorage.setItem("@user_email", String(userEmail));
 
         dispatch(
-          updateNotifiaction(data.notifications)
+          updateNotification(data.notifications)
         );
         await AsyncStorage.setItem("@notifications", JSON.stringify(data.notifications));
         const headers = {

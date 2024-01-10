@@ -100,11 +100,11 @@ export const clearPersonalInformation = () => ({
   type: CLEAR_PERSONAL_INFORMATION
 });
 
-export const updateNotifiaction = (data) => ({
+export const updateNotification = (data) => ({
   type: UPDATE_NOTIFICATION,
   payload: data,
 });
 
-export const clearNotifiaction = () => ({
+export const clearNotification = () => ({
   type: ClEAR_NOTIFICATION
 });

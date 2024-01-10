@@ -202,7 +202,7 @@ export default function PersonalInformation() {
         {userId && (
           <>
             <CustomTextInput
-              placeholder={"Enter Password"}
+              placeholder={"Enter New Password"}
               icon={require("../images/lock.png")}
               type={"password"}
               value={password}

@@ -18,7 +18,7 @@ const rootReducer = combineReducers({
   zones: zoneReducers,
   booking: BookingReducers,
   coupon: CouponReducers,
-  notifiactions: NotificationReducers
+  Notifications: NotificationReducers
 });
 
 const store = createStore(rootReducer);

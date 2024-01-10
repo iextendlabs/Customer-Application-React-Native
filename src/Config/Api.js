@@ -19,6 +19,7 @@ const NotificationUrl = BaseUrl + "api/customerNotification?";
 const ChatUrl = BaseUrl+'api/customerChat?';
 const AddChatUrl = BaseUrl+'api/addCustomerChat';
 const PasswordResetUrl = BaseUrl + "api/passwordReset";
+const StaffUrl = BaseUrl + "api/staff/";
 export {
   LoginUrl,
   SignupUrl,
@@ -39,5 +40,6 @@ export {
   NotificationUrl,
   ChatUrl,
   AddChatUrl,
-  PasswordResetUrl
+  PasswordResetUrl,
+  StaffUrl
 };

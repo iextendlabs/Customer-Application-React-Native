@@ -118,8 +118,6 @@ export default function Address() {
     }
 
     let location = await Location.getCurrentPositionAsync({});
-    console.log("Location:");
-    console.log(location);
     setLocation(location);
     setLongitude(location.coords.longitude);
     setLatitude(location.coords.latitude);

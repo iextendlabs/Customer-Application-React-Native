@@ -7,7 +7,7 @@ import { useNavigation } from "@react-navigation/native";
 import {
   clearAddress,
   clearCoupon,
-  clearNotifiaction,
+  clearNotification,
   clearPersonalInformation,
 } from "../redux/actions/Actions";
 import { useDispatch } from "react-redux";
@@ -36,7 +36,7 @@ export default function Profile() {
       dispatch(clearAddress());
       dispatch(clearPersonalInformation());
       dispatch(clearCoupon());
-      dispatch(clearNotifiaction());
+      dispatch(clearNotification());
       await AsyncStorage.removeItem("@personalInformation");
       await AsyncStorage.removeItem("@couponData");
       await AsyncStorage.removeItem("@addressData");

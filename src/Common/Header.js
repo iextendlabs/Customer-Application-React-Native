@@ -7,7 +7,7 @@ import { useSelector } from "react-redux";
 export default function Header({ title, onPress, isProfile }) {
 
   const navigation = useNavigation();
-  const notificationsData = useSelector((state) => state.notifiactions);
+  const notificationsData = useSelector((state) => state.Notifications);
   const [countNotification, setCountNotification] = useState(0);
   useEffect(() => {
     if (notificationsData && notificationsData.length > 0) {

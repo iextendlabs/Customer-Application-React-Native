@@ -107,7 +107,7 @@ export default function WriteReviewModal({
         setVideo(result);
         setError("");
       } else {
-        setError("Please select a valid video file.");
+        setError("Please select a valid video file. Only mp4 acceptable.");
       }
     }
   };

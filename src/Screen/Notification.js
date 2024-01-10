@@ -10,7 +10,7 @@ import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useDispatch, useSelector } from "react-redux";
-import { updateNotifiaction } from "../redux/actions/Actions";
+import { updateNotification } from "../redux/actions/Actions";
 import Splash from "./Splash";
 import { NotificationUrl } from "../Config/Api";
 
@@ -22,7 +22,7 @@ export default function MyVoucher() {
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const notificationsData = useSelector((state) => state.notifiactions);
+  const notificationsData = useSelector((state) => state.Notifications);
     
   useEffect(() => {
     setTimeout(() => {
@@ -46,7 +46,7 @@ export default function MyVoucher() {
         let data = response.data.notifications;
         setNotifications(data);
         dispatch(
-            updateNotifiaction(data)
+            updateNotification(data)
         );
         saveToAsyncStorage("@notifications", data);
       } else {

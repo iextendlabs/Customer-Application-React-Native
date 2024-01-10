@@ -6,7 +6,7 @@ import { NotificationUrl } from "./Config/Api";
 import { useDispatch } from "react-redux";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
-import { updateNotifiaction } from './redux/actions/Actions';
+import { updateNotification } from './redux/actions/Actions';
 
 export default function MainContainer() {
   const dispatch = useDispatch();
@@ -32,7 +32,7 @@ export default function MainContainer() {
       if (response.status === 200) {
         let data = response.data.notifications;
         dispatch(
-          updateNotifiaction(data)
+          updateNotification(data)
         );
         saveToAsyncStorage("@notifications", data);
       } else {
