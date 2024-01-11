@@ -22,6 +22,7 @@ const Login = () => {
   const [badEmail, setBadEmail] = useState(false);
   const [badPassword, setBadPassword] = useState(false);
   const [error, setError] = useState("");
+  const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [fcmToken, setFcmToken] = useState("");
 
@@ -48,6 +49,16 @@ const Login = () => {
     return () => { };
   }, [navigation]);
 
+  useEffect(() => {
+    if (route.params && route.params.msg) {
+      console.log(route.params.msg);
+      setMessage(route.params.msg);
+      setTimeout(() => {
+        setMessage("");
+      }, 3000);
+    }
+  }, [navigation]);
+
   try {
 
     const unsubscribeOnTokenRefreshed = messaging().onTokenRefresh((fcmToken) => {
@@ -61,7 +72,7 @@ const Login = () => {
         setFcmToken(fcmToken);
       });
   } catch (error) {
-    
+
   }
 
   const handleLogin = async () => {
@@ -156,7 +167,7 @@ const Login = () => {
     }
     setLoading(false);
   };
-
+  
   if (loading) {
     return Splash();
   }
@@ -188,6 +199,12 @@ const Login = () => {
         {error && (
           <Text style={{ marginTop: 10, marginLeft: 40, color: "red" }}>
             {error}
+          </Text>
+        )}
+
+        {message && (
+          <Text style={{ marginTop: 10, marginLeft: 40, color: "green" }}>
+            {message}
           </Text>
         )}
         <CustomTextInput

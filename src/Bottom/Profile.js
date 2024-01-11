@@ -12,12 +12,22 @@ import {
 } from "../redux/actions/Actions";
 import { useDispatch } from "react-redux";
 import Footer from "../Common/Footer";
+import axios from "axios";
+import { DeleteAccountUrl } from "../Config/Api";
 
 export default function Profile() {
   const dispatch = useDispatch();
   const [name, setName] = useState();
   const [email, setEmail] = useState();
+  const [message, setMessage] = useState();
   const navigation = useNavigation();
+
+  const setSuccess = (message) => {
+    setMessage(message);
+    setTimeout(() => {
+      setMessage("");
+    }, 5000);
+  };
   useEffect(() => {
     getData();
   }, []);
@@ -55,17 +65,65 @@ export default function Profile() {
       console.log("Error occurred during logout:", error);
     }
   };
+
+  const deleteAccount = async () => {
+    let userId = await AsyncStorage.getItem("@user_id");
+
+    try {
+      const response = await axios.get(
+        `${DeleteAccountUrl}id=${userId}`
+      );
+      if (response.status === 200) {
+        await AsyncStorage.removeItem("@user_id");
+        await AsyncStorage.removeItem("@access_token");
+        await AsyncStorage.removeItem("@user_name");
+        await AsyncStorage.removeItem("@user_email");
+
+        dispatch(clearAddress());
+        dispatch(clearPersonalInformation());
+        dispatch(clearCoupon());
+        dispatch(clearNotification());
+        await AsyncStorage.removeItem("@personalInformation");
+        await AsyncStorage.removeItem("@couponData");
+        await AsyncStorage.removeItem("@addressData");
+        await AsyncStorage.removeItem("@addressData");
+        await AsyncStorage.removeItem("@notifications");
+        navigation.reset({
+          index: 0,
+          routes: [
+            {
+              name: 'Login',
+              params: { back: "Home", msg: response.data.msg },
+            },
+          ],
+        });
+      } else if (response.status === 201) {
+        setSuccess(response.data.msg);
+      };
+    } catch (error) {
+      console.log("Error occurred during logout:", error);
+    }
+  };
+  
   return (
     <View style={{ flex: 1, backgroundColor: "#FFCACC" }}>
       <Header title={"Profile"} isProfile={true} />
       <Image
         source={require("../images/profile.png")}
-        style={{ width: 80, height: 80, alignSelf: "center", marginTop: 30 }}
+        style={{ width: 80, height: 80, alignSelf: "center" }}
       />
-      <Text style={{ alignSelf: "center", marginTop: 10, fontSize: 18 }}>
+      {message !== "" && (
+        <Text style={{
+          color: "red",
+          fontSize: 16,
+          fontWeight: "bold",
+          margin: 10,
+        }}>{message}</Text>
+      )}
+      <Text style={{ alignSelf: "center", marginTop: 5, fontSize: 18 }}>
         {name}
       </Text>
-      <Text style={{ alignSelf: "center", marginTop: 10, fontSize: 18 }}>
+      <Text style={{ alignSelf: "center", marginTop: 5, fontSize: 18 }}>
         {email}
       </Text>
       <TouchableOpacity
@@ -75,7 +133,7 @@ export default function Profile() {
           height: 50,
           borderBottomWidth: 0.3,
           borderBottomColor: "#8e8e8e",
-          marginTop: 20,
+          marginTop: 10,
           justifyContent: "center",
         }}
         onPress={() => {
@@ -144,18 +202,40 @@ export default function Profile() {
       >
         <Text>Customer Support</Text>
       </TouchableOpacity>
-      <TouchableOpacity
-        style={{ marginBottom: 60 }}
-        onPress={() => {
-          logout();
-        }}
-      >
-        <Image
-          source={require("../images/logout.png")}
-          style={{ width: 30, height: 30, alignSelf: "center", margin: 30 }}
-        />
-      </TouchableOpacity>
-
+      <View style={{ flexDirection: "row", justifyContent: "space-around" }}>
+        <TouchableOpacity
+          style={{
+            width: 120,
+            height: 40,
+            marginTop: 20,
+            justifyContent: "center",
+            alignSelf: "center",
+            borderWidth: 0.5,
+            borderColor: "#8e8e8e",
+          }}
+          onPress={() => {
+            deleteAccount();
+          }}
+        >
+          <Text style={{ alignSelf: "center" }}>Delete Account</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={{
+            width: 80,
+            height: 40,
+            marginTop: 20,
+            justifyContent: "center",
+            alignSelf: "center",
+            borderWidth: 0.5,
+            borderColor: "#8e8e8e",
+          }}
+          onPress={() => {
+            logout();
+          }}
+        >
+          <Text style={{ alignSelf: "center" }}>Logout</Text>
+        </TouchableOpacity>
+      </View>
       <Footer />
     </View>
   );

@@ -123,7 +123,7 @@ export default function MyVoucher() {
               >
                 <View>
                   <Text style={styles.orderTitle}>{item.title}</Text>
-                  <Text>Code: {item.body}</Text>
+                  <Text>{item.body}</Text>
                 </View>
               </View>
             )}

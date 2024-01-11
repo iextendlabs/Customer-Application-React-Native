@@ -20,6 +20,7 @@ const ChatUrl = BaseUrl+'api/customerChat?';
 const AddChatUrl = BaseUrl+'api/addCustomerChat';
 const PasswordResetUrl = BaseUrl + "api/passwordReset";
 const StaffUrl = BaseUrl + "api/staff/";
+const DeleteAccountUrl = BaseUrl + "api/deleteAccountMail?";
 export {
   LoginUrl,
   SignupUrl,
@@ -41,5 +42,6 @@ export {
   ChatUrl,
   AddChatUrl,
   PasswordResetUrl,
-  StaffUrl
+  StaffUrl,
+  DeleteAccountUrl
 };
