@@ -144,6 +144,7 @@ export default function Details() {
 **Service:** ${service.name}
 **Price:** AED ${discountedPrice} ${service.discount ? "(Discounted)" : ""}
 **Duration:** ${service.duration}
+**Description:** ${service.short_description}
 **URL:** ${BaseUrl + "serviceDetail/" + service.id}
 `;
 

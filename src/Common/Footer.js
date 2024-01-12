@@ -207,10 +207,21 @@ export default function Footer() {
       </View>
       <TouchableOpacity
         onPress={openWhatsAppMessage}
-        style={{ position: "absolute", bottom: 80, right: 20 }}
+        style={{ position: "absolute", bottom: 65, right: 20 }}
       >
         <Image
           source={require("../images/whatsapp-chat.png")}
+          style={{ width: 50, height: 50 }}
+        />
+      </TouchableOpacity>
+      <TouchableOpacity
+        onPress={() => {
+          navigation.navigate("Chat");
+        }}
+        style={{ position: "absolute", bottom: 130, right: 20 }}
+      >
+        <Image
+          source={require("../images/chat.png")}
           style={{ width: 50, height: 50 }}
         />
       </TouchableOpacity>

@@ -53,6 +53,7 @@ export default function MainContainer() {
             console.log(token);
           });
 
+        messaging().subscribeToTopic('lipslay');
         messaging()
           .getInitialNotification()
           .then(async (remoteMessage) => {
