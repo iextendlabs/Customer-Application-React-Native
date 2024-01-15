@@ -18,14 +18,7 @@ export default function Footer() {
 
   const navigation = useNavigation();
   const route = useRoute();
-  const checkAuthentication = async (navigate) => {
-    const user = await AsyncStorage.getItem("@user_id");
-    if (user === "" || user === null) {
-      navigation.navigate("Login", { Navigate: navigate });
-    } else {
-      navigation.navigate(navigate);
-    }
-  };
+  
 
   const openWhatsAppMessage = async () => {
     try {
@@ -192,15 +185,15 @@ export default function Footer() {
             alignItems: "center",
           }}
           onPress={() => {
-            checkAuthentication("Profile");
+            navigation.navigate("Menu")
           }}
         >
           <Image
-            source={require("../images/user.png")}
+            source={require("../images/menu.png")}
             style={{
               width: 24,
               height: 24,
-              tintColor: route.name == "Profile" ? "#000" : "#8e8e8e",
+              tintColor: route.name == "Menu" ? "#000" : "#8e8e8e",
             }}
           />
         </TouchableOpacity>

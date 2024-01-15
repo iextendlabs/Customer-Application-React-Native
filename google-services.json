@@ -7,9 +7,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:871352006740:android:a52a11c858bc1a95bed5c1",
+        "mobilesdk_app_id": "1:871352006740:android:0f544b171bb31ad0bed5c1",
         "android_client_info": {
-          "package_name": "com.hamza0003.Customerapp"
+          "package_name": "com.SHERAZASLAM.Customerapp"
         }
       },
       "oauth_client": [],

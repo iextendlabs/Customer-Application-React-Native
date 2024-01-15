@@ -301,6 +301,21 @@ const Signup = () => {
             >
               Terms and Conditions
             </Text>
+            {" and "}
+            <Text
+              style={{
+                fontSize: 14,
+                alignSelf: "center",
+                marginTop: 5,
+                color: "#00a1fc",
+                textDecorationLine: "underline",
+              }}
+              onPress={() => {
+                navigation.navigate("PrivacyPolicy");
+              }}
+            >
+              Privacy Policy
+            </Text>
           </Text>
         </View>
         <CommonButton

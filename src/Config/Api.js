@@ -1,4 +1,4 @@
-const BaseUrl = "https://lipslay.com/";
+const BaseUrl = "https://test.lipslay.com/";
 
 const LoginUrl = BaseUrl + "api/customerLogin";
 const SignupUrl = BaseUrl + "api/customerSignup";
@@ -21,6 +21,7 @@ const AddChatUrl = BaseUrl+'api/addCustomerChat';
 const PasswordResetUrl = BaseUrl + "api/passwordReset";
 const StaffUrl = BaseUrl + "api/staff/";
 const DeleteAccountUrl = BaseUrl + "api/deleteAccountMail?";
+const SubCategoriesUrl = BaseUrl + "api/subCategories?id=";
 export {
   LoginUrl,
   SignupUrl,
@@ -43,5 +44,6 @@ export {
   AddChatUrl,
   PasswordResetUrl,
   StaffUrl,
-  DeleteAccountUrl
+  DeleteAccountUrl,
+  SubCategoriesUrl
 };

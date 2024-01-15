@@ -19,7 +19,7 @@ import { useDispatch } from "react-redux";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
 import Splash from "../Screen/Splash";
-import { updateServices, updateZone } from "../redux/actions/Actions";
+import { updateCategories, updateServices, updateZone } from "../redux/actions/Actions";
 import CommonButton from "../Common/CommonButton";
 import StaffCard from "../Common/StaffCard";
 
@@ -64,6 +64,7 @@ export default function Main() {
         setStaffs(data.staffs);
         setLoading(false);
         dispatch(updateServices(data.services));
+        dispatch(updateCategories(data.categories));
         dispatch(updateZone(data.staffZones));
         await AsyncStorage.setItem(
           "@whatsappNumber",

@@ -19,6 +19,7 @@ import RescheduleOrder from "./Screen/RescheduleOrder";
 import Notification from "./Screen/Notification";
 import Chat from "./Screen/Chat";
 import ForgotPassword from "./Screen/ForgotPassword";
+import Menu from "./Bottom/Menu";
 
 const Stack = createStackNavigator();
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -35,6 +36,8 @@ import Details from "./Bottom/Details";
 import { ImageBackground } from "react-native";
 import Booking from "./Bottom/Booking";
 import TermsCondition from "./Common/TermsCondition";
+import AboutUs from "./Common/AboutUs";
+import PrivacyPolicy from "./Common/PrivacyPolicy";
 import Staff from "./Common/Staff";
 
 export default function AppNavigator() {
@@ -154,7 +157,7 @@ export default function AppNavigator() {
           component={Cart}
         />
         <Stack.Screen
-          options={{ headerShown: false }}
+          options={{ title: "Profile" }}
           name="Profile"
           component={Profile}
         />
@@ -200,6 +203,16 @@ export default function AppNavigator() {
           component={TermsCondition}
         />
         <Stack.Screen
+          options={{ title: "Privacy Policy" }}
+          name="PrivacyPolicy"
+          component={PrivacyPolicy}
+        />
+        <Stack.Screen
+          options={{ title: "About Us" }}
+          name="AboutUs"
+          component={AboutUs}
+        />
+        <Stack.Screen
           options={{ title: "Our Team" }}
           name="Staff"
           component={Staff}
@@ -223,6 +236,11 @@ export default function AppNavigator() {
           options={{ title: "Forgot Password" }}
           name="ForgotPassword"
           component={ForgotPassword}
+        />
+        <Stack.Screen
+          options={{ headerShown: false }}
+          name="Menu"
+          component={Menu}
         />
       </Stack.Navigator>
     </NavigationContainer>

@@ -17,11 +17,17 @@ import {
   UPDATE_COUPON,
   UPDATE_NOTIFICATION,
   UPDATE_SERVICES,
+  UPDATE_CATEGORY,
   UPDATE_ZONE
 } from "../ActionTypes";
 
 export const updateServices = (data) => ({
   type: UPDATE_SERVICES,
+  payload: data,
+});
+
+export const updateCategories = (data) => ({
+  type: UPDATE_CATEGORY,
   payload: data,
 });
 

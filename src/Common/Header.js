@@ -4,7 +4,7 @@ import { ImageBackground } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useSelector } from "react-redux";
 
-export default function Header({ title, onPress, isProfile }) {
+export default function Header({ title, onPress, isMenu }) {
 
   const navigation = useNavigation();
   const notificationsData = useSelector((state) => state.Notifications);
@@ -47,7 +47,7 @@ export default function Header({ title, onPress, isProfile }) {
         >
           {title}
         </Text>
-        {!isProfile && (
+        {!isMenu && (
           <Text
             style={{
               fontSize: 14,

@@ -107,10 +107,9 @@ export default function Profile() {
   
   return (
     <View style={{ flex: 1, backgroundColor: "#FFCACC" }}>
-      <Header title={"Profile"} isProfile={true} />
       <Image
         source={require("../images/profile.png")}
-        style={{ width: 80, height: 80, alignSelf: "center" }}
+        style={{ width: 80, height: 80, alignSelf: "center",marginTop:20 }}
       />
       {message !== "" && (
         <Text style={{
