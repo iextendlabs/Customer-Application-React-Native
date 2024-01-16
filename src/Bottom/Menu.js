@@ -35,19 +35,19 @@ export default function Menu() {
       </TouchableOpacity>
       <TouchableOpacity
         style={styles.menuItem}
-        onPress={() => checkAuthentication("TermsCondition")}
+        onPress={() => navigation.navigate("TermsCondition")}
       >
         <Text>Terms & Condition</Text>
       </TouchableOpacity>
       <TouchableOpacity
         style={styles.menuItem}
-        onPress={() => checkAuthentication("AboutUs")}
+        onPress={() => navigation.navigate("AboutUs")}
       >
         <Text>About Us</Text>
       </TouchableOpacity>
       <TouchableOpacity
         style={styles.menuItem}
-        onPress={() => checkAuthentication("PrivacyPolicy")}
+        onPress={() => navigation.navigate("PrivacyPolicy")}
       >
         <Text>Privacy Policy</Text>
       </TouchableOpacity>

@@ -18,7 +18,14 @@ export default function Footer() {
 
   const navigation = useNavigation();
   const route = useRoute();
-  
+  const checkAuthentication = async (navigate) => {
+    const user = await AsyncStorage.getItem("@user_id");
+    if (user === "" || user === null) {
+      navigation.navigate("Login", { Navigate: navigate });
+    } else {
+      navigation.navigate(navigate);
+    }
+  };
 
   const openWhatsAppMessage = async () => {
     try {
@@ -209,7 +216,7 @@ export default function Footer() {
       </TouchableOpacity>
       <TouchableOpacity
         onPress={() => {
-          navigation.navigate("Chat");
+          checkAuthentication("Chat");
         }}
         style={{ position: "absolute", bottom: 130, right: 20 }}
       >
