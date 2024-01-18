@@ -7,7 +7,7 @@ export default function PrivacyPolicy() {
   return (
     <View style={{ flex: 1 }}>
       <WebView
-        source={{ uri: BaseUrl+"privacyPolicy" }}
+        source={{ uri: BaseUrl+"privacyPolicy?app=true" }}
         style={{ flex: 1 }}
       />
     </View>

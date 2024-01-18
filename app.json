@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "Lipslay",
-    "slug": "Lipslay",
+    "slug": "Lipslay_App",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -45,12 +45,12 @@
           "apiKey": "AIzaSyBJ0A4bxdhZ4FWomyO-tSEa4Qn0KY1jpT8"
         }
       },
-      "package": "com.SHERAZASLAM.Customerapp"
+      "package": "com.lipslay.Customerapp"
     },
     "web": {},
     "extra": {
       "eas": {
-        "projectId": "04ed7562-d065-454d-9604-a31458f0d1e8"
+        "projectId": "441d9510-00b2-4425-9516-37a6c5dd3117"
       }
     }
   }

@@ -120,6 +120,7 @@ const Signup = () => {
         await AsyncStorage.setItem("@user_id", String(userId));
         await AsyncStorage.setItem("@user_name", String(userName));
         await AsyncStorage.setItem("@user_email", String(userEmail));
+        await AsyncStorage.setItem("@affiliate", String(affiliate));
         const headers = {
           Authorization: `Bearer ${accessToken}`,
         };

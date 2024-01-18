@@ -7,25 +7,6 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:871352006740:android:0f544b171bb31ad0bed5c1",
-        "android_client_info": {
-          "package_name": "com.SHERAZASLAM.Customerapp"
-        }
-      },
-      "oauth_client": [],
-      "api_key": [
-        {
-          "current_key": "AIzaSyCzQj3NfTxwI52vKrvWxfIIWA4j5XRKGYI"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": []
-        }
-      }
-    },
-    {
-      "client_info": {
         "mobilesdk_app_id": "1:871352006740:android:0f8c34d93acccf3fbed5c1",
         "android_client_info": {
           "package_name": "com.iextendlabs.driver.saloon"
@@ -48,6 +29,25 @@
         "mobilesdk_app_id": "1:871352006740:android:dced243d62e33b54bed5c1",
         "android_client_info": {
           "package_name": "com.iextendlabs.saloon"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCzQj3NfTxwI52vKrvWxfIIWA4j5XRKGYI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:871352006740:android:01ee9b9d51df86acbed5c1",
+        "android_client_info": {
+          "package_name": "com.lipslay.Customerapp"
         }
       },
       "oauth_client": [],

@@ -80,6 +80,7 @@ export default function Checkout() {
   const [latitude, setLatitude] = useState(null);
 
   useEffect(() => {
+    affiliateSet();
     setServicesTotal(getServicesTotal());
   }, []);
 
@@ -177,6 +178,16 @@ export default function Checkout() {
     fetchAvailableTimeSlots(date.dateString, selectedArea);
   };
 
+  const affiliateSet = async () => {
+   
+    try {
+      const affiliate = await AsyncStorage.getItem("@affiliate");
+      setAffiliate(affiliate);
+      applyCode(null,affiliate);
+    } catch (error) {
+    }
+    
+  };
   const fetchAvailableTimeSlots = async (
     date,
     area,
@@ -300,7 +311,6 @@ export default function Checkout() {
   };
 
   const applyCode = async (coupon=null , affiliate=null) => {
-    console.log(coupon, affiliate);
     if (coupon !== "" || affiliate !== "") {
       setLoading(true);
       try {

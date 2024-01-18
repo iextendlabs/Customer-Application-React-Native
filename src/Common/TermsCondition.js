@@ -7,7 +7,7 @@ export default function TermsCondition() {
   return (
     <View style={{ flex: 1 }}>
       <WebView
-        source={{ uri: BaseUrl+"termsCondition" }}
+        source={{ uri: BaseUrl+"termsCondition?app=true" }}
         style={{ flex: 1 }}
       />
     </View>
