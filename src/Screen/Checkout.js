@@ -183,7 +183,9 @@ export default function Checkout() {
     try {
       const affiliate = await AsyncStorage.getItem("@affiliate");
       setAffiliate(affiliate);
-      applyCode(null,affiliate);
+      if(affiliate){
+        applyCode(null,affiliate);
+      }
     } catch (error) {
     }
     
