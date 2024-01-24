@@ -143,7 +143,7 @@ export default function Checkout() {
         couponDiscount
       );
     }
-  }, [bookingData,couponDiscount]);
+  }, [bookingData, couponDiscount]);
 
   const getServicesTotal = () => {
     return cartData.reduce((total, item) => {
@@ -179,16 +179,16 @@ export default function Checkout() {
   };
 
   const affiliateSet = async () => {
-   
+
     try {
       const affiliate = await AsyncStorage.getItem("@affiliate");
       setAffiliate(affiliate);
-      if(affiliate){
-        applyCode(null,affiliate);
+      if (affiliate) {
+        applyCode(null, affiliate);
       }
     } catch (error) {
     }
-    
+
   };
   const fetchAvailableTimeSlots = async (
     date,
@@ -312,13 +312,16 @@ export default function Checkout() {
     setLoading(false);
   };
 
-  const applyCode = async (coupon=null , affiliate=null) => {
+  const applyCode = async (coupon = null, affiliate = null) => {
+    const userId = await AsyncStorage.getItem("@user_id");
     if (coupon !== "" || affiliate !== "") {
       setLoading(true);
       try {
         const response = await axios.post(applyCouponAffiliateUrl, {
           coupon: coupon,
           affiliate: affiliate,
+          user_id: userId,
+          service_ids:cartDataIds
         });
 
         if (response.status === 200) {
@@ -331,20 +334,13 @@ export default function Checkout() {
           if (couponData) {
             setCouponId(couponData.id);
 
-            let discount = 0;
-
-            if (couponData.type === "Percentage") {
-              discount = (getServicesTotal() * couponData.discount) / 100;
-            } else {
-              discount = couponData.discount; // Fixed variable name from $discount to discount
-            }
-            setCouponDiscount(discount);
+            setCouponDiscount(response.data.coupon_discount);
 
             setOrderTotal(
               servicesTotal +
               parseFloat(selectedStaffCharges) +
               parseFloat(transportCharges) -
-              discount
+              response.data.coupon_discount
             );
           } else {
             setCouponId("");
@@ -354,7 +350,7 @@ export default function Checkout() {
               parseFloat(selectedStaffCharges) +
               parseFloat(transportCharges)
             );
-          }
+          } 
           setApplyCouponAffiliate("Your codes Apply Successfully.");
 
           setTimeout(() => {
@@ -380,7 +376,7 @@ export default function Checkout() {
               dispatch(clearCoupon());
               await AsyncStorage.removeItem("@couponData");
               setNotValidCoupon("Your Selected Voucher is Expired.");
-            }else{
+            } else {
               setNotValidCoupon(errors.coupon[0]);
             }
           }
@@ -520,7 +516,7 @@ export default function Checkout() {
           bgColor={"#fd245f"}
           textColor={"#fff"}
           onPress={() => {
-            applyCode(coupon,affiliate);
+            applyCode(coupon, affiliate);
           }}
         />
       </View>

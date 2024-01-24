@@ -65,10 +65,12 @@ export default function MyVoucher() {
   };
 
   const applyCoupon = async (code) => {
-      setLoading(true);
+    const userId = await AsyncStorage.getItem("@user_id");
+    setLoading(true);
       try {
         const response = await axios.post(applyCouponAffiliateUrl, {
           coupon: code,
+          user_id: userId
         });
 
         if (response.status === 200) {
