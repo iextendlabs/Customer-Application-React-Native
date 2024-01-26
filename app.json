@@ -2,7 +2,7 @@
   "expo": {
     "name": "Lipslay",
     "slug": "Lipslay_App",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -16,16 +16,12 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "config": {
-        "googleMaps": {
-          "apiKey": "AIzaSyBJ0A4bxdhZ4FWomyO-tSEa4Qn0KY1jpT8"
-        }
-      },
       "infoPlist": {
         "NSLocationWhenInUseUsageDescription": "Your description here"
       }
     },
     "android": {
+      "versionCode": 2,
       "googleServicesFile": "./google-services.json",
       "permissions": [
         "INTERNET",
@@ -39,11 +35,6 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      },
-      "config": {
-        "googleMaps": {
-          "apiKey": "AIzaSyBJ0A4bxdhZ4FWomyO-tSEa4Qn0KY1jpT8"
-        }
       },
       "package": "com.lipslay.Customerapp"
     },

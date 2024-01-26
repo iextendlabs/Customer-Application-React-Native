@@ -1,4 +1,4 @@
-import { StyleSheet, Alert } from 'react-native';
+import { StyleSheet, Alert, Linking } from 'react-native';
 import React, { useEffect } from 'react';
 import AppNavigator from './AppNavigator';
 import messaging from '@react-native-firebase/messaging';
@@ -7,13 +7,48 @@ import { useDispatch } from "react-redux";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import { updateNotification } from './redux/actions/Actions';
+import * as Notifications from 'expo-notifications';
 
 export default function MainContainer() {
   const dispatch = useDispatch();
   useEffect(() => {
+    checkNotificationPermission();
     fcmMessaging();
     getNotification();
   }, []);
+
+  const checkNotificationPermission = async () => {
+    try {
+      const { status } = await Notifications.getPermissionsAsync();
+
+      if (status !== 'granted') {
+        const { status: newStatus } = await Notifications.requestPermissionsAsync();
+
+        if (newStatus !== 'granted') {
+          console.log('Notification permission denied');
+          Alert.alert(
+            'Notification Permission Required',
+            'To receive notifications, please enable notification permissions in your device settings.',
+            [
+              {
+                text: 'OK',
+                onPress: () => {
+                  // Open device settings
+                  openSettings();
+                },
+              },
+            ]
+          );
+        }
+      }
+    } catch (error) {
+      console.error('Error checking notification permission:', error);
+    }
+  };
+
+  const openSettings = () => {
+    Linking.openSettings();
+  };
 
   const saveToAsyncStorage = async (key, data) => {
     try {
