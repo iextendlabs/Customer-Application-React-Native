@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, Text, View, TouchableOpacity, FlatList } from "react-native";
+import { StyleSheet, Text, View, TouchableOpacity, FlatList,ScrollView } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useSelector } from "react-redux";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -27,12 +27,21 @@ export default function Menu() {
   return (
     <View style={styles.container}>
       <Header title={"Menu"} isMenu={true} />
+      <ScrollView showsVerticalScrollIndicator={false}>
       <TouchableOpacity
         style={styles.menuItem}
         onPress={() => checkAuthentication("Profile")}
       >
         <Text>Profile</Text>
       </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.menuItem}
+        onPress={() => checkAuthentication("MyOrders")}
+      >
+        <Text>My Bookings</Text>
+      </TouchableOpacity>
+
       <TouchableOpacity
         style={styles.menuItem}
         onPress={() => navigation.navigate("TermsCondition")}
@@ -56,6 +65,7 @@ export default function Menu() {
         {categories && (
           <FlatList
             data={categories}
+            showsVerticalScrollIndicator={false}
             keyExtractor={(item) => item.id.toString()}
             renderItem={({ item, index }) => (
               <TouchableOpacity
@@ -72,6 +82,7 @@ export default function Menu() {
           />
         )}
       </View>
+      </ScrollView>
       <Footer />
     </View>
   );

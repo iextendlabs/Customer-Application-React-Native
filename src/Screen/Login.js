@@ -152,7 +152,13 @@ const Login = () => {
         };
 
         if (route.params && route.params.Navigate) {
-          navigation.navigate(route.params.Navigate);
+          navigation.reset({
+            index: 1, // Set the index based on the position of the route you want to set
+            routes: [
+              { name: 'Main' },  // Replace with the route you want to set in the history
+              { name: route.params.Navigate },   // Home screen or any other screen you want to navigate to
+            ],
+          });
         } else {
           navigation.reset({
             index: 0,
