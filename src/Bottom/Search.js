@@ -43,10 +43,10 @@ export default function Search() {
 
   const getServicesByCategory = (category_id) => {
     const filtered = data.services[0].filter(
-      (item) => item.category_id === category_id.toString()
+      (item) => item.category_id.includes(category_id)
     );
     setServices(filtered);
-  };
+  };  
 
   const filter = () => {
     if (search) {

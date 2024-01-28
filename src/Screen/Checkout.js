@@ -289,6 +289,7 @@ export default function Checkout() {
         coupon_id: couponId,
         latitude: latitude,
         longitude: longitude,
+        orderTotal: orderTotal
       });
 
       if (response.status === 200) {
@@ -321,7 +322,7 @@ export default function Checkout() {
           coupon: coupon,
           affiliate: affiliate,
           user_id: userId,
-          service_ids:cartDataIds
+          service_ids: cartDataIds
         });
 
         if (response.status === 200) {
@@ -350,7 +351,7 @@ export default function Checkout() {
               parseFloat(selectedStaffCharges) +
               parseFloat(transportCharges)
             );
-          } 
+          }
           setApplyCouponAffiliate("Your codes Apply Successfully.");
 
           setTimeout(() => {
@@ -1097,6 +1098,16 @@ export default function Checkout() {
   return (
     <ScrollView style={{ flex: 1, backgroundColor: "#FFCACC" }}>
       <View style={{ flex: 1, marginBottom: 40 }}>
+      {orderError && (
+          <Text
+            style={{
+              margin: 10,
+              color: "red",
+            }}
+          >
+            {orderError}
+          </Text>
+        )}
         {renderServices()}
         {renderPersonalInformation()}
         {name !== null && email !== null && (
@@ -1153,16 +1164,6 @@ export default function Checkout() {
                                       />
                                     </View>
                                     <View style={{ marginBottom: 30 }}>
-                                      {orderError && (
-                                        <Text
-                                          style={{
-                                            margin: 10,
-                                            color: "red",
-                                          }}
-                                        >
-                                          {orderError}
-                                        </Text>
-                                      )}
                                       <CommonButton
                                         title={"Place Order"}
                                         bgColor={"#000"}
