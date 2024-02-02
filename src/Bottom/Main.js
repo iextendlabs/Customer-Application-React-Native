@@ -8,12 +8,16 @@ import {
   TouchableOpacity,
   ScrollView,
   Dimensions,
-  TouchableWithoutFeedback
+  TouchableWithoutFeedback,
+  Alert,
+  Linking,
+  Modal,
+  Button
 } from "react-native";
 import axios from "axios";
 import Header from "../Common/Header";
 import Footer from "../Common/Footer";
-import { appIndex, BaseUrl } from "../Config/Api";
+import { appIndex, BaseUrl, appOfferUrl } from "../Config/Api";
 import OfferProductItem from "../Common/OfferProductItem";
 import { useDispatch } from "react-redux";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -22,6 +26,8 @@ import Splash from "../Screen/Splash";
 import { updateCategories, updateServices, updateZone } from "../redux/actions/Actions";
 import CommonButton from "../Common/CommonButton";
 import StaffCard from "../Common/StaffCard";
+import VersionCheck from 'react-native-version-check';
+import Constants from 'expo-constants';
 
 export default function Main() {
   const navigation = useNavigation();
@@ -36,24 +42,220 @@ export default function Main() {
   const [currentIndex, setCurrentIndex] = useState(0); // Initialize with 0
   const [staffs, setStaffs] = useState(0); // Initialize with 0
   const flatListRef = useRef(null);
+  const [updateModalVisible, setUpdateModalVisible] = useState(false);
+  const [offer, setOffer] = useState("");
+  const [offerImage, setOfferImage] = useState("");
+  const [offerType, setOfferType] = useState("");
+  const [offerId, setOfferId] = useState("");
+  const [offerStatus, setOfferStatus] = useState("");
+  const [offerModalVisible, setOfferModalVisible] = useState(false);
+  const [isUpdate, setIsUpdate] = useState(true);
 
   useEffect(() => {
-    // Fetch data effect
     getData();
+    checkForUpdate();
+    getOffer();
   }, []);
 
   useEffect(() => {
-    const intervalId = setInterval(moveToNextSlide, 3000);
+    const checkModalVisibility = async () => {
+      try {
+        const savedTime = await AsyncStorage.getItem("@offer");
+        if (savedTime) {
+          const currentTime = new Date().getTime();
+          const timeDifferenceInMs = currentTime - parseInt(savedTime, 10);
+          const timeDifferenceInHours = timeDifferenceInMs / (1000 * 60 * 60);
 
-    return () => clearInterval(intervalId);
-  }, [sliderImages, currentIndex, flatListRef]);
+          if (timeDifferenceInHours > 24) {
+            setOfferModalVisible(true);
+          }
+        } else {
+          setOfferModalVisible(true);
+        }
+      } catch (error) {
+        console.error('Error retrieving data from AsyncStorage:', error);
+      }
+    };
+
+    if (isUpdate === false && offerStatus === "1") {
+      checkModalVisibility();
+    }
+  }, [offer, isUpdate, offerStatus]);
+
+  const checkForUpdate = async () => {
+    try {
+      const latestVersion = await VersionCheck.getLatestVersion({
+        provider: 'playStore',
+        packageName: 'com.lipslay.Customerapp',
+      });
+
+      const currentVersion = Constants.expoConfig.version;
+
+      if (latestVersion !== currentVersion) {
+        setUpdateModalVisible(true);
+        setOfferModalVisible(false);
+        setIsUpdate(true);
+      }else{
+        setIsUpdate(false);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const UpdateModal = ({ visible }) => (
+    <Modal
+      transparent
+      animationType="slide"
+      visible={visible}
+    >
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <View style={{ backgroundColor: 'white', padding: 30, borderRadius: 10 }}>
+          <Text style={{ fontSize: 20, marginBottom: 10 }}>Update Available</Text>
+          <Text style={{ fontSize: 16, marginBottom: 10 }}>
+            A new version of the app is available. Please update to the latest version.
+          </Text>
+          <View style={{
+            justifyContent: "space-between",
+            flexDirection: "row",
+            alignItems: "center",
+          }}>
+            <Button
+              title="Update Now"
+              onPress={() => {
+                Linking.openURL('market://details?id=com.lipslay.Customerapp');
+                setUpdateModalVisible(false);  // Fix: Use setUpdateModalVisible instead of "false"
+                setIsUpdate(false);
+              }}
+            />
+            <TouchableOpacity
+              style={{
+                width: 100,
+                height: 35,
+                justifyContent: "center",
+                alignSelf: "center",
+                borderWidth: 0.5,
+                borderColor: "#8e8e8e",
+              }}
+              onPress={() => {
+                setUpdateModalVisible(false);
+                setIsUpdate(false);
+              }}
+            >
+              <Text style={{ alignSelf: "center" }}>Cancel</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </View>
+    </Modal>
+  );
+
+  const renderOfferModal = () => {
+    if (offer) {
+      const [status, type, id, filename] = offer.split('_');
+
+      const closeModal = async () => {
+        try {
+          await AsyncStorage.setItem("@offer", new Date().getTime().toString());
+        } catch (error) {
+          console.error('Error setting data in AsyncStorage:', error);
+        }
+
+        setOfferModalVisible(false);
+      };
+
+      const navigateToDetails = () => {
+        if (type === 'category') {
+          navigation.navigate('Search', {
+            category: parseInt(id, 10),
+          });
+        } else if (type === 'service') {
+          const filteredService = services.find((service) => service.id === parseInt(id, 10));
+
+          if (filteredService) {
+            navigation.navigate('Details', {
+              service: filteredService,
+            });
+          }
+        }
+        closeModal();
+      };
+
+      return (
+        <Modal animationType="slide" transparent={true} visible={offerModalVisible}>
+          <View style={{
+            flex: 1,
+            justifyContent: 'center',
+            alignItems: 'center',
+            backgroundColor: 'rgba(0, 0, 0, 0.7)',
+          }}>
+            <View style={{
+              width: '100%',
+              alignSelf: 'center',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}>
+              <TouchableOpacity onPress={closeModal} style={{
+                borderWidth: 0.5,
+                borderColor: "#fff",
+                borderRadius: 10,
+                backgroundColor: "#fff",
+                position: 'absolute',
+                top: -30,
+                right: 5,
+                padding: 5,
+                zIndex: 1,
+              }}>
+                <Image source={require('../images/close.png')} style={{ width: 10, height: 10 }} />
+              </TouchableOpacity>
+              <TouchableWithoutFeedback onPress={navigateToDetails}>
+                <Image
+                  source={{ uri: BaseUrl + 'uploads/' + filename }}
+                  style={{
+                    width: '90%',
+                    height: 200,
+                    borderRadius: 10,
+                  }}
+                />
+              </TouchableWithoutFeedback>
+            </View>
+          </View>
+        </Modal>
+      );
+    }
+    return null;
+  };
+
+  const getOffer = async () => {
+    try {
+      const offers = await axios.get(appOfferUrl);
+      if (offers.status === 200) {
+        const [status, type, id, filename] = offers.data.offer.split('_');
+        setOffer(offers.data.offer);
+        setOfferImage(filename);
+        setOfferId(id);
+        setOfferType(type);
+        setOfferStatus(status);
+      }
+    } catch (error) {
+    }
+  };
+
+  useEffect(() => {
+    if(!isUpdate){
+      const intervalId = setInterval(moveToNextSlide, 3000);
+      
+      return () => clearInterval(intervalId);
+    }
+  }, [sliderImages, currentIndex, flatListRef,isUpdate]);
 
   const getData = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(appIndex);
-      if (response.status === 200) {
-        let data = response.data;
+      const response = await fetch(BaseUrl+'AppData.json');
+      
+      if (response.ok) {
+        const data = await response.json();
         const selectedServices = data.services.filter((service) =>
           data.featured_services.includes(String(service.id))
         );
@@ -71,18 +273,26 @@ export default function Main() {
           String(data.whatsapp_number)
         );
       } else {
-        setError("Please try again.");
+        // Retry after 5 seconds if there's an error
+        setTimeout(() => {
+          getData();
+        }, 5000);
       }
     } catch (error) {
+      // Retry after 5 seconds if there's an error
+      setTimeout(() => {
+        getData();
+      }, 5000);
       setError("An error occurred while fetching data.");
     }
     setLoading(false);
   };
- 
-  const moveToNextSlide = () => {
-    if (flatListRef.current) {
-      const nextIndex = (currentIndex + 1) % sliderImages.length;
+  
 
+  const moveToNextSlide = () => {
+    if (!isUpdate && flatListRef.current) {
+      const nextIndex = (currentIndex + 1) % sliderImages.length;
+  
       if (!isNaN(nextIndex)) {
         flatListRef.current.scrollToOffset({
           offset: nextIndex * width,
@@ -286,6 +496,8 @@ export default function Main() {
         </ScrollView>
       )}
 
+      <UpdateModal visible={updateModalVisible} />
+      {renderOfferModal()}
       <Footer />
     </View>
   );
