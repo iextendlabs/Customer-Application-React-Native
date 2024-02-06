@@ -252,6 +252,7 @@ export default function Main() {
   const getData = async () => {
     setLoading(true);
     try {
+      setError("");
       const response = await fetch(BaseUrl+'AppData.json');
       
       if (response.ok) {

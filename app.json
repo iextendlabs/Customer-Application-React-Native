@@ -2,7 +2,7 @@
   "expo": {
     "name": "Lipslay",
     "slug": "Lipslay_App",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -18,10 +18,11 @@
       "supportsTablet": true,
       "infoPlist": {
         "NSLocationWhenInUseUsageDescription": "Your description here"
-      }
+      },
+      "bundleIdentifier": "com.lipslay.Customerapp"
     },
     "android": {
-      "versionCode": 3,
+      "versionCode": 4,
       "googleServicesFile": "./google-services.json",
       "permissions": [
         "INTERNET",
@@ -39,10 +40,15 @@
       "package": "com.lipslay.Customerapp"
     },
     "web": {},
+    "owner": "forexleo",
     "extra": {
       "eas": {
-        "projectId": "dca3f341-be24-491f-b9ef-362e0d2655aa"
+        "projectId": "441d9510-00b2-4425-9516-37a6c5dd3117"
       }
-    }
+    },
+    "plugins": [
+      "expo-build-properties",
+      ["expo-build-properties", { "ios": { "useFrameworks": "static" } }]
+    ]
   }
 }
