@@ -17,6 +17,7 @@ export default function Address() {
   const [building, setBuilding] = useState("");
   const [villa, setVilla] = useState("");
   const [street, setStreet] = useState("");
+  const [district, setDistrict] = useState("");
   const [area, setArea] = useState("");
   const [landmark, setLandmark] = useState("");
   const [city, setCity] = useState("");
@@ -40,6 +41,7 @@ export default function Address() {
       setBuilding(addressData.building || "");
       setVilla(addressData.villa || "");
       setStreet(addressData.street || "");
+      setDistrict(addressData.district || "");
       setArea(addressData.area || "");
       setLandmark(addressData.landmark || "");
       setCity(addressData.city || "");
@@ -56,6 +58,7 @@ export default function Address() {
       building.trim() !== "" &&
       villa.trim() !== "" &&
       street.trim() !== "" &&
+      district.trim() !== "" &&
       area.trim() !== "" &&
       landmark.trim() !== "" &&
       city.trim() !== ""
@@ -65,6 +68,7 @@ export default function Address() {
         villa: villa,
         street: street,
         area: area,
+        district: district,
         landmark: landmark,
         city: city,
         latitude: latitude,
@@ -90,6 +94,7 @@ export default function Address() {
           flatVilla: villa,
           street: street,
           area: area,
+          district: district,
           landmark: landmark,
           city: city,
           user_id: user_id,
@@ -158,6 +163,7 @@ export default function Address() {
         setVilla(villa);
         setStreet(street);
         setArea(area);
+        setDistrict(area);
         setLandmark(landmark);
         setCity(city);
       } else {
@@ -225,6 +231,13 @@ export default function Address() {
           value={city}
           onChangeText={(txt) => setCity(txt)}
           label={"City"}
+        />
+        <CustomTextInput
+          placeholder={"Enter District Name"}
+          icon={require("../images/building.png")}
+          value={district}
+          onChangeText={(txt) => setDistrict(txt)}
+          label={"District"}
         />
         <Text style={{ width: "85%", alignSelf: "center", padding: 10 }}>
           Zone:

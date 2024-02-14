@@ -23,6 +23,8 @@ const StaffUrl = BaseUrl + "api/staff/";
 const DeleteAccountUrl = BaseUrl + "api/deleteAccountMail?";
 const SubCategoriesUrl = BaseUrl + "api/subCategories?id=";
 const appOfferUrl = BaseUrl + "api/appOffer";
+const checkUser = BaseUrl + "api/checkUser?id=";
+const orderIssueMail = BaseUrl + "api/orderIssueMail";
 export {
   LoginUrl,
   SignupUrl,
@@ -47,5 +49,7 @@ export {
   StaffUrl,
   DeleteAccountUrl,
   SubCategoriesUrl,
-  appOfferUrl
+  appOfferUrl,
+  checkUser,
+  orderIssueMail
 };

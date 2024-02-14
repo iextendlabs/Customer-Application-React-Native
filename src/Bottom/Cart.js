@@ -9,12 +9,14 @@ import {
 import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import CartItem from "../Common/CartItem";
-import { removeFromCart, addItemToWishlist } from "../redux/actions/Actions";
+import { removeFromCart, addItemToWishlist, clearAddress, clearPersonalInformation, clearCoupon, clearNotification } from "../redux/actions/Actions";
 import Header from "../Common/Header";
 import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Footer from "../Common/Footer";
 import Splash from "../Screen/Splash";
+import axios from "axios";
+import { checkUser } from "../Config/Api";
 
 export default function Cart() {
   const navigation = useNavigation();
@@ -47,7 +49,28 @@ export default function Cart() {
       if (!user) {
         navigation.navigate("Login", { Navigate: "Checkout" });
       } else {
-        navigation.navigate("Checkout");
+        const response = await axios.get(checkUser + user);
+        if (response.status === 200) {
+          if (response.data.exists === true) {
+            navigation.navigate("Checkout");
+          } else {
+            await AsyncStorage.removeItem("@user_id");
+            await AsyncStorage.removeItem("@access_token");
+            await AsyncStorage.removeItem("@user_name");
+            await AsyncStorage.removeItem("@user_email");
+
+            dispatch(clearAddress());
+            dispatch(clearPersonalInformation());
+            dispatch(clearCoupon());
+            dispatch(clearNotification());
+            await AsyncStorage.removeItem("@personalInformation");
+            await AsyncStorage.removeItem("@couponData");
+            await AsyncStorage.removeItem("@addressData");
+            await AsyncStorage.removeItem("@addressData");
+            await AsyncStorage.removeItem("@notifications");
+            navigation.navigate("Login");
+          }
+        }
       }
       setLoading(false);
     } catch (error) {

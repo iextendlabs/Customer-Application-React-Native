@@ -9,6 +9,7 @@ import {
   ScrollView,
   Modal,
   TextInput,
+  Alert
 } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
 import {
@@ -16,6 +17,7 @@ import {
   availableTimeSlotUrl,
   AddOrderUrl,
   applyCouponAffiliateUrl,
+  orderIssueMail,
 } from "../Config/Api";
 import { useNavigation } from "@react-navigation/native";
 import { Calendar } from "react-native-calendars";
@@ -42,6 +44,7 @@ export default function Checkout() {
   const [selectedAddress, setSelectedAddress] = useState(null);
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedBuilding, setSelectedBuilding] = useState(null);
+  const [selectedDistrict, setSelectedDistrict] = useState(null);
   const [selectedArea, setSelectedArea] = useState(null);
   const [selectedLandmark, setSelectedLandmark] = useState(null);
   const [selectedFlatVilla, setSelectedFlatVilla] = useState(null);
@@ -156,8 +159,9 @@ export default function Checkout() {
 
   const selectAddress = (item) => {
     setSelectedAddress(
-      `${item.building} ${item.villa} ${item.street} ${item.area} ${item.city}`
+      `${item.building} ${item.villa} ${item.street} ${item.district} ${item.city}`
     );
+    setSelectedDistrict(item.district);
     setSelectedArea(item.area);
     setSelectedBuilding(item.building);
     setSelectedLandmark(item.landmark);
@@ -267,30 +271,34 @@ export default function Checkout() {
 
   const handleSave = async () => {
     setLoading(true);
+
+    const requestData = {
+      name: name,
+      email: email,
+      buildingName: selectedBuilding,
+      district: selectedDistrict,
+      area: selectedArea,
+      landmark: selectedLandmark,
+      flatVilla: selectedFlatVilla,
+      street: selectedStreet,
+      city: selectedCity,
+      number: number,
+      whatsapp: whatsapp,
+      service_staff_id: selectedStaffId,
+      date: selectedDate,
+      time_slot_id: selectedSlotId,
+      gender: gender,
+      service_ids: cartDataIds,
+      order_comment: note,
+      affiliate_id: affiliateId,
+      coupon_id: couponId,
+      latitude: latitude,
+      longitude: longitude,
+      orderTotal: orderTotal
+    };
+
     try {
-      const response = await axios.post(AddOrderUrl, {
-        name: name,
-        email: email,
-        buildingName: selectedBuilding,
-        area: selectedArea,
-        landmark: selectedLandmark,
-        flatVilla: selectedFlatVilla,
-        street: selectedStreet,
-        city: selectedCity,
-        number: number,
-        whatsapp: whatsapp,
-        service_staff_id: selectedStaffId,
-        date: selectedDate,
-        time_slot_id: selectedSlotId,
-        gender: gender,
-        service_ids: cartDataIds,
-        order_comment: note,
-        affiliate_id: affiliateId,
-        coupon_id: couponId,
-        latitude: latitude,
-        longitude: longitude,
-        orderTotal: orderTotal
-      });
+      const response = await axios.post(AddOrderUrl, requestData);
 
       if (response.status === 200) {
         await AsyncStorage.removeItem("@cartData");
@@ -308,7 +316,25 @@ export default function Checkout() {
         setError("Order failed. Please try again.");
       }
     } catch (error) {
-      // setError("These credentials do not match our records.");
+      const response = await axios.post(orderIssueMail, requestData);
+      if (response.data.mailSend === true) {
+        Alert.alert(
+          "Order Placement Failed",
+          "Our support will contact you. Please try again once more.",
+          [
+            {
+              text: "OK",
+              onPress: async () => {
+                navigation.navigate("Main");
+                await AsyncStorage.removeItem("@cartData");
+                dispatch(clearCart());
+              },
+            },
+          ],
+          { cancelable: false }
+        );
+      }
+
     }
     setLoading(false);
   };
@@ -361,11 +387,13 @@ export default function Checkout() {
           const errors = response.data.errors;
 
           if (errors.affiliate) {
+            setAffiliate("");
             setAffiliateId("");
             setNotValidAffiliate(errors.affiliate[0]); // Assuming affiliate is an array
           }
 
           if (errors.coupon) {
+            setCoupon("");
             setCouponId("");
             setCouponDiscount("");
             setOrderTotal(
@@ -373,13 +401,9 @@ export default function Checkout() {
               parseFloat(selectedStaffCharges) +
               parseFloat(transportCharges)
             );
-            if (couponData && couponData.length > 0) {
-              dispatch(clearCoupon());
-              await AsyncStorage.removeItem("@couponData");
-              setNotValidCoupon("Your Selected Voucher is Expired.");
-            } else {
-              setNotValidCoupon(errors.coupon[0]);
-            }
+            dispatch(clearCoupon());
+            await AsyncStorage.removeItem("@couponData");
+            setNotValidCoupon(errors.coupon[0]);
           }
 
           setTimeout(() => {
@@ -1098,7 +1122,7 @@ export default function Checkout() {
   return (
     <ScrollView style={{ flex: 1, backgroundColor: "#FFCACC" }}>
       <View style={{ flex: 1, marginBottom: 40 }}>
-      {orderError && (
+        {orderError && (
           <Text
             style={{
               margin: 10,

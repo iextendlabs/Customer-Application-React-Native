@@ -23,7 +23,7 @@ import { useDispatch } from "react-redux";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
 import Splash from "../Screen/Splash";
-import { updateCategories, updateServices, updateZone } from "../redux/actions/Actions";
+import { addItemToCart, addItemToWishlist, clearCart, clearWishlist, updateCategories, updateServices, updateZone } from "../redux/actions/Actions";
 import CommonButton from "../Common/CommonButton";
 import StaffCard from "../Common/StaffCard";
 import VersionCheck from 'react-native-version-check';
@@ -95,7 +95,7 @@ export default function Main() {
         setUpdateModalVisible(true);
         setOfferModalVisible(false);
         setIsUpdate(true);
-      }else{
+      } else {
         setIsUpdate(false);
       }
     } catch (error) {
@@ -242,19 +242,19 @@ export default function Main() {
   };
 
   useEffect(() => {
-    if(!isUpdate){
+    if (!isUpdate) {
       const intervalId = setInterval(moveToNextSlide, 3000);
-      
+
       return () => clearInterval(intervalId);
     }
-  }, [sliderImages, currentIndex, flatListRef,isUpdate]);
+  }, [sliderImages, currentIndex, flatListRef, isUpdate]);
 
   const getData = async () => {
     setLoading(true);
     try {
       setError("");
       const response = await fetch(BaseUrl+'AppData.json');
-      
+
       if (response.ok) {
         const data = await response.json();
         const selectedServices = data.services.filter((service) =>
@@ -269,18 +269,48 @@ export default function Main() {
         dispatch(updateServices(data.services));
         dispatch(updateCategories(data.categories));
         dispatch(updateZone(data.staffZones));
+
         await AsyncStorage.setItem(
           "@whatsappNumber",
           String(data.whatsapp_number)
         );
+
+        const wishlistData = await AsyncStorage.getItem("@wishlistData");
+        const cartData = await AsyncStorage.getItem("@cartData");
+
+        const updatedCartData = cartData
+          ? JSON.parse(cartData).filter((cartItem) =>
+            data.services.some((serviceItem) => serviceItem.id === cartItem.id)
+          )
+          : [];
+
+        dispatch(clearCart());
+        updatedCartData.forEach((item) => {
+          dispatch(addItemToCart(item));
+        });
+
+        await AsyncStorage.removeItem("@cartData");
+        await AsyncStorage.setItem("@cartData", JSON.stringify(updatedCartData));
+
+        const updatedWishlistData = wishlistData
+          ? JSON.parse(wishlistData).filter((wishlistItem) =>
+            data.services.some((serviceItem) => serviceItem.id === wishlistItem.id)
+          )
+          : [];
+        
+        dispatch(clearWishlist());
+        updatedWishlistData.forEach((item) => {
+          dispatch(addItemToWishlist(item));
+        });
+
+        await AsyncStorage.removeItem("@wishlistData");
+        await AsyncStorage.setItem("@wishlistData", JSON.stringify(updatedWishlistData));
       } else {
-        // Retry after 5 seconds if there's an error
         setTimeout(() => {
           getData();
         }, 5000);
       }
     } catch (error) {
-      // Retry after 5 seconds if there's an error
       setTimeout(() => {
         getData();
       }, 5000);
@@ -383,7 +413,7 @@ export default function Main() {
                         console.log(type);
                         if (type === 'category') {
                           navigation.navigate("Search", {
-                            category: id,
+                            category: parseInt(id,10),
                           });
                         } else if (type === 'service') {
                           const filteredService = services.find(service => service.id === parseInt(id, 10));

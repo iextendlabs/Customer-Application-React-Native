@@ -240,7 +240,7 @@ const Signup = () => {
         )}
 
         <CustomTextInput
-          placeholder={"Enter Affiliate Code"}
+          placeholder={"Enter Affiliate Code (Optional)"}
           icon={require("../images/affiliate.png")}
           value={affiliate}
           onChangeText={(txt) => {
