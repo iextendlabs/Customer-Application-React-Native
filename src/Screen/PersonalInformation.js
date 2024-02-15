@@ -209,7 +209,7 @@ export default function PersonalInformation() {
               onChangeText={(txt) => {
                 setPassword(txt);
               }}
-              label={'Change Password'}
+              label={'Change Password (Optional)'}
             />
             {badPassword === true && (
               <Text style={{ marginTop: 10, marginLeft: 40, color: "red" }}>

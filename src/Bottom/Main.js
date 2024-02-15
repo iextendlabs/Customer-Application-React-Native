@@ -21,7 +21,7 @@ import { appIndex, BaseUrl, appOfferUrl } from "../Config/Api";
 import OfferProductItem from "../Common/OfferProductItem";
 import { useDispatch } from "react-redux";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import Splash from "../Screen/Splash";
 import { addItemToCart, addItemToWishlist, clearCart, clearWishlist, updateCategories, updateServices, updateZone } from "../redux/actions/Actions";
 import CommonButton from "../Common/CommonButton";
@@ -50,12 +50,20 @@ export default function Main() {
   const [offerStatus, setOfferStatus] = useState("");
   const [offerModalVisible, setOfferModalVisible] = useState(false);
   const [isUpdate, setIsUpdate] = useState(true);
+  const route = useRoute();
 
   useEffect(() => {
     getData();
     checkForUpdate();
     getOffer();
   }, []);
+
+  useEffect(() => {
+    if (route.params && route.params.refresh) {
+      console.log(route.params.refresh);
+      getData();
+    }
+  }, [navigation]);
 
   useEffect(() => {
     const checkModalVisibility = async () => {
@@ -233,7 +241,7 @@ export default function Main() {
         const [status, type, id, filename] = offers.data.offer.split('_');
         setOffer(offers.data.offer);
         setOfferImage(filename);
-        setOfferId(id);
+        setOfferId(parseInt(id,10));
         setOfferType(type);
         setOfferStatus(status);
       }

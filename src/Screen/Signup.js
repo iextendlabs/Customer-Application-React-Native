@@ -129,8 +129,8 @@ const Signup = () => {
           routes: [
             {
               name:
-                route.params && route.params.target
-                  ? route.params.target
+                route.params && route.params.Navigate
+                  ? route.params.Navigate
                   : "Main",
             },
           ],

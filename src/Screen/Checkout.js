@@ -17,7 +17,6 @@ import {
   availableTimeSlotUrl,
   AddOrderUrl,
   applyCouponAffiliateUrl,
-  orderIssueMail,
 } from "../Config/Api";
 import { useNavigation } from "@react-navigation/native";
 import { Calendar } from "react-native-calendars";
@@ -312,12 +311,7 @@ export default function Checkout() {
         });
       } else if (response.status === 201) {
         setOrderError(response.data.msg);
-      } else {
-        setError("Order failed. Please try again.");
-      }
-    } catch (error) {
-      const response = await axios.post(orderIssueMail, requestData);
-      if (response.data.mailSend === true) {
+      } else if (response.status === 202) {
         Alert.alert(
           "Order Placement Failed",
           "Our support will contact you. Please try again once more.",
@@ -325,7 +319,15 @@ export default function Checkout() {
             {
               text: "OK",
               onPress: async () => {
-                navigation.navigate("Main");
+                navigation.reset({
+                  index: 0,
+                  routes: [
+                    {
+                      name: 'Main',
+                      params: { refresh: "true" }, // Add your params here
+                    },
+                  ],
+                });
                 await AsyncStorage.removeItem("@cartData");
                 dispatch(clearCart());
               },
@@ -333,9 +335,10 @@ export default function Checkout() {
           ],
           { cancelable: false }
         );
+      } else {
+        setError("Order failed. Please try again.");
       }
-
-    }
+    } catch (error) { }
     setLoading(false);
   };
 
@@ -544,6 +547,29 @@ export default function Checkout() {
             applyCode(coupon, affiliate);
           }}
         />
+        <TouchableOpacity
+          style={{
+            backgroundColor: "#ec407a",
+            justifyContent: 'center',
+            flexDirection:"row",
+            alignItems: 'center',
+            height: 50,
+            width: '85%',
+            borderRadius: 10,
+            alignSelf: 'center',
+            marginTop: 20
+          }}
+          onPress={() => {
+            navigation.navigate("Chat");
+          }}
+        >
+          <Image
+            source={require("../images/chat.png")}
+            style={{ width: 50, height: 50 }}
+          />
+          <Text style={{ color: "#fff" }}>Customer Support</Text>
+        </TouchableOpacity>
+
       </View>
     </View>
   );

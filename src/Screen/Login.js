@@ -258,9 +258,9 @@ const Login = () => {
           }}
           onPress={() => {
             navigation.navigate("Signup", {
-              target:
-                route.params && route.params.target
-                  ? route.params.target
+              Navigate:
+                route.params && route.params.Navigate
+                  ? route.params.Navigate
                   : "Main",
             });
           }}

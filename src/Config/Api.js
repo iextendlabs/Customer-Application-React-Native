@@ -24,7 +24,6 @@ const DeleteAccountUrl = BaseUrl + "api/deleteAccountMail?";
 const SubCategoriesUrl = BaseUrl + "api/subCategories?id=";
 const appOfferUrl = BaseUrl + "api/appOffer";
 const checkUser = BaseUrl + "api/checkUser?id=";
-const orderIssueMail = BaseUrl + "api/orderIssueMail";
 export {
   LoginUrl,
   SignupUrl,
@@ -50,6 +49,5 @@ export {
   DeleteAccountUrl,
   SubCategoriesUrl,
   appOfferUrl,
-  checkUser,
-  orderIssueMail
+  checkUser
 };
