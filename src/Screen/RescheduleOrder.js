@@ -410,7 +410,6 @@ export default function RescheduleOrder() {
           {selectedSlotValue === null && (
             <View
               style={{
-                height: 50,
                 width: "80%",
                 alignSelf: "center",
                 borderWidth: 0.5,

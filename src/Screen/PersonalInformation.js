@@ -34,6 +34,17 @@ export default function PersonalInformation() {
   const [badPassword, setBadPassword] = useState(false);
   const [badConfirmPassword, setBadConfirmPassword] = useState(false);
   const [notValidPassword, setNotValidPassword] = useState(false);
+  const [selectedCountryForNumber, setSelectedCountryForNumber] = useState('');
+  const [selectedCountryForWhatsapp, setSelectedCountryForWhatsapp] = useState('');
+  const handleSelectCountryForNumber = (country) => {
+    setSelectedCountryForNumber(country.cca2);
+    setNumber('+'+country.callingCode['0']);
+  };
+
+  const handleSelectCountryForWhatsapp = (country) => {
+    setSelectedCountryForWhatsapp(country.cca2);
+    setWhatsapp('+'+country.callingCode['0']);
+  };
 
   const personalInformationData = useSelector(
     (state) => state.personalInformation
@@ -59,6 +70,8 @@ export default function PersonalInformation() {
       const storedName = await AsyncStorage.getItem("@user_name");
       const storedEmail = await AsyncStorage.getItem("@user_email");
       setUserId(await AsyncStorage.getItem("@user_id"));
+      setSelectedCountryForNumber(await AsyncStorage.getItem("@selectedCountryForNumber"));
+      setSelectedCountryForWhatsapp(await AsyncStorage.getItem("@selectedCountryForWhatsapp"));
 
       if (
         !personalInformationData ||
@@ -97,6 +110,11 @@ export default function PersonalInformation() {
         setError("Enter a valid email address.");
         return;
       }
+      console.log(selectedCountryForNumber);
+      if (selectedCountryForNumber === null || selectedCountryForWhatsapp === null) {
+        setError("Please select country for number!");
+        return;
+      }
 
       if (password !== "" || confirmPassword !== "") {
         if (password === "") {
@@ -130,6 +148,9 @@ export default function PersonalInformation() {
         "@personalInformation",
         JSON.stringify(personalInfo)
       );
+
+      await AsyncStorage.setItem("@selectedCountryForNumber", selectedCountryForNumber);
+      await AsyncStorage.setItem("@selectedCountryForWhatsapp", selectedCountryForWhatsapp);
 
       if (personalInformationData && personalInformationData.length > 0) {
         dispatch(deletePersonalInformation(0));
@@ -183,22 +204,25 @@ export default function PersonalInformation() {
           label={'Email'}
         />
         <CustomTextInput
-          placeholder={"Enter Phone Number"}
-          icon={require("../images/phone.png")}
           value={number}
           onChangeText={(txt) => setNumber(txt)}
+          placeholder={"Enter Phone Number"}
           keyboardType={"numeric"}
           label={'Phone Number'}
+          onSelectCountry={handleSelectCountryForNumber} // Make sure to pass the correct function
+          selectedCountry={selectedCountryForNumber}
+          isNumber={true}
         />
         <CustomTextInput
-          placeholder={"Enter Whatsapp Number"}
-          icon={require("../images/whatsapp.png")}
           value={whatsapp}
           onChangeText={(txt) => setWhatsapp(txt)}
+          placeholder={"Enter Whatsapp Number"}
           keyboardType={"numeric"}
           label={'Whatsapp Number'}
+          onSelectCountry={handleSelectCountryForWhatsapp} // Make sure to pass the correct function
+          selectedCountry={selectedCountryForWhatsapp}
+          isNumber={true}
         />
-
         {userId && (
           <>
             <CustomTextInput

@@ -312,7 +312,6 @@ export default function Details() {
                 </Text>
                 <View
                   style={{
-                    height: 50,
                     width: "100%",
                     alignSelf: "center",
                     borderWidth: 0.5,

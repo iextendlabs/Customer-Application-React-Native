@@ -1054,7 +1054,6 @@ export default function Checkout() {
           </View>
           <View
             style={{
-              height: 50,
               width: "80%",
               alignSelf: "center",
               borderWidth: 0.5,
