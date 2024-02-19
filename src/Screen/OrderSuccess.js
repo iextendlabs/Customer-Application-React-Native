@@ -64,6 +64,7 @@ Total Order Charges: AED ${route.params.total_amount}
       <Text style={{ fontSize: 15, alignSelf: "center", marginTop: 20 }}>
         Your Order Placed Successfully!
       </Text>
+      <Text>Order Id: {route.params.order_id}</Text>
       <Text>Appointment: {route.params.date}</Text>
       <Text>Staff: {route.params.staff}</Text>
       <Text>Slot: {route.params.slot}</Text>
@@ -100,6 +101,14 @@ Total Order Charges: AED ${route.params.total_amount}
           }}
         >
           <Text>Share</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.buttons}
+          onPress={() => {
+            navigation.navigate("MyOrders");
+          }}
+        >
+          <Text>Check Booking</Text>
         </TouchableOpacity>
       </View>
       <TouchableOpacity

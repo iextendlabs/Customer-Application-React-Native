@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { getOrdersUrl, orderPDFDownloadUrl } from "../Config/Api";
+import { cancelOrder, getOrdersUrl, orderPDFDownloadUrl } from "../Config/Api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import Splash from "../Screen/Splash";
@@ -49,7 +49,7 @@ export default function MyOrders() {
   }, []);
 
   const handleSaveReview = () => {
-    setMsg("Review saved successfully."); 
+    setMsg("Review saved successfully.");
     setTimeout(() => {
       setMsg("");
     }, 4000);
@@ -153,6 +153,22 @@ Total Order Charges: AED ${order.total_amount}
     setSelectedTab(tabIndex);
   };
 
+  const handleCancelOrder = async (order_id) => {
+    setLoading(true);
+    try {
+      const response = await axios.get(cancelOrder+order_id);
+      if (response.status === 200) {
+        getOrders();
+        setMsg(response.data.msg);
+        setLoading(false);
+      } else {
+        setError("Please try again.");
+      }
+    } catch (error) {
+      setError("An error occurred while fetching data.");
+    }
+    setLoading(false);
+  };
   if (loading) {
     return Splash();
   }
@@ -278,7 +294,17 @@ Total Order Charges: AED ${order.total_amount}
                     marginTop: 10,
                   }}
                 >
-                  {item.status === "Complete" && item.review === null && ( 
+                  {item.status === "Pending" && (
+                    <TouchableOpacity
+                      style={styles.buttons}
+                      onPress={() => {
+                        handleCancelOrder(item.id);
+                      }}
+                    >
+                      <Text>Cancel Order</Text>
+                    </TouchableOpacity>
+                  )}
+                  {item.status === "Complete" && item.review === null && (
                     <TouchableOpacity
                       style={styles.buttons}
                       onPress={() => {
@@ -340,7 +366,7 @@ Total Order Charges: AED ${order.total_amount}
             justifyContent: "center",
             alignItems: "center",
             borderColor: "#8e8e8e",
-            backgroundColor:  selectedTab == 1 ? "#fd245f" : "#ff5d89",
+            backgroundColor: selectedTab == 1 ? "#fd245f" : "#ff5d89",
             borderRadius: 10,
           }}
           onPress={() => {
