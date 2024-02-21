@@ -110,7 +110,7 @@ export default function PersonalInformation() {
         setError("Enter a valid email address.");
         return;
       }
-      console.log(selectedCountryForNumber);
+      
       if (selectedCountryForNumber === null || selectedCountryForWhatsapp === null) {
         setError("Please select country for number!");
         return;
@@ -168,7 +168,7 @@ export default function PersonalInformation() {
           password: password,
         });
         if (response.status === 200) {
-          console.log(response.data.msg);
+          
         } else {
           setError("Please try again.");
         }

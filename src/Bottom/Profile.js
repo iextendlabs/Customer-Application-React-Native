@@ -52,6 +52,8 @@ export default function Profile() {
       await AsyncStorage.removeItem("@addressData");
       await AsyncStorage.removeItem("@addressData");
       await AsyncStorage.removeItem("@notifications");
+      await AsyncStorage.removeItem("@selectedCountryForNumber");
+      await AsyncStorage.removeItem("@selectedCountryForWhatsapp");
       navigation.reset({
         index: 0,
         routes: [

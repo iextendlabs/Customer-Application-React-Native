@@ -3,13 +3,20 @@ import React, { useState } from "react";
 import CustomTextInput from "../Common/CustomTextInput";
 import CommonButton from "../Common/CommonButton";
 import { useNavigation, useRoute } from "@react-navigation/native";
-import { SignupUrl } from "../Config/Api";
+import { SignupUrl, signInWithFBUrl } from "../Config/Api";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Splash from "../Screen/Splash";
 import messaging from "@react-native-firebase/messaging";
+import { getAuth, FacebookAuthProvider, signInWithCredential } from 'firebase/auth';
+import { onAuthStateChanged } from 'firebase/auth';
+import { LoginManager, AccessToken } from 'react-native-fbsdk-next';
+import { auth } from '../../config';
+import { useDispatch } from "react-redux";
+import { addPersonalInformation, addAddress, updateNotification, clearAddress, clearPersonalInformation } from "../redux/actions/Actions";
 
 const Signup = () => {
+  const dispatch = useDispatch();
   const route = useRoute();
   const navigation = useNavigation();
   const [email, setEmail] = useState("");
@@ -28,6 +35,145 @@ const Signup = () => {
   const [termsChecked, setTermsChecked] = useState(false);
   const [fcmToken, setFcmToken] = useState("");
 
+  const signInWithFB = async () => {
+    setLoading(true);
+    try {
+      const result = await LoginManager.logInWithPermissions(['public_profile', 'email']);
+
+      if (result.isCancelled) {
+        setLoading(false);
+        console.log('Login canceled');
+        return;
+      }
+
+      const data = await AccessToken.getCurrentAccessToken();
+
+      if (!data) {
+        setLoading(false);
+        return;
+      }
+      const facebookCredential = FacebookAuthProvider.credential(data.accessToken);
+
+      const response = await signInWithCredential(auth, facebookCredential);
+
+      if (response) {
+        saveLoginWithFB(response['_tokenResponse']['fullName'], response['_tokenResponse']['email']);
+      }
+    } catch (error) {
+      setLoading(false);
+      console.log(error);
+    }
+  };
+
+  const saveLoginWithFB = async (name, email) => {
+    setError("");
+    setLoading(true);
+    try {
+      const response = await axios.post(signInWithFBUrl, {
+        name: name,
+        email: email,
+        fcmToken: fcmToken,
+      });
+      const data = response.data;
+
+      if (response.status === 200) {
+        if (data.user_info !== null) {
+          dispatch(clearAddress());
+          dispatch(clearPersonalInformation());
+          const addressInfo = {
+            building: data.user_info.buildingName || "",
+            villa: data.user_info.flatVilla || "",
+            street: data.user_info.street || "",
+            area: data.user_info.area || "",
+            landmark: data.user_info.landmark || "",
+            city: data.user_info.city || "",
+            district: data.user_info.district || "",
+          };
+
+          const personalInfo = {
+            name: data.user.name,
+            email: data.user.email,
+            number: data.user_info.number || "",
+            whatsapp: data.user_info.whatsapp || "",
+            gender: data.user_info.gender || "",
+          };
+
+          await AsyncStorage.setItem(
+            "@addressData",
+            JSON.stringify(addressInfo)
+          );
+          await AsyncStorage.setItem(
+            "@personalInformation",
+            JSON.stringify(personalInfo)
+          );
+          dispatch(addPersonalInformation(personalInfo));
+          dispatch(addAddress(addressInfo));
+        }
+
+        const accessToken = data.access_token;
+
+        await AsyncStorage.setItem("@access_token", accessToken);
+        await AsyncStorage.setItem("@user_id", String(data.user.id));
+        await AsyncStorage.setItem("@user_name", String(data.user.name));
+        await AsyncStorage.setItem("@user_email", String(data.user.email));
+
+        dispatch(
+          updateNotification(data.notifications)
+        );
+        await AsyncStorage.setItem("@notifications", JSON.stringify(data.notifications));
+        const headers = {
+          Authorization: `Bearer ${accessToken}`,
+        };
+
+        if (route.params && route.params.Navigate) {
+          navigation.reset({
+            index: 1,
+            routes: [
+              { name: 'Main' },
+              { name: route.params.Navigate },
+            ],
+          });
+        } else {
+          navigation.reset({
+            index: 0,
+            routes: [{ name: "Main" }],
+          });
+        }
+      } else if (response.status === 203) {
+        const accessToken = data.access_token;
+
+        await AsyncStorage.setItem("@access_token", accessToken);
+        await AsyncStorage.setItem("@user_id", String(data.user.id));
+        await AsyncStorage.setItem("@user_name", String(data.user.name));
+        await AsyncStorage.setItem("@user_email", String(data.user.email));
+
+        const headers = {
+          Authorization: `Bearer ${accessToken}`,
+        };
+
+        if (route.params && route.params.Navigate) {
+          navigation.reset({
+            index: 1,
+            routes: [
+              { name: 'Main' },
+              { name: route.params.Navigate },
+            ],
+          });
+        } else {
+          navigation.reset({
+            index: 0,
+            routes: [{ name: "Main" }],
+          });
+        }
+      } else {
+        setError("Login failed. Please try again.");
+      }
+    } catch (error) {
+      setError("There is something wrong. Please try again");
+    }
+    setLoading(false);
+  };
+
   try {
 
     const unsubscribeOnTokenRefreshed = messaging().onTokenRefresh((fcmToken) => {
@@ -41,7 +187,7 @@ const Signup = () => {
         setFcmToken(fcmToken);
       });
   } catch (error) {
-    
+
   }
 
   const isValidEmail = (email) => {
@@ -325,6 +471,14 @@ const Signup = () => {
           textColor={"#fff"}
           onPress={() => {
             handleSignup();
+          }}
+        />
+        <CommonButton
+          title={"Register With Facebook"}
+          bgColor={"#0064e0"}
+          textColor={"#fff"}
+          onPress={() => {
+            signInWithFB();
           }}
         />
         <Text

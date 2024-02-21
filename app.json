@@ -17,7 +17,15 @@
     "ios": {
       "supportsTablet": true,
       "infoPlist": {
-        "NSLocationWhenInUseUsageDescription": "Your description here"
+        "NSLocationWhenInUseUsageDescription": "Your description here",
+        "SKAdNetworkItems": [
+          {
+            "SKAdNetworkIdentifier": "v9wttpbfk9.skadnetwork"
+          },
+          {
+            "SKAdNetworkIdentifier": "n38lu8286q.skadnetwork"
+          }
+        ]
       }
     },
     "android": {
@@ -30,7 +38,8 @@
         "READ_EXTERNAL_STORAGE",
         "WRITE_EXTERNAL_STORAGE",
         "ACCESS_FINE_LOCATION",
-        "ACCESS_COARSE_LOCATION"
+        "ACCESS_COARSE_LOCATION",
+        "android.permission.INTERNET"
       ],
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
@@ -38,6 +47,16 @@
       },
       "package": "com.lipslay.Customerapp"
     },
+    "plugins": [
+      [
+        "react-native-fbsdk-next",
+        {
+          "appID": "649408790562368",
+          "clientToken": "c703dd26fe158274c0fa685053f0e742",
+          "displayName": "Lipslay"
+        }
+      ]
+    ],
     "web": {},
     "owner": "forexleo",
     "extra": {

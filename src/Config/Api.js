@@ -25,6 +25,7 @@ const SubCategoriesUrl = BaseUrl + "api/subCategories?id=";
 const appOfferUrl = BaseUrl + "api/appOffer";
 const checkUser = BaseUrl + "api/checkUser?id=";
 const cancelOrder = BaseUrl + "api/cancelOrder?order_id=";
+const signInWithFBUrl = BaseUrl + "api/signInWithFB";
 export {
   LoginUrl,
   SignupUrl,
@@ -51,5 +52,6 @@ export {
   SubCategoriesUrl,
   appOfferUrl,
   checkUser,
-  cancelOrder
+  cancelOrder,
+  signInWithFBUrl
 };
