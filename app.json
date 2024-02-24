@@ -26,7 +26,8 @@
             "SKAdNetworkIdentifier": "n38lu8286q.skadnetwork"
           }
         ]
-      }
+      },
+      "bundleIdentifier": "com.lipslay.Customerapp"
     },
     "android": {
       "versionCode": 7,
