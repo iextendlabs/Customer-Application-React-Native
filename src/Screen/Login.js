@@ -33,7 +33,14 @@ const Login = () => {
   const signInWithFB = async () => {
     setLoading(true);
     try {
-      const result = await LoginManager.logInWithPermissions(['public_profile', 'email']);
+      let result;
+      try {
+        LoginManager.setLoginBehavior('NATIVE_ONLY');
+        result = await LoginManager.logInWithPermissions(['public_profile', 'email']);
+      } catch (error) {
+        LoginManager.setLoginBehavior('WEB_ONLY');
+        result = await LoginManager.logInWithPermissions(['public_profile', 'email']);
+      }
 
       if (result.isCancelled) {
         setLoading(false);
