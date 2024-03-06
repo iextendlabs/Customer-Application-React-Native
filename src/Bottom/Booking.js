@@ -57,18 +57,19 @@ export default function Booking() {
   const [number, setNumber] = useState(null);
   const [whatsapp, setWhatsapp] = useState(null);
   const [gender, setGender] = useState(null);
-  const [modalVisible, setModalVisible] = useState(true);
+  const [modalVisible, setModalVisible] = useState(false);
   const [isUser, setIsUser] = useState(false);
 
   useEffect(() => {
-    if (selectedDate === null && selectedArea !== null) {
+    if (selectedDate === null) {
       const today = new Date();
       const formattedDate = `${today.getFullYear()}-${(today.getMonth() + 1)
         .toString()
         .padStart(2, "0")}-${today.getDate().toString().padStart(2, "0")}`;
-      setModalVisible(false);
       setSelectedDate(formattedDate);
-      fetchAvailableTimeSlots(formattedDate, selectedArea);
+    }
+    if (selectedArea && selectedDate) {
+      fetchAvailableTimeSlots(selectedDate, selectedArea, selectedStaffId, selectedSlot);
     }
   }, [selectedArea]);
 
@@ -86,18 +87,19 @@ export default function Booking() {
   useEffect(() => {
     // If personalInformationData is available, set values from it
     if (addressData && addressData.length > 0) {
+      setTransportCharges(null);
       selectAddress(addressData[0]);
     }
   }, [addressData]);
 
   useEffect(() => {
     if (bookingData && bookingData.length > 0) {
-      setModalVisible(false);
       const booking = bookingData[0];
       setSelectedDate(booking.selectedDate || null);
       setSelectedStaff(booking.selectedStaff || null);
       setSelectedStaffId(booking.selectedStaffId || null);
       setSelectedSlot(booking.selectedSlot || null);
+      setSelectedSlotValue(booking.selectedSlotValue || null);
       setSelectedSlotId(booking.selectedSlotId || null);
       setSelectedStaffCharges(booking.selectedStaffCharge);
       setTransportCharges(booking.transportCharges || null);
@@ -121,7 +123,7 @@ export default function Booking() {
     setSelectedArea(item);
 
     if (selectedDate) {
-      fetchAvailableTimeSlots(selectedDate, item);
+      (selectedDate, item);
     }
   };
 
@@ -168,6 +170,8 @@ export default function Booking() {
         );
 
         if (!isStaffIdInAvailableStaff) {
+          setSelectedStaffCharges(null);
+          setSelectedStaffId(null);
           setSelectedStaff(null);
         }
 
@@ -185,15 +189,23 @@ export default function Booking() {
           if (!isSlotInAvailableStaff) {
             setSelectedSlotId(null);
             setSelectedSlot(null);
+            setSelectedSlotValue(null);
           }
         } else {
           setSelectedSlotId(null);
+          setSelectedSlotValue(null);
           setSelectedSlot(null);
         }
 
         setTransportCharges(parseFloat(response.data.transport_charges));
         setLoading(false);
       } else if (response.status === 201) {
+        setAvailableStaff([]);
+        setAvailableSlot([]);
+        setSelectedStaff(null);
+        setSelectedSlotId(null);
+        setSelectedSlot(null);
+        setSelectedSlotValue(null);
         setError(response.data.msg);
         setLoading(false);
       } else {
@@ -281,7 +293,7 @@ export default function Booking() {
                 alignItems: "center",
                 fontWeight: 600,
                 fontSize: 16,
-                color: "#000",
+                color: "red",
               }}
             >
               No Personal Information Saved Yet!
@@ -427,7 +439,7 @@ export default function Booking() {
                 alignItems: "center",
                 fontWeight: 600,
                 fontSize: 16,
-                color: "#000",
+                color: "red",
               }}
             >
               No Addresses Saved Yet!
@@ -672,15 +684,13 @@ export default function Booking() {
   );
 
   const renderSlot = () => (
-    <View
-      style={{ borderColor: "#8e8e8e", borderTopWidth: 0.5, marginTop: 10 }}
-    >
+    <View style={{ borderColor: "#8e8e8e", borderTopWidth: 0.5, marginTop: 10 }}>
       {availableSlot.length === 0 ? (
         <Text style={{ margin: 10, color: "red" }}>
           No Staff Availalbe for the Selected Date / Zone
         </Text>
       ) : (
-        <View>
+        <>
           <View
             style={{
               width: "100%",
@@ -693,11 +703,31 @@ export default function Booking() {
             <Text
               style={{
                 margin: 10,
+
                 fontWeight: "800",
               }}
             >
               Slot:
             </Text>
+            {selectedSlotValue && (
+              <TouchableOpacity
+                style={{
+                  borderWidth: 0.2,
+                  borderRadius: 4,
+                  padding: 7,
+                  marginRight: 20,
+                  alignSelf: "center",
+                  justifyContent: "center",
+                }}
+                onPress={() => {
+                  setSelectedSlot(null);
+                  setSelectedSlotValue(null);
+                  setSelectedSlotId(null);
+                }}
+              >
+                <Text>Change</Text>
+              </TouchableOpacity>
+            )}
           </View>
           <View
             style={{
@@ -705,39 +735,70 @@ export default function Booking() {
               alignSelf: "center",
               borderWidth: 0.5,
               borderColor: "#8e8e8e",
+              padding: 10,
             }}
           >
-            <Picker
-              selectedValue={selectedSlot}
-              onValueChange={(itemValue, itemIndex) => {
-                setSelectedSlot(itemValue);
-
-                // Add a check to ensure itemValue is defined
-                if (itemValue) {
-                  const [slotId, timeRange] = itemValue.split(",");
-                  setSelectedSlotId(slotId);
-                  setSelectedSlotValue(timeRange);
-                }
-              }}
-            >
-              <Picker.Item label="Select Time Slot" />
-              {Object.keys(availableSlot).map((slotIndex) => {
-                // Display slots only for the selected staff
-                if (slotIndex == selectedStaffId) {
-                  return availableSlot[slotIndex].map((slot) => (
-                    <Picker.Item
-                      key={slot[0]}
-                      label={slot[1]}
-                      value={slot[0] + "," + slot[1]} // Keep the value as a string
-                    />
-                  ));
-                }
-                return null;
-              })}
-            </Picker>
+            {selectedSlot ? (
+              <TouchableOpacity
+                style={{
+                  padding: 10,
+                  borderBottomWidth: 1,
+                  borderBottomColor: "#eee",
+                }}
+                onPress={() => {
+                  setSelectedSlot(null);
+                  setSelectedSlotValue(null);
+                  setSelectedSlotId(null);
+                }}
+              >
+                <Text>{selectedSlotValue}</Text>
+              </TouchableOpacity>
+            ) : (
+              <FlatList
+                data={availableSlot[selectedStaffId] || []}
+                keyExtractor={(item) => item[0]}
+                renderItem={({ item }) => (
+                  <TouchableOpacity
+                    style={{
+                      padding: 10,
+                      borderBottomWidth: 1,
+                      borderBottomColor: "#eee",
+                    }}
+                    onPress={() => {
+                      setSelectedSlot(item[0] + "," + item[1]);
+                      if (item) {
+                        const [slotId, timeRange] = item;
+                        setSelectedSlotId(slotId);
+                        setSelectedSlotValue(timeRange);
+                      }
+                    }}
+                  >
+                    <Text>{item[1]}</Text>
+                  </TouchableOpacity>
+                )}
+                ListHeaderComponent={() => (
+                  <Text
+                    style={{
+                      fontWeight: 'bold',
+                    }}
+                  >
+                    <Text
+                      style={{
+                        fontWeight: 'bold',
+                        color: selectedStaff ? "#000" : "red"
+                      }}
+                    >
+                      {selectedStaff ? "Select Time Slot" : "First Select Staff"}
+                    </Text>
+                  </Text>
+                )}
+              />
+            )}
           </View>
-        </View>
+
+        </>
       )}
+
     </View>
   );
 
@@ -764,83 +825,74 @@ export default function Booking() {
   const renderContent = () => (
     <>
       {renderDate()}
-      {selectedDate && (
-        <>
-          {error ? (
-            <Text style={{ margin: 10, color: "red" }}>
-              {error}
-            </Text>
+      {renderStaff()}
+      <>
+        {renderSlot()}
+        <View style={{ marginBottom: 30 }}>
+          {selectedDate && selectedStaff && selectedArea && selectedSlotValue ? (
+            <CommonButton
+              title={
+                cartData.length > 0
+                  ? "Checkout"
+                  : "Select Services"
+              }
+              bgColor={"#000"}
+              textColor={"#fff"}
+              onPress={() => {
+                setLoading(true);
+                const bookingInfo = {
+                  selectedDate: selectedDate,
+                  selectedStaff: selectedStaff,
+                  selectedStaffId: selectedStaffId,
+                  selectedArea: selectedArea,
+                  selectedSlotValue: selectedSlotValue,
+                  selectedSlot: selectedSlot,
+                  selectedSlotId: selectedSlotId,
+                  selectedStaffCharge: selectedStaffCharge,
+                  transportCharges: transportCharges
+                };
+
+                dispatch(
+                  updateBooking(bookingInfo)
+                );
+                if (cartData.length > 0) {
+                  checkAuthentication("Checkout");
+                } else {
+                  navigation.navigate("Main");
+                }
+
+                setLoading(false);
+              }}
+            />
           ) : (
             <>
-              {availableStaff && (
-                <>
-                  {renderStaff()}
-                  {selectedStaff && (
-                    <>
-                      {renderSlot()}
-                      {selectedSlot && (
-                        <>
-                          <View style={{ marginBottom: 30 }}>
-                            <CommonButton
-                              title={
-                                cartData.length > 0
-                                  ? "Checkout"
-                                  : "Select Services"
-                              }
-                              bgColor={"#000"}
-                              textColor={"#fff"}
-                              onPress={() => {
-                                setLoading(true);
-                                const bookingInfo = {
-                                  selectedDate: selectedDate,
-                                  selectedStaff: selectedStaff,
-                                  selectedStaffId: selectedStaffId,
-                                  selectedArea: selectedArea,
-                                  selectedSlot: selectedSlot,
-                                  selectedSlotId: selectedSlotId,
-                                  selectedStaffCharge: selectedStaffCharge,
-                                  transportCharges: transportCharges
-                                };
-
-                                dispatch(
-                                  updateBooking(bookingInfo)
-                                );
-                                if (cartData.length > 0) {
-                                  checkAuthentication("Checkout");
-                                } else {
-                                  navigation.navigate("Main");
-                                }
-
-                                setLoading(false);
-                              }}
-                            />
-                            <TouchableOpacity
-                              style={{
-                                width: 200,
-                                height: 50,
-                                marginTop: 20,
-                                justifyContent: "center",
-                                alignSelf: "center",
-                                borderWidth: 0.5,
-                                borderColor: "#8e8e8e",
-                              }}
-                              onPress={() => {
-                                navigation.navigate('Main');
-                              }}
-                            >
-                              <Text style={{ alignSelf: "center" }}>Go To Home</Text>
-                            </TouchableOpacity>
-                          </View>
-                        </>
-                      )}
-                    </>
-                  )}
-                </>
+              {selectedStaff === null && (
+                <Text style={{ margin: 10, color: "red" }}>To Proccess the Order, Select Staff</Text>
+              )}
+              {selectedSlot === null && (
+                <Text style={{ margin: 10, color: "red" }}>To Proccess the Order, Select Slot</Text>
               )}
             </>
           )}
-        </>
-      )}
+
+          <TouchableOpacity
+            style={{
+              width: 200,
+              height: 50,
+              marginTop: 20,
+              justifyContent: "center",
+              alignSelf: "center",
+              borderWidth: 0.5,
+              borderColor: "#8e8e8e",
+            }}
+            onPress={() => {
+              navigation.navigate('Main');
+            }}
+          >
+            <Text style={{ alignSelf: "center" }}>Go To Home</Text>
+          </TouchableOpacity>
+        </View>
+      </>
     </>
   );
 
@@ -852,16 +904,12 @@ export default function Booking() {
           {isUser === true ? (
             <>
               {renderPersonalInformation()}
-              {name !== null && email !== null && (
+              <>
+                {renderAddress()}
                 <>
-                  {renderAddress()}
-                  {selectedAddress && (
-                    <>
-                      {renderContent()}
-                    </>
-                  )}
+                  {renderContent()}
                 </>
-              )}
+              </>
             </>
           ) : (
             <>
@@ -870,7 +918,6 @@ export default function Booking() {
               </Text>
               <View
                 style={{
-                  height: 50,
                   width: "85%",
                   alignSelf: "center",
                   borderWidth: 0.5,
@@ -890,11 +937,9 @@ export default function Booking() {
                   </Picker>
                 )}
               </View>
-              {selectedArea !== null && (
-                <>
-                  {renderContent()}
-                </>
-              )}
+              <>
+                {renderContent()}
+              </>
             </>
           )}
 
