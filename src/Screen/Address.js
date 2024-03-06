@@ -244,7 +244,7 @@ export default function Address() {
         </Text>
         <View
           style={{
-            width: "85%",
+            width: "70%",
             alignSelf: "center",
             borderWidth: 0.5,
             borderColor: "#8e8e8e",

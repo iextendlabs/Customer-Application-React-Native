@@ -17,6 +17,7 @@ export default function Header({ title, onPress, isMenu }) {
   return (
     <View
       style={{
+        marginTop:20,
         height: 100,
         backgroundColor: "#FFCACC",
         justifyContent: "space-between",
