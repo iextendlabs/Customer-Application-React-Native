@@ -54,7 +54,7 @@ export default function Main() {
 
   useEffect(() => {
     getData();
-    checkForUpdate();
+    // checkForUpdate();
     getOffer();
   }, []);
 
@@ -90,73 +90,73 @@ export default function Main() {
     }
   }, [offer, isUpdate, offerStatus]);
 
-  const checkForUpdate = async () => {
-    try {
-      const latestVersion = await VersionCheck.getLatestVersion({
-        provider: 'playStore',
-        packageName: 'com.lipslay.Customerapp',
-      });
+  // const checkForUpdate = async () => {
+  //   try {
+  //     const latestVersion = await VersionCheck.getLatestVersion({
+  //       provider: 'playStore',
+  //       packageName: 'com.lipslay.Customerapp',
+  //     });
 
-      const currentVersion = Constants.expoConfig.version;
+  //     const currentVersion = Constants.expoConfig.version;
 
-      if (latestVersion !== currentVersion) {
-        setUpdateModalVisible(true);
-        setOfferModalVisible(false);
-        setIsUpdate(true);
-      } else {
-        setIsUpdate(false);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  //     if (latestVersion !== currentVersion) {
+  //       setUpdateModalVisible(true);
+  //       setOfferModalVisible(false);
+  //       setIsUpdate(true);
+  //     } else {
+  //       setIsUpdate(false);
+  //     }
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
 
-  const UpdateModal = ({ visible }) => (
-    <Modal
-      transparent
-      animationType="slide"
-      visible={visible}
-    >
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <View style={{ backgroundColor: 'white', padding: 30, borderRadius: 10 }}>
-          <Text style={{ fontSize: 20, marginBottom: 10 }}>Update Available</Text>
-          <Text style={{ fontSize: 16, marginBottom: 10 }}>
-            A new version of the app is available. Please update to the latest version.
-          </Text>
-          <View style={{
-            justifyContent: "space-between",
-            flexDirection: "row",
-            alignItems: "center",
-          }}>
-            <Button
-              title="Update Now"
-              onPress={() => {
-                Linking.openURL('market://details?id=com.lipslay.Customerapp');
-                setUpdateModalVisible(false);  // Fix: Use setUpdateModalVisible instead of "false"
-                setIsUpdate(false);
-              }}
-            />
-            <TouchableOpacity
-              style={{
-                width: 100,
-                height: 35,
-                justifyContent: "center",
-                alignSelf: "center",
-                borderWidth: 0.5,
-                borderColor: "#8e8e8e",
-              }}
-              onPress={() => {
-                setUpdateModalVisible(false);
-                setIsUpdate(false);
-              }}
-            >
-              <Text style={{ alignSelf: "center" }}>Cancel</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </View>
-    </Modal>
-  );
+  // const UpdateModal = ({ visible }) => (
+  //   <Modal
+  //     transparent
+  //     animationType="slide"
+  //     visible={visible}
+  //   >
+  //     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+  //       <View style={{ backgroundColor: 'white', padding: 30, borderRadius: 10 }}>
+  //         <Text style={{ fontSize: 20, marginBottom: 10 }}>Update Available</Text>
+  //         <Text style={{ fontSize: 16, marginBottom: 10 }}>
+  //           A new version of the app is available. Please update to the latest version.
+  //         </Text>
+  //         <View style={{
+  //           justifyContent: "space-between",
+  //           flexDirection: "row",
+  //           alignItems: "center",
+  //         }}>
+  //           <Button
+  //             title="Update Now"
+  //             onPress={() => {
+  //               Linking.openURL('market://details?id=com.lipslay.Customerapp');
+  //               setUpdateModalVisible(false);  // Fix: Use setUpdateModalVisible instead of "false"
+  //               setIsUpdate(false);
+  //             }}
+  //           />
+  //           <TouchableOpacity
+  //             style={{
+  //               width: 100,
+  //               height: 35,
+  //               justifyContent: "center",
+  //               alignSelf: "center",
+  //               borderWidth: 0.5,
+  //               borderColor: "#8e8e8e",
+  //             }}
+  //             onPress={() => {
+  //               setUpdateModalVisible(false);
+  //               setIsUpdate(false);
+  //             }}
+  //           >
+  //             <Text style={{ alignSelf: "center" }}>Cancel</Text>
+  //           </TouchableOpacity>
+  //         </View>
+  //       </View>
+  //     </View>
+  //   </Modal>
+  // );
 
   const renderOfferModal = () => {
     if (offer) {
@@ -329,17 +329,17 @@ export default function Main() {
   
 
   const moveToNextSlide = () => {
-    if (!isUpdate && flatListRef.current) {
-      const nextIndex = (currentIndex + 1) % sliderImages.length;
+    // if (!isUpdate && flatListRef.current) {
+    //   const nextIndex = (currentIndex + 1) % sliderImages.length;
   
-      if (!isNaN(nextIndex)) {
-        flatListRef.current.scrollToOffset({
-          offset: nextIndex * width,
-          animated: true,
-        });
-        setCurrentIndex(nextIndex);
-      }
-    }
+    //   if (!isNaN(nextIndex)) {
+    //     flatListRef.current.scrollToOffset({
+    //       offset: nextIndex * width,
+    //       animated: true,
+    //     });
+    //     setCurrentIndex(nextIndex);
+    //   }
+    // }
   };
 
   useEffect(() => {
@@ -535,7 +535,7 @@ export default function Main() {
         </ScrollView>
       )}
 
-      <UpdateModal visible={updateModalVisible} />
+      {/* <UpdateModal visible={updateModalVisible} /> */}
       {renderOfferModal()}
       <Footer />
     </View>

@@ -86,6 +86,17 @@ export default function Checkout() {
     setServicesTotal(getServicesTotal());
   }, []);
 
+  useEffect(() => {
+    if (selectedDate === null && selectedArea !== null) {
+      const today = new Date();
+      const formattedDate = `${today.getFullYear()}-${(today.getMonth() + 1)
+        .toString()
+        .padStart(2, "0")}-${today.getDate().toString().padStart(2, "0")}`;
+      setModalVisible(false);
+      setSelectedDate(formattedDate);
+      fetchAvailableTimeSlots(formattedDate, selectedArea);
+    }
+  }, [selectedArea]);
 
   useEffect(() => {
     if (couponData && couponData.length > 0) {
@@ -94,6 +105,7 @@ export default function Checkout() {
       applyCode(couponInfo.code);
     }
   }, [couponData]);
+
   useEffect(() => {
     if (personalInformationData && personalInformationData.length > 0) {
       const info = personalInformationData[0];
@@ -107,6 +119,8 @@ export default function Checkout() {
 
   useEffect(() => {
     if (addressData && addressData.length > 0) {
+      setTransportCharges(null);
+      setSelectedStaffCharges(null);
       selectAddress(addressData[0]);
     }
   }, [addressData]);

@@ -61,6 +61,18 @@ export default function Booking() {
   const [isUser, setIsUser] = useState(false);
 
   useEffect(() => {
+    if (selectedDate === null && selectedArea !== null) {
+      const today = new Date();
+      const formattedDate = `${today.getFullYear()}-${(today.getMonth() + 1)
+        .toString()
+        .padStart(2, "0")}-${today.getDate().toString().padStart(2, "0")}`;
+      setModalVisible(false);
+      setSelectedDate(formattedDate);
+      fetchAvailableTimeSlots(formattedDate, selectedArea);
+    }
+  }, [selectedArea]);
+
+  useEffect(() => {
     if (personalInformationData && personalInformationData.length > 0) {
       const info = personalInformationData[0];
       setName(info.name || null);

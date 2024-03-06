@@ -2,7 +2,7 @@
   "expo": {
     "name": "Lipslay",
     "slug": "Lipslay_App",
-    "version": "1.0.8",
+    "version": "1.0.9",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -16,22 +16,14 @@
     ],
     "ios": {
       "supportsTablet": true,
+      "buildNumber": "1.1",
       "infoPlist": {
-        "NSLocationWhenInUseUsageDescription": "Your description here",
-        "SKAdNetworkItems": [
-          {
-            "SKAdNetworkIdentifier": "v9wttpbfk9.skadnetwork"
-          },
-          {
-            "SKAdNetworkIdentifier": "n38lu8286q.skadnetwork"
-          }
-        ]
+        "NSLocationWhenInUseUsageDescription": "Getting Location for Service Delivery"
       },
       "bundleIdentifier": "com.lipslay.Customerapp"
     },
     "android": {
       "versionCode": 9,
-      "googleServicesFile": "./google-services.json",
       "permissions": [
         "INTERNET",
         "ACCESS_WIFI_STATE",
@@ -39,8 +31,7 @@
         "READ_EXTERNAL_STORAGE",
         "WRITE_EXTERNAL_STORAGE",
         "ACCESS_FINE_LOCATION",
-        "ACCESS_COARSE_LOCATION",
-        "android.permission.INTERNET"
+        "ACCESS_COARSE_LOCATION"
       ],
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
@@ -50,18 +41,19 @@
     },
     "plugins": [
       [
-        "react-native-fbsdk-next",
+        "expo-build-properties",
         {
-          "appID": "649408790562368",
-          "clientToken": "c703dd26fe158274c0fa685053f0e742",
-          "displayName": "Lipslay"
+          "ios": {
+            "useFrameworks": "static"
+          }
         }
       ]
     ],
     "web": {},
+    "owner": "forexleo",
     "extra": {
       "eas": {
-        "projectId": "e9c0dba2-6b0b-4dc8-b1a2-4cf55ab53e5b"
+        "projectId": "441d9510-00b2-4425-9516-37a6c5dd3117"
       }
     }
   }

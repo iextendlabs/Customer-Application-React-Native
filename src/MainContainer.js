@@ -1,54 +1,54 @@
 import { StyleSheet, Alert, Linking } from 'react-native';
 import React, { useEffect } from 'react';
 import AppNavigator from './AppNavigator';
-import messaging from '@react-native-firebase/messaging';
+// import messaging from '@react-native-firebase/messaging';
 import { NotificationUrl } from "./Config/Api";
 import { useDispatch } from "react-redux";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import { updateNotification } from './redux/actions/Actions';
-import * as Notifications from 'expo-notifications';
+// import * as Notifications from 'expo-notifications';
 
 export default function MainContainer() {
   const dispatch = useDispatch();
   useEffect(() => {
-    checkNotificationPermission();
-    fcmMessaging();
+    // checkNotificationPermission();
+    // fcmMessaging();
     getNotification();
   }, []);
 
-  const checkNotificationPermission = async () => {
-    try {
-      const { status } = await Notifications.getPermissionsAsync();
+  // const checkNotificationPermission = async () => {
+  //   try {
+  //     const { status } = await Notifications.getPermissionsAsync();
 
-      if (status !== 'granted') {
-        const { status: newStatus } = await Notifications.requestPermissionsAsync();
+  //     if (status !== 'granted') {
+  //       const { status: newStatus } = await Notifications.requestPermissionsAsync();
 
-        if (newStatus !== 'granted') {
-          console.log('Notification permission denied');
-          Alert.alert(
-            'Notification Permission Required',
-            'To receive notifications, please enable notification permissions in your device settings.',
-            [
-              {
-                text: 'OK',
-                onPress: () => {
-                  // Open device settings
-                  openSettings();
-                },
-              },
-            ]
-          );
-        }
-      }
-    } catch (error) {
-      console.error('Error checking notification permission:', error);
-    }
-  };
+  //       if (newStatus !== 'granted') {
+  //         console.log('Notification permission denied');
+  //         Alert.alert(
+  //           'Notification Permission Required',
+  //           'To receive notifications, please enable notification permissions in your device settings.',
+  //           [
+  //             {
+  //               text: 'OK',
+  //               onPress: () => {
+  //                 // Open device settings
+  //                 openSettings();
+  //               },
+  //             },
+  //           ]
+  //         );
+  //       }
+  //     }
+  //   } catch (error) {
+  //     console.error('Error checking notification permission:', error);
+  //   }
+  // };
 
-  const openSettings = () => {
-    Linking.openSettings();
-  };
+  // const openSettings = () => {
+  //   Linking.openSettings();
+  // };
 
   const saveToAsyncStorage = async (key, data) => {
     try {
@@ -77,74 +77,74 @@ export default function MainContainer() {
     }
   };
 
-  const fcmMessaging = async () => {
-    try {
-      const authStatus = await requestUserPermission();
+  // const fcmMessaging = async () => {
+  //   try {
+  //     const authStatus = await requestUserPermission();
 
-      if (authStatus) {
-        messaging()
-          .getToken()
-          .then((token) => {
-            console.log(token);
-          });
+  //     if (authStatus) {
+  //       messaging()
+  //         .getToken()
+  //         .then((token) => {
+  //           console.log(token);
+  //         });
 
-        messaging().subscribeToTopic('lipslay');
-        messaging()
-          .getInitialNotification()
-          .then(async (remoteMessage) => {
-            if (remoteMessage) {
-              console.log(
-                'Notification caused app to open from quit state:',
-                remoteMessage.notification
-              );
-            }
-          });
+  //       messaging().subscribeToTopic('lipslay');
+  //       messaging()
+  //         .getInitialNotification()
+  //         .then(async (remoteMessage) => {
+  //           if (remoteMessage) {
+  //             console.log(
+  //               'Notification caused app to open from quit state:',
+  //               remoteMessage.notification
+  //             );
+  //           }
+  //         });
 
-        messaging().onNotificationOpenedApp(async (remoteMessage) => {
-          console.log(
-            'Notification caused app to open from background state:',
-            remoteMessage.notification
-          );
-          getNotification();
-        });
+  //       messaging().onNotificationOpenedApp(async (remoteMessage) => {
+  //         console.log(
+  //           'Notification caused app to open from background state:',
+  //           remoteMessage.notification
+  //         );
+  //         getNotification();
+  //       });
 
-        messaging().setBackgroundMessageHandler(async (remoteMessage) => {
-          console.log('Message handled in the background!', remoteMessage);
-          getNotification();
-        });
+  //       messaging().setBackgroundMessageHandler(async (remoteMessage) => {
+  //         console.log('Message handled in the background!', remoteMessage);
+  //         getNotification();
+  //       });
 
-        messaging().onMessage(async (remoteMessage) => {
-          const { body, title } = remoteMessage.notification;
-          Alert.alert(`${title}`, `${body}`);
-          getNotification();
+  //       messaging().onMessage(async (remoteMessage) => {
+  //         const { body, title } = remoteMessage.notification;
+  //         Alert.alert(`${title}`, `${body}`);
+  //         getNotification();
 
-        });
-      } else {
-        console.log('Failed token status', authStatus);
-      }
-    } catch (error) {
-      console.error('Error in FCM setup:', error);
-    }
-  };
+  //       });
+  //     } else {
+  //       console.log('Failed token status', authStatus);
+  //     }
+  //   } catch (error) {
+  //     console.error('Error in FCM setup:', error);
+  //   }
+  // };
 
-  const requestUserPermission = async () => {
-    try {
-      const authStatus = await messaging().requestPermission();
-      const enabled =
-        authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
-        authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+  // const requestUserPermission = async () => {
+  //   try {
+  //     const authStatus = await messaging().requestPermission();
+  //     const enabled =
+  //       authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+  //       authStatus === messaging.AuthorizationStatus.PROVISIONAL;
 
-      if (enabled) {
-        console.log('Authorization status:', authStatus);
-        return true;
-      } else {
-        return false;
-      }
-    } catch (error) {
-      console.error('Error in requesting user permission:', error);
-      return false;
-    }
-  };
+  //     if (enabled) {
+  //       console.log('Authorization status:', authStatus);
+  //       return true;
+  //     } else {
+  //       return false;
+  //     }
+  //   } catch (error) {
+  //     console.error('Error in requesting user permission:', error);
+  //     return false;
+  //   }
+  // };
 
   return <AppNavigator />;
 }
