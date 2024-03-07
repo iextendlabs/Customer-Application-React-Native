@@ -21,7 +21,6 @@ import {
 import { useNavigation } from "@react-navigation/native";
 import { Calendar } from "react-native-calendars";
 import axios from "axios";
-import { Picker } from "@react-native-picker/picker";
 import CommonButton from "../Common/CommonButton";
 import { clearCart, clearCoupon } from "../redux/actions/Actions";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -506,23 +505,6 @@ export default function Checkout() {
           </View>
         )}
       />
-      <View
-        style={{
-          flexDirection: "row",
-          justifyContent: "space-between",
-          alignItems: "center",
-          paddingLeft: 30,
-          paddingRight: 30,
-          marginTop: 10,
-          borderTopWidth: 0.5,
-          height: 40,
-          borderColor: "#8e8e8e",
-          borderBottomWidth: 0.5,
-        }}
-      >
-        <Text style={{ fontWeight: "800" }}>Total :</Text>
-        <Text>AED {getServicesTotal()}</Text>
-      </View>
       <View style={{ marginBottom: 10 }}>
         {applyCouponAffiliate && (
           <Text style={{ marginTop: 10, marginLeft: 40, color: "green" }}>
@@ -566,29 +548,6 @@ export default function Checkout() {
             applyCode(coupon, affiliate);
           }}
         />
-        <TouchableOpacity
-          style={{
-            backgroundColor: "#ec407a",
-            justifyContent: 'center',
-            flexDirection: "row",
-            alignItems: 'center',
-            height: 50,
-            width: '85%',
-            borderRadius: 10,
-            alignSelf: 'center',
-            marginTop: 20
-          }}
-          onPress={() => {
-            navigation.navigate("Chat");
-          }}
-        >
-          <Image
-            source={require("../images/chat.png")}
-            style={{ width: 50, height: 50 }}
-          />
-          <Text style={{ color: "#fff" }}>Customer Support</Text>
-        </TouchableOpacity>
-
       </View>
     </View>
   );
@@ -1272,7 +1231,6 @@ export default function Checkout() {
                         />
                       </View>
                       <View style={{ marginBottom: 30 }}>
-
                         {name !== null && email !== null && selectedAddress && selectedStaff && selectedSlot ? (
                           <CommonButton
                             title={"Place Order"}
@@ -1283,16 +1241,48 @@ export default function Checkout() {
                             }}
                           />
                         ) : (
-                          <>
-                            {selectedStaff === null && (
-                              <Text style={{ margin: 10, color: "red" }}>To Proccess the Order, Select Staff</Text>
-                            )}
-                            {selectedSlot === null && (
-                              <Text style={{ margin: 10, color: "red" }}>To Proccess the Order, Select Slot</Text>
-                            )}
-                          </>
-                        )}
+                          <View style={{ padding: 20 }}>
+                            <Text style={styles.innerText}>To Process the Order, Check the Following:</Text>
 
+                            {selectedStaff === null && (
+                              <Text style={{ color: 'red' }}>Select Staff</Text>
+                            )}
+
+                            {selectedSlot === null && (
+                              <Text style={{ color: 'red' }}>Select Slot</Text>
+                            )}
+
+                            {personalInformationData.length === 0 && (
+                              <Text style={{ color: 'red' }}>Need Contact Information!</Text>
+                            )}
+
+                            {addressData.length === 0 && (
+                              <Text style={{ color: 'red' }}>No Addresses Given Yet!</Text>
+                            )}
+                          </View>
+                        )}
+                        <TouchableOpacity
+                          style={{
+                            backgroundColor: "#ec407a",
+                            justifyContent: 'center',
+                            flexDirection: "row",
+                            alignItems: 'center',
+                            height: 50,
+                            width: '85%',
+                            borderRadius: 10,
+                            alignSelf: 'center',
+                            marginTop: 20
+                          }}
+                          onPress={() => {
+                            navigation.navigate("Chat");
+                          }}
+                        >
+                          <Image
+                            source={require("../images/chat.png")}
+                            style={{ width: 50, height: 50 }}
+                          />
+                          <Text style={{ color: "#fff" }}>Customer Support</Text>
+                        </TouchableOpacity>
                         <TouchableOpacity
                           style={{
                             width: 200,
@@ -1322,4 +1312,10 @@ export default function Checkout() {
   );
 }
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  innerText: {
+    fontWeight: '600',
+    fontSize: 16,
+    color: 'red',
+  },
+});

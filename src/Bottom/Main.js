@@ -329,17 +329,17 @@ export default function Main() {
   
 
   const moveToNextSlide = () => {
-    // if (!isUpdate && flatListRef.current) {
-    //   const nextIndex = (currentIndex + 1) % sliderImages.length;
+    if (!isUpdate && flatListRef.current) {
+      const nextIndex = (currentIndex + 1) % sliderImages.length;
   
-    //   if (!isNaN(nextIndex)) {
-    //     flatListRef.current.scrollToOffset({
-    //       offset: nextIndex * width,
-    //       animated: true,
-    //     });
-    //     setCurrentIndex(nextIndex);
-    //   }
-    // }
+      if (!isNaN(nextIndex)) {
+        flatListRef.current.scrollToOffset({
+          offset: nextIndex * width,
+          animated: true,
+        });
+        setCurrentIndex(nextIndex);
+      }
+    }
   };
 
   useEffect(() => {

@@ -138,7 +138,7 @@ export default function Profile() {
           justifyContent: "center",
         }}
         onPress={() => {
-          navigation.navigate("PersonalInformation");
+          navigation.navigate("PersonalInformation",{ previousRouteName: 'Profile' });
         }}
       >
         <Text>Personal Information</Text>

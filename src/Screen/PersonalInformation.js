@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import CustomTextInput from "../Common/CustomTextInput";
 import CommonButton from "../Common/CommonButton";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -21,6 +21,7 @@ import axios from "axios";
 
 export default function PersonalInformation() {
   const dispatch = useDispatch();
+  const route = useRoute();
   const navigation = useNavigation();
   const [name, setName] = useState("");
   const [userId, setUserId] = useState("");
@@ -38,12 +39,12 @@ export default function PersonalInformation() {
   const [selectedCountryForWhatsapp, setSelectedCountryForWhatsapp] = useState('');
   const handleSelectCountryForNumber = (country) => {
     setSelectedCountryForNumber(country.cca2);
-    setNumber('+'+country.callingCode['0']);
+    setNumber('+' + country.callingCode['0']);
   };
 
   const handleSelectCountryForWhatsapp = (country) => {
     setSelectedCountryForWhatsapp(country.cca2);
-    setWhatsapp('+'+country.callingCode['0']);
+    setWhatsapp('+' + country.callingCode['0']);
   };
 
   const personalInformationData = useSelector(
@@ -110,7 +111,7 @@ export default function PersonalInformation() {
         setError("Enter a valid email address.");
         return;
       }
-      
+
       if (selectedCountryForNumber === null || selectedCountryForWhatsapp === null) {
         setError("Please select country for number!");
         return;
@@ -168,7 +169,7 @@ export default function PersonalInformation() {
           password: password,
         });
         if (response.status === 200) {
-          
+
         } else {
           setError("Please try again.");
         }
@@ -223,7 +224,7 @@ export default function PersonalInformation() {
           selectedCountry={selectedCountryForWhatsapp}
           isNumber={true}
         />
-        {userId && (
+        {userId && route.params && route.params.previousRouteName && route.params.previousRouteName === "Profile" && (
           <>
             <CustomTextInput
               placeholder={"Enter New Password"}

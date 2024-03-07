@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, Image, TextInput, TouchableOpacity } from "react-native";
+import { View, Text, Image, TextInput, TouchableOpacity, Dimensions, } from "react-native";
 import CountryPicker from 'react-native-country-picker-modal';
 
 const CustomTextInput = ({
@@ -17,6 +17,7 @@ const CustomTextInput = ({
   isNumber,
 }) => {
   const [countryModalVisible, setCountryModalVisible] = useState(false);
+  const { height, width } = Dimensions.get("window");
 
   return (
     <View style={label ? null : { marginTop: 10 }}>
@@ -75,7 +76,7 @@ const CustomTextInput = ({
           }}
           placeholder={placeholder}
           secureTextEntry={type ? true : false}
-          style={{ marginLeft: 10, width: 270 }}
+          style={{ marginLeft: 10, width: width }}
           keyboardType={keyboardType ? keyboardType : "default"}
         />
         {isSearch && (
