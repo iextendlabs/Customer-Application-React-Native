@@ -69,14 +69,13 @@ const CustomTextInput = ({
           <Image source={icon} style={{ width: 24, height: 24, marginLeft: 10 }} />
         )}
         <TextInput
-          clearButtonMode={"always"}
           value={value}
           onChangeText={(txt) => {
             onChangeText(txt);
           }}
           placeholder={placeholder}
           secureTextEntry={type ? true : false}
-          style={{ marginLeft: 10, width: width }}
+          style={{ marginLeft: 10, width: width/1.6 }}
           keyboardType={keyboardType ? keyboardType : "default"}
         />
         {isSearch && (
