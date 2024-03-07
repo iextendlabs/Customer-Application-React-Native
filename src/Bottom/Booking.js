@@ -123,7 +123,7 @@ export default function Booking() {
     setSelectedArea(item);
 
     if (selectedDate) {
-      (selectedDate, item);
+      fetchAvailableTimeSlots(selectedDate, item);
     }
   };
 
