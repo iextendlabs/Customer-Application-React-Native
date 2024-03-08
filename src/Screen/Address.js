@@ -192,11 +192,6 @@ export default function Address() {
             onPress={() => reverseGeocode()}
           />
         </View>
-        {error && (
-          <Text style={{ marginTop: 10, marginLeft: 40, color: "red" }}>
-            {error}
-          </Text>
-        )}
         <CustomTextInput
           placeholder={"Enter Building Name"}
           icon={require("../images/building.png")}
@@ -264,6 +259,11 @@ export default function Address() {
           )}
         </View>
         <View style={{ marginBottom: 40 }}>
+          {error && (
+            <Text style={{ marginTop: 10, marginLeft: 40, color: "red" }}>
+              {error}
+            </Text>
+          )}
           <CommonButton
             title={"Save"}
             bgColor={"#000"}

@@ -17,11 +17,11 @@ import {
   availableTimeSlotUrl,
   AddOrderUrl,
   applyCouponAffiliateUrl,
+  orderTotalURL,
 } from "../Config/Api";
 import { useNavigation } from "@react-navigation/native";
 import { Calendar } from "react-native-calendars";
 import axios from "axios";
-import { Picker } from "@react-native-picker/picker";
 import CommonButton from "../Common/CommonButton";
 import { clearCart, clearCoupon } from "../redux/actions/Actions";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -68,7 +68,7 @@ export default function Checkout() {
   const [gender, setGender] = useState(null);
   const [servicesTotal, setServicesTotal] = useState(null);
   const [orderTotal, setOrderTotal] = useState(null);
-  const [modalVisible, setModalVisible] = useState(true);
+  const [modalVisible, setModalVisible] = useState(false);
   const [note, setNote] = useState(null);
   const [affiliate, setAffiliate] = useState("");
   const [coupon, setCoupon] = useState("");
@@ -83,9 +83,21 @@ export default function Checkout() {
 
   useEffect(() => {
     affiliateSet();
-    setServicesTotal(getServicesTotal());
+    orderTotalCall();
   }, []);
 
+  useEffect(() => {
+    if (selectedDate === null) {
+      const today = new Date();
+      const formattedDate = `${today.getFullYear()}-${(today.getMonth() + 1)
+        .toString()
+        .padStart(2, "0")}-${today.getDate().toString().padStart(2, "0")}`;
+      setSelectedDate(formattedDate);
+    }
+    if (selectedArea && selectedDate) {
+      fetchAvailableTimeSlots(selectedDate, selectedArea, selectedStaffId, selectedSlot);
+    }
+  }, [selectedArea]);
 
   useEffect(() => {
     if (couponData && couponData.length > 0) {
@@ -94,6 +106,7 @@ export default function Checkout() {
       applyCode(couponInfo.code);
     }
   }, [couponData]);
+
   useEffect(() => {
     if (personalInformationData && personalInformationData.length > 0) {
       const info = personalInformationData[0];
@@ -107,18 +120,19 @@ export default function Checkout() {
 
   useEffect(() => {
     if (addressData && addressData.length > 0) {
+      setTransportCharges(null);
       selectAddress(addressData[0]);
     }
   }, [addressData]);
 
   useEffect(() => {
     if (bookingData && bookingData.length > 0) {
-      setModalVisible(false);
       const booking = bookingData[0];
       setSelectedDate(booking.selectedDate || null);
       setSelectedStaff(booking.selectedStaff || null);
       setSelectedStaffId(booking.selectedStaffId || null);
       setSelectedSlotId(booking.selectedSlotId || null);
+      setSelectedSlotValue(booking.selectedSlotValue || null);
       setSelectedSlot(booking.selectedSlot || null);
       setSelectedStaffCharges(booking.selectedStaffCharge || null);
       setTransportCharges(booking.transportCharges || null);
@@ -130,31 +144,9 @@ export default function Checkout() {
           booking.selectedSlot
         );
       }
-
-      setServicesTotal(getServicesTotal());
-      console.log(
-        getServicesTotal(),
-        parseFloat(booking.selectedStaffCharge),
-        parseFloat(booking.transportCharges),
-        couponDiscount
-      );
-      setOrderTotal(
-        getServicesTotal() +
-        parseFloat(booking.selectedStaffCharge) +
-        parseFloat(booking.transportCharges) -
-        couponDiscount
-      );
+      orderTotalCall(booking.selectedStaffId,booking.selectedArea);
     }
   }, [bookingData, couponDiscount]);
-
-  const getServicesTotal = () => {
-    return cartData.reduce((total, item) => {
-      const itemTotal = item.discount
-        ? parseFloat(item.discount)
-        : parseFloat(item.price);
-      return total + itemTotal;
-    }, 0);
-  };
 
   const selectAddress = (item) => {
     setSelectedAddress(
@@ -176,6 +168,7 @@ export default function Checkout() {
   };
 
   const handleDateSelect = (date) => {
+    orderTotalCall();
     setModalVisible(false);
     setSelectedDate(date.dateString);
     fetchAvailableTimeSlots(date.dateString, selectedArea);
@@ -216,6 +209,8 @@ export default function Checkout() {
 
         if (!isStaffIdInAvailableStaff) {
           setSelectedStaff(null);
+          setSelectedStaffCharges(null);
+          setSelectedStaffId(null);
         }
 
         if (response.data.slots[selectedStaffId]) {
@@ -232,14 +227,23 @@ export default function Checkout() {
           if (!isSlotInAvailableStaff) {
             setSelectedSlotId(null);
             setSelectedSlot(null);
+            setSelectedSlotValue(null);
           }
         } else {
           setSelectedSlotId(null);
           setSelectedSlot(null);
+          setSelectedSlotValue(null);
         }
 
         setLoading(false);
       } else if (response.status === 201) {
+        setSelectedStaffCharges(null);
+        setAvailableStaff([]);
+        setAvailableSlot([]);
+        setSelectedStaff(null);
+        setSelectedSlotId(null);
+        setSelectedSlot(null);
+        setSelectedSlotValue(null);
         setError(response.data.msg);
         setLoading(false);
       } else {
@@ -254,18 +258,7 @@ export default function Checkout() {
   const selectStaff = (item) => {
     setSelectedStaff(item.name);
     setSelectedStaffId(item.id);
-    let staff_charges = 0; // Initialize staff_charges outside of if-else block
-
-    if (item.staff.charges) {
-      staff_charges = parseFloat(item.staff.charges);
-    }
-    setSelectedStaffCharges(staff_charges);
-    setOrderTotal(
-      servicesTotal +
-      parseFloat(staff_charges) +
-      parseFloat(transportCharges) -
-      couponDiscount
-    );
+    orderTotalCall(item.id);
   };
 
   const handleSave = async () => {
@@ -342,6 +335,36 @@ export default function Checkout() {
     setLoading(false);
   };
 
+  const orderTotalCall = async (staff_id = null, zone = null, coupon_id = null) => {
+    setLoading(true);
+    const requestData = {
+      service_ids: cartDataIds,
+      staff_id: staff_id ?? selectedStaffId,
+      zone: zone ?? selectedArea,
+      coupon_id: coupon_id ?? couponId,
+    };
+
+    try {
+      const response = await axios.get(orderTotalURL, { params: requestData });
+
+      if (response.status === 200) {
+        const data = response.data;
+        setServicesTotal(data.services_total);
+        setCouponDiscount(data.coupon_discount);
+        setSelectedStaffCharges(parseFloat(data.staff_charges));
+        setTransportCharges(parseFloat(data.transport_charges));
+        setOrderTotal(data.total);
+        setLoading(false);
+      } else {
+        setError("Code failed. Please try again.");
+      }
+    } catch (error) {
+      setLoading(false);
+    }
+
+    setLoading(false);
+  };
+
   const applyCode = async (coupon = null, affiliate = null) => {
     const userId = await AsyncStorage.getItem("@user_id");
     if (coupon !== "" || affiliate !== "") {
@@ -363,23 +386,11 @@ export default function Checkout() {
           }
           if (couponData) {
             setCouponId(couponData.id);
-
-            setCouponDiscount(response.data.coupon_discount);
-
-            setOrderTotal(
-              servicesTotal +
-              parseFloat(selectedStaffCharges) +
-              parseFloat(transportCharges) -
-              response.data.coupon_discount
-            );
+            orderTotalCall(null,null,couponData.id)
           } else {
             setCouponId("");
             setCouponDiscount("");
-            setOrderTotal(
-              servicesTotal +
-              parseFloat(selectedStaffCharges) +
-              parseFloat(transportCharges)
-            );
+            orderTotalCall(null,null,0)
           }
           setApplyCouponAffiliate("Your codes Apply Successfully.");
 
@@ -398,12 +409,7 @@ export default function Checkout() {
           if (errors.coupon) {
             setCoupon("");
             setCouponId("");
-            setCouponDiscount("");
-            setOrderTotal(
-              servicesTotal +
-              parseFloat(selectedStaffCharges) +
-              parseFloat(transportCharges)
-            );
+            orderTotalCall(null,null,0)
             dispatch(clearCoupon());
             await AsyncStorage.removeItem("@couponData");
             setNotValidCoupon(errors.coupon[0]);
@@ -417,23 +423,14 @@ export default function Checkout() {
           setError("Code failed. Please try again.");
         }
       } catch (error) {
-        setOrderTotal(
-          servicesTotal +
-          parseFloat(selectedStaffCharges) +
-          parseFloat(transportCharges)
-        );
+        orderTotalCall(null,null,0)
       } finally {
         setLoading(false);
       }
     } else {
       setAffiliateId("");
       setCouponId("");
-      setCouponDiscount("");
-      setOrderTotal(
-        servicesTotal +
-        parseFloat(selectedStaffCharges) +
-        parseFloat(transportCharges)
-      );
+      orderTotalCall(null,null,0)
       setNotValidCoupon("Please Enter Code!");
       setTimeout(() => {
         setNotValidCoupon("");
@@ -487,23 +484,6 @@ export default function Checkout() {
           </View>
         )}
       />
-      <View
-        style={{
-          flexDirection: "row",
-          justifyContent: "space-between",
-          alignItems: "center",
-          paddingLeft: 30,
-          paddingRight: 30,
-          marginTop: 10,
-          borderTopWidth: 0.5,
-          height: 40,
-          borderColor: "#8e8e8e",
-          borderBottomWidth: 0.5,
-        }}
-      >
-        <Text style={{ fontWeight: "800" }}>Total :</Text>
-        <Text>AED {getServicesTotal()}</Text>
-      </View>
       <View style={{ marginBottom: 10 }}>
         {applyCouponAffiliate && (
           <Text style={{ marginTop: 10, marginLeft: 40, color: "green" }}>
@@ -547,29 +527,6 @@ export default function Checkout() {
             applyCode(coupon, affiliate);
           }}
         />
-        <TouchableOpacity
-          style={{
-            backgroundColor: "#ec407a",
-            justifyContent: 'center',
-            flexDirection:"row",
-            alignItems: 'center',
-            height: 50,
-            width: '85%',
-            borderRadius: 10,
-            alignSelf: 'center',
-            marginTop: 20
-          }}
-          onPress={() => {
-            navigation.navigate("Chat");
-          }}
-        >
-          <Image
-            source={require("../images/chat.png")}
-            style={{ width: 50, height: 50 }}
-          />
-          <Text style={{ color: "#fff" }}>Customer Support</Text>
-        </TouchableOpacity>
-
       </View>
     </View>
   );
@@ -639,7 +596,7 @@ export default function Checkout() {
                 alignItems: "center",
                 fontWeight: 600,
                 fontSize: 16,
-                color: "#000",
+                color: "red",
               }}
             >
               To Proccess the Order, Need Contact Information!
@@ -785,7 +742,7 @@ export default function Checkout() {
                 alignItems: "center",
                 fontWeight: 600,
                 fontSize: 16,
-                color: "#000",
+                color: "red",
               }}
             >
               No Addresses Given Yet!
@@ -1025,15 +982,13 @@ export default function Checkout() {
     </View>
   );
   const renderSlot = () => (
-    <View
-      style={{ borderColor: "#8e8e8e", borderTopWidth: 0.5, marginTop: 10 }}
-    >
+    <View style={{ borderColor: "#8e8e8e", borderTopWidth: 0.5, marginTop: 10 }}>
       {availableSlot.length === 0 ? (
         <Text style={{ margin: 10, color: "red" }}>
           No Staff Availalbe for the Selected Date / Zone
         </Text>
       ) : (
-        <View>
+        <>
           <View
             style={{
               width: "100%",
@@ -1046,11 +1001,31 @@ export default function Checkout() {
             <Text
               style={{
                 margin: 10,
+
                 fontWeight: "800",
               }}
             >
               Slot:
             </Text>
+            {selectedSlotValue && (
+              <TouchableOpacity
+                style={{
+                  borderWidth: 0.2,
+                  borderRadius: 4,
+                  padding: 7,
+                  marginRight: 20,
+                  alignSelf: "center",
+                  justifyContent: "center",
+                }}
+                onPress={() => {
+                  setSelectedSlot(null);
+                  setSelectedSlotValue(null);
+                  setSelectedSlotId(null);
+                }}
+              >
+                <Text>Change</Text>
+              </TouchableOpacity>
+            )}
           </View>
           <View
             style={{
@@ -1058,39 +1033,70 @@ export default function Checkout() {
               alignSelf: "center",
               borderWidth: 0.5,
               borderColor: "#8e8e8e",
+              padding: 10,
             }}
           >
-            <Picker
-              selectedValue={selectedSlot}
-              onValueChange={(itemValue, itemIndex) => {
-                setSelectedSlot(itemValue);
-
-                // Add a check to ensure itemValue is defined
-                if (itemValue) {
-                  const [slotId, timeRange] = itemValue.split(",");
-                  setSelectedSlotId(slotId);
-                  setSelectedSlotValue(timeRange);
-                }
-              }}
-            >
-              <Picker.Item label="Select Time Slot" />
-              {Object.keys(availableSlot).map((slotIndex) => {
-                // Display slots only for the selected staff
-                if (slotIndex == selectedStaffId) {
-                  return availableSlot[slotIndex].map((slot) => (
-                    <Picker.Item
-                      key={slot[0]}
-                      label={slot[1]}
-                      value={slot[0] + "," + slot[1]} // Keep the value as a string
-                    />
-                  ));
-                }
-                return null;
-              })}
-            </Picker>
+            {selectedSlot ? (
+              <TouchableOpacity
+                style={{
+                  padding: 10,
+                  borderBottomWidth: 1,
+                  borderBottomColor: "#eee",
+                }}
+                onPress={() => {
+                  setSelectedSlot(null);
+                  setSelectedSlotValue(null);
+                  setSelectedSlotId(null);
+                }}
+              >
+                <Text>{selectedSlotValue}</Text>
+              </TouchableOpacity>
+            ) : (
+              <FlatList
+                data={availableSlot[selectedStaffId] || []}
+                keyExtractor={(item) => item[0]}
+                renderItem={({ item }) => (
+                  <TouchableOpacity
+                    style={{
+                      padding: 10,
+                      borderBottomWidth: 1,
+                      borderBottomColor: "#eee",
+                    }}
+                    onPress={() => {
+                      setSelectedSlot(item[0] + "," + item[1]);
+                      if (item) {
+                        const [slotId, timeRange] = item;
+                        setSelectedSlotId(slotId);
+                        setSelectedSlotValue(timeRange);
+                      }
+                    }}
+                  >
+                    <Text>{item[1]}</Text>
+                  </TouchableOpacity>
+                )}
+                ListHeaderComponent={() => (
+                  <Text
+                    style={{
+                      fontWeight: 'bold',
+                    }}
+                  >
+                    <Text
+                      style={{
+                        fontWeight: 'bold',
+                        color: selectedStaff ? "#000" : "red"
+                      }}
+                    >
+                      {selectedStaff ? "Select Time Slot" : "First Select Staff"}
+                    </Text>
+                  </Text>
+                )}
+              />
+            )}
           </View>
-        </View>
+
+        </>
       )}
+
     </View>
   );
 
@@ -1118,7 +1124,7 @@ export default function Checkout() {
         }}
       >
         <Text style={{ padding: 10 }}>
-          Total Services Charges: AED {getServicesTotal()}
+          Total Services Charges: AED {servicesTotal}
         </Text>
         <Text style={{ padding: 10 }}>
           Coupon Discount: AED {couponDiscount ? couponDiscount : 0}
@@ -1159,102 +1165,136 @@ export default function Checkout() {
         )}
         {renderServices()}
         {renderPersonalInformation()}
-        {name !== null && email !== null && (
+        <>
+          {renderAddress()}
           <>
-            {renderAddress()}
-            {selectedAddress && (
+            {renderDate()}
+            <>
               <>
-                {renderDate()}
-                {selectedDate && (
+                <>
+                  {renderStaff()}
                   <>
-                    {error ? (
-                      <Text style={{ margin: 10, color: "red" }}>{error}</Text>
-                    ) : (
-                      <>
-                        {availableStaff && (
-                          <>
-                            {renderStaff()}
-                            {selectedStaff && (
-                              <>
-                                {renderSlot()}
-                                {selectedSlot && (
-                                  <>
-                                    {renderSummary()}
-                                    <View
-                                      style={{
-                                        borderTopWidth: 0.5,
-                                        marginTop: 10,
-                                        borderColor: "#8e8e8e",
-                                      }}
-                                    >
-                                      <Text
-                                        style={{
-                                          margin: 10,
-                                          fontWeight: "800",
-                                        }}
-                                      >
-                                        Note:
-                                      </Text>
-                                      <TextInput
-                                        style={{
-                                          height: 100,
-                                          width: "80%",
-                                          alignSelf: "center",
-                                          borderColor: "#8e8e8e",
-                                          borderWidth: 0.5,
-                                          borderRadius: 5,
-                                          paddingHorizontal: 10,
-                                          paddingVertical: 5,
-                                        }}
-                                        value={note}
-                                        onChangeText={setNote}
-                                        placeholder="Enter your Note"
-                                        multiline
-                                      />
-                                    </View>
-                                    <View style={{ marginBottom: 30 }}>
-                                      <CommonButton
-                                        title={"Place Order"}
-                                        bgColor={"#000"}
-                                        textColor={"#fff"}
-                                        onPress={() => {
-                                          handleSave();
-                                        }}
-                                      />
-                                      <TouchableOpacity
-                                        style={{
-                                          width: 200,
-                                          height: 50,
-                                          marginTop: 20,
-                                          justifyContent: "center",
-                                          alignSelf: "center",
-                                          borderWidth: 0.5,
-                                          borderColor: "#8e8e8e",
-                                        }}
-                                        onPress={() => {
-                                          navigation.navigate('Main');
-                                        }}
-                                      >
-                                        <Text style={{ alignSelf: "center" }}>Go To Home</Text>
-                                      </TouchableOpacity>
-                                    </View>
-                                  </>
-                                )}
-                              </>
+                    {renderSlot()}
+                    <>
+                      {renderSummary()}
+                      <View
+                        style={{
+                          borderTopWidth: 0.5,
+                          marginTop: 10,
+                          borderColor: "#8e8e8e",
+                        }}
+                      >
+                        <Text
+                          style={{
+                            margin: 10,
+                            fontWeight: "800",
+                          }}
+                        >
+                          Note:
+                        </Text>
+                        <TextInput
+                          style={{
+                            height: 100,
+                            width: "80%",
+                            alignSelf: "center",
+                            borderColor: "#8e8e8e",
+                            borderWidth: 0.5,
+                            borderRadius: 5,
+                            paddingHorizontal: 10,
+                            paddingVertical: 5,
+                          }}
+                          value={note}
+                          onChangeText={setNote}
+                          placeholder="Enter your Note"
+                          multiline
+                        />
+                      </View>
+                      <View style={{ marginBottom: 30 }}>
+                        {name !== null && email !== null && selectedAddress && selectedStaff && selectedSlot ? (
+                          <CommonButton
+                            title={"Place Order"}
+                            bgColor={"#000"}
+                            textColor={"#fff"}
+                            onPress={() => {
+                              handleSave();
+                            }}
+                          />
+                        ) : (
+                          <View style={{ padding: 20 }}>
+                            <Text style={styles.innerText}>To Process the Order, Check the Following:</Text>
+
+                            {selectedStaff === null && (
+                              <Text style={{ color: 'red' }}>Select Staff</Text>
                             )}
-                          </>
+
+                            {selectedSlot === null && (
+                              <Text style={{ color: 'red' }}>Select Slot</Text>
+                            )}
+
+                            {personalInformationData.length === 0 && (
+                              <Text style={{ color: 'red' }}>Need Contact Information!</Text>
+                            )}
+
+                            {addressData.length === 0 && (
+                              <Text style={{ color: 'red' }}>No Addresses Given Yet!</Text>
+                            )}
+                          </View>
                         )}
-                      </>
-                    )}
+                        <TouchableOpacity
+                          style={{
+                            backgroundColor: "#ec407a",
+                            justifyContent: 'center',
+                            flexDirection: "row",
+                            alignItems: 'center',
+                            height: 50,
+                            width: '85%',
+                            borderRadius: 10,
+                            alignSelf: 'center',
+                            marginTop: 20
+                          }}
+                          onPress={() => {
+                            navigation.navigate("Chat");
+                          }}
+                        >
+                          <Image
+                            source={require("../images/chat.png")}
+                            style={{ width: 50, height: 50 }}
+                          />
+                          <Text style={{ color: "#fff" }}>Customer Support</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                          style={{
+                            width: 200,
+                            height: 50,
+                            marginTop: 20,
+                            justifyContent: "center",
+                            alignSelf: "center",
+                            borderWidth: 0.5,
+                            borderColor: "#8e8e8e",
+                          }}
+                          onPress={() => {
+                            navigation.navigate('Main');
+                          }}
+                        >
+                          <Text style={{ alignSelf: "center" }}>Go To Home</Text>
+                        </TouchableOpacity>
+                      </View>
+                    </>
                   </>
-                )}
+                </>
               </>
-            )}
+            </>
           </>
-        )}
+        </>
       </View>
     </ScrollView>
   );
 }
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  innerText: {
+    fontWeight: '600',
+    fontSize: 16,
+    color: 'red',
+  },
+});

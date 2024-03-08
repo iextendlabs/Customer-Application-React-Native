@@ -75,7 +75,7 @@ const CustomTextInput = ({
           }}
           placeholder={placeholder}
           secureTextEntry={type ? true : false}
-          style={{ marginLeft: 10, width: 170 }}
+          style={{ marginLeft: 10, width: 200 }}
           keyboardType={keyboardType ? keyboardType : "default"}
         />
         {isSearch && (

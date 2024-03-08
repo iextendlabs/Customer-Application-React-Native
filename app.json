@@ -2,7 +2,7 @@
   "expo": {
     "name": "Lipslay",
     "slug": "Lipslay_App",
-    "version": "1.0.8",
+    "version": "1.1.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -30,7 +30,7 @@
       "bundleIdentifier": "com.lipslay.Customerapp"
     },
     "android": {
-      "versionCode": 9,
+      "versionCode": 11,
       "googleServicesFile": "./google-services.json",
       "permissions": [
         "INTERNET",
@@ -59,9 +59,10 @@
       ]
     ],
     "web": {},
+    "owner": "forexleo",
     "extra": {
       "eas": {
-        "projectId": "e9c0dba2-6b0b-4dc8-b1a2-4cf55ab53e5b"
+        "projectId": "441d9510-00b2-4425-9516-37a6c5dd3117"
       }
     }
   }

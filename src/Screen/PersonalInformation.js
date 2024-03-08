@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import CustomTextInput from "../Common/CustomTextInput";
 import CommonButton from "../Common/CommonButton";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -21,6 +21,7 @@ import axios from "axios";
 
 export default function PersonalInformation() {
   const dispatch = useDispatch();
+  const route = useRoute();
   const navigation = useNavigation();
   const [name, setName] = useState("");
   const [userId, setUserId] = useState("");
@@ -183,11 +184,6 @@ export default function PersonalInformation() {
   return (
     <ScrollView style={{ flex: 1, backgroundColor: "#FFCACC" }}>
       <View style={{ flex: 1 }}>
-        {error !== "" && (
-          <Text style={{ marginTop: 10, marginLeft: 40, color: "red" }}>
-            {error}
-          </Text>
-        )}
         <CustomTextInput
           placeholder={"Enter Name"}
           icon={require("../images/name.png")}
@@ -223,7 +219,7 @@ export default function PersonalInformation() {
           selectedCountry={selectedCountryForWhatsapp}
           isNumber={true}
         />
-        {userId && (
+        {userId && route.params && route.params.previousRouteName && route.params.previousRouteName === "Profile" && (
           <>
             <CustomTextInput
               placeholder={"Enter New Password"}
@@ -291,6 +287,11 @@ export default function PersonalInformation() {
             <Text style={{ marginLeft: 5 }}>Female</Text>
           </TouchableOpacity>
         </View>
+        {error !== "" && (
+          <Text style={{ marginTop: 10, marginLeft: 40, color: "red" }}>
+            {error}
+          </Text>
+        )}
         <CommonButton
           title={"Save"}
           bgColor="#000"

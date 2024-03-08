@@ -26,6 +26,7 @@ const appOfferUrl = BaseUrl + "api/appOffer";
 const checkUser = BaseUrl + "api/checkUser?id=";
 const cancelOrder = BaseUrl + "api/cancelOrder?order_id=";
 const signInWithFBUrl = BaseUrl + "api/signInWithFB";
+const orderTotalURL = BaseUrl + "api/orderTotal";
 export {
   LoginUrl,
   SignupUrl,
@@ -53,5 +54,6 @@ export {
   appOfferUrl,
   checkUser,
   cancelOrder,
-  signInWithFBUrl
+  signInWithFBUrl,
+  orderTotalURL
 };
