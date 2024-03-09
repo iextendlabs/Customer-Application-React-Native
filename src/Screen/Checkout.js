@@ -17,6 +17,7 @@ import {
   availableTimeSlotUrl,
   AddOrderUrl,
   applyCouponAffiliateUrl,
+  orderTotalURL,
 } from "../Config/Api";
 import { useNavigation } from "@react-navigation/native";
 import { Calendar } from "react-native-calendars";
@@ -82,7 +83,7 @@ export default function Checkout() {
 
   useEffect(() => {
     affiliateSet();
-    setServicesTotal(getServicesTotal());
+    orderTotalCall();
   }, []);
 
   useEffect(() => {
@@ -143,26 +144,9 @@ export default function Checkout() {
           booking.selectedSlot
         );
       }
-
-      setServicesTotal(getServicesTotal());
-
-      setOrderTotal(
-        getServicesTotal() +
-        parseFloat(booking.selectedStaffCharge) +
-        parseFloat(booking.transportCharges) -
-        couponDiscount
-      );
+      orderTotalCall(booking.selectedStaffId,booking.selectedArea);
     }
   }, [bookingData, couponDiscount]);
-
-  const getServicesTotal = () => {
-    return cartData.reduce((total, item) => {
-      const itemTotal = item.discount
-        ? parseFloat(item.discount)
-        : parseFloat(item.price);
-      return total + itemTotal;
-    }, 0);
-  };
 
   const selectAddress = (item) => {
     setSelectedAddress(
@@ -184,6 +168,7 @@ export default function Checkout() {
   };
 
   const handleDateSelect = (date) => {
+    orderTotalCall();
     setModalVisible(false);
     setSelectedDate(date.dateString);
     fetchAvailableTimeSlots(date.dateString, selectedArea);
@@ -252,6 +237,7 @@ export default function Checkout() {
 
         setLoading(false);
       } else if (response.status === 201) {
+        setSelectedStaffCharges(null);
         setAvailableStaff([]);
         setAvailableSlot([]);
         setSelectedStaff(null);
@@ -272,18 +258,7 @@ export default function Checkout() {
   const selectStaff = (item) => {
     setSelectedStaff(item.name);
     setSelectedStaffId(item.id);
-    let staff_charges = 0; // Initialize staff_charges outside of if-else block
-
-    if (item.staff.charges) {
-      staff_charges = parseFloat(item.staff.charges);
-    }
-    setSelectedStaffCharges(staff_charges);
-    setOrderTotal(
-      servicesTotal +
-      parseFloat(staff_charges) +
-      parseFloat(transportCharges) -
-      couponDiscount
-    );
+    orderTotalCall(item.id);
   };
 
   const handleSave = async () => {
@@ -360,6 +335,36 @@ export default function Checkout() {
     setLoading(false);
   };
 
+  const orderTotalCall = async (staff_id = null, zone = null, coupon_id = null) => {
+    setLoading(true);
+    const requestData = {
+      service_ids: cartDataIds,
+      staff_id: staff_id ?? selectedStaffId,
+      zone: zone ?? selectedArea,
+      coupon_id: coupon_id ?? couponId,
+    };
+
+    try {
+      const response = await axios.get(orderTotalURL, { params: requestData });
+
+      if (response.status === 200) {
+        const data = response.data;
+        setServicesTotal(data.services_total);
+        setCouponDiscount(data.coupon_discount);
+        setSelectedStaffCharges(parseFloat(data.staff_charges));
+        setTransportCharges(parseFloat(data.transport_charges));
+        setOrderTotal(data.total);
+        setLoading(false);
+      } else {
+        setError("Code failed. Please try again.");
+      }
+    } catch (error) {
+      setLoading(false);
+    }
+
+    setLoading(false);
+  };
+
   const applyCode = async (coupon = null, affiliate = null) => {
     const userId = await AsyncStorage.getItem("@user_id");
     if (coupon !== "" || affiliate !== "") {
@@ -381,23 +386,11 @@ export default function Checkout() {
           }
           if (couponData) {
             setCouponId(couponData.id);
-
-            setCouponDiscount(response.data.coupon_discount);
-
-            setOrderTotal(
-              servicesTotal +
-              parseFloat(selectedStaffCharges) +
-              parseFloat(transportCharges) -
-              response.data.coupon_discount
-            );
+            orderTotalCall(null,null,couponData.id)
           } else {
             setCouponId("");
             setCouponDiscount("");
-            setOrderTotal(
-              servicesTotal +
-              parseFloat(selectedStaffCharges) +
-              parseFloat(transportCharges)
-            );
+            orderTotalCall(null,null,0)
           }
           setApplyCouponAffiliate("Your codes Apply Successfully.");
 
@@ -416,12 +409,7 @@ export default function Checkout() {
           if (errors.coupon) {
             setCoupon("");
             setCouponId("");
-            setCouponDiscount("");
-            setOrderTotal(
-              servicesTotal +
-              parseFloat(selectedStaffCharges) +
-              parseFloat(transportCharges)
-            );
+            orderTotalCall(null,null,0)
             dispatch(clearCoupon());
             await AsyncStorage.removeItem("@couponData");
             setNotValidCoupon(errors.coupon[0]);
@@ -435,23 +423,14 @@ export default function Checkout() {
           setError("Code failed. Please try again.");
         }
       } catch (error) {
-        setOrderTotal(
-          servicesTotal +
-          parseFloat(selectedStaffCharges) +
-          parseFloat(transportCharges)
-        );
+        orderTotalCall(null,null,0)
       } finally {
         setLoading(false);
       }
     } else {
       setAffiliateId("");
       setCouponId("");
-      setCouponDiscount("");
-      setOrderTotal(
-        servicesTotal +
-        parseFloat(selectedStaffCharges) +
-        parseFloat(transportCharges)
-      );
+      orderTotalCall(null,null,0)
       setNotValidCoupon("Please Enter Code!");
       setTimeout(() => {
         setNotValidCoupon("");
@@ -1145,7 +1124,7 @@ export default function Checkout() {
         }}
       >
         <Text style={{ padding: 10 }}>
-          Total Services Charges: AED {getServicesTotal()}
+          Total Services Charges: AED {servicesTotal}
         </Text>
         <Text style={{ padding: 10 }}>
           Coupon Discount: AED {couponDiscount ? couponDiscount : 0}
