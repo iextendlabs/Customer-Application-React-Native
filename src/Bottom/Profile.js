@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import {
   clearAddress,
+  clearAffiliate,
   clearCoupon,
   clearNotification,
   clearPersonalInformation,
@@ -46,9 +47,11 @@ export default function Profile() {
       dispatch(clearAddress());
       dispatch(clearPersonalInformation());
       dispatch(clearCoupon());
+      dispatch(clearAffiliate());
       dispatch(clearNotification());
       await AsyncStorage.removeItem("@personalInformation");
       await AsyncStorage.removeItem("@couponData");
+      await AsyncStorage.removeItem("@affiliate");
       await AsyncStorage.removeItem("@addressData");
       await AsyncStorage.removeItem("@addressData");
       await AsyncStorage.removeItem("@notifications");
@@ -111,7 +114,7 @@ export default function Profile() {
     <View style={{ flex: 1, backgroundColor: "#FFCACC" }}>
       <Image
         source={require("../images/profile.png")}
-        style={{ width: 80, height: 80, alignSelf: "center",marginTop:20 }}
+        style={{ width: 80, height: 80, alignSelf: "center", marginTop: 10 }}
       />
       {message !== "" && (
         <Text style={{
@@ -121,10 +124,10 @@ export default function Profile() {
           margin: 10,
         }}>{message}</Text>
       )}
-      <Text style={{ alignSelf: "center", marginTop: 5, fontSize: 18 }}>
+      <Text style={{ alignSelf: "center", marginTop: 2, fontSize: 18 }}>
         {name}
       </Text>
-      <Text style={{ alignSelf: "center", marginTop: 5, fontSize: 18 }}>
+      <Text style={{ alignSelf: "center", marginTop: 2, fontSize: 18 }}>
         {email}
       </Text>
       <TouchableOpacity
@@ -134,11 +137,11 @@ export default function Profile() {
           height: 50,
           borderBottomWidth: 0.3,
           borderBottomColor: "#8e8e8e",
-          marginTop: 10,
+          marginTop: 5,
           justifyContent: "center",
         }}
         onPress={() => {
-          navigation.navigate("PersonalInformation",{ previousRouteName: 'Profile' });
+          navigation.navigate("PersonalInformation", { previousRouteName: 'Profile' });
         }}
       >
         <Text>Personal Information</Text>
@@ -197,6 +200,19 @@ export default function Profile() {
           borderBottomColor: "#8e8e8e",
           justifyContent: "center",
         }}
+        onPress={() => navigation.navigate("JoinAffiliate")}
+      >
+        <Text>Join Affiliate</Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={{
+          width: "90%",
+          alignSelf: "center",
+          height: 50,
+          borderBottomWidth: 0.3,
+          borderBottomColor: "#8e8e8e",
+          justifyContent: "center",
+        }}
         onPress={() => {
           navigation.navigate("Chat");
         }}
@@ -208,7 +224,7 @@ export default function Profile() {
           style={{
             width: 120,
             height: 40,
-            marginTop: 20,
+            marginTop: 10,
             justifyContent: "center",
             alignSelf: "center",
             borderWidth: 0.5,
@@ -224,7 +240,7 @@ export default function Profile() {
           style={{
             width: 80,
             height: 40,
-            marginTop: 20,
+            marginTop: 10,
             justifyContent: "center",
             alignSelf: "center",
             borderWidth: 0.5,

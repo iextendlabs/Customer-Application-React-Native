@@ -39,6 +39,7 @@ export default function Checkout() {
   const bookingData = useSelector((state) => state.booking);
   const cartDataIds = cartData.map((item) => item.id);
   const couponData = useSelector((state) => state.coupon);
+  const affiliateData = useSelector((state) => state.affiliate);
   const addressData = useSelector((state) => state.address);
   const [selectedAddress, setSelectedAddress] = useState(null);
   const [selectedDate, setSelectedDate] = useState(null);
@@ -82,7 +83,6 @@ export default function Checkout() {
   const [latitude, setLatitude] = useState(null);
 
   useEffect(() => {
-    affiliateSet();
     orderTotalCall();
   }, []);
 
@@ -100,12 +100,25 @@ export default function Checkout() {
   }, [selectedArea]);
 
   useEffect(() => {
-    if (couponData && couponData.length > 0) {
+    if (couponData && couponData.length > 0 && affiliateData && affiliateData.length > 0) {
+      const couponInfo = couponData[0];
+      const affiliateInfo = affiliateData[0];
+      setCoupon(couponInfo.code);
+      setAffiliate(affiliateInfo);
+      applyCode(couponInfo.code, affiliateInfo);
+    } 
+    else if (couponData && couponData.length > 0) {
       const couponInfo = couponData[0];
       setCoupon(couponInfo.code);
       applyCode(couponInfo.code);
+    } 
+    else if (affiliateData && affiliateData.length > 0) {
+      const affiliateInfo = affiliateData[0];
+      setAffiliate(affiliateInfo);
+      applyCode(null, affiliateInfo);
     }
-  }, [couponData]);
+  }, [couponData, affiliateData]);
+  
 
   useEffect(() => {
     if (personalInformationData && personalInformationData.length > 0) {
@@ -174,18 +187,6 @@ export default function Checkout() {
     fetchAvailableTimeSlots(date.dateString, selectedArea);
   };
 
-  const affiliateSet = async () => {
-
-    try {
-      const affiliate = await AsyncStorage.getItem("@affiliate");
-      setAffiliate(affiliate);
-      if (affiliate) {
-        applyCode(null, affiliate);
-      }
-    } catch (error) {
-    }
-
-  };
   const fetchAvailableTimeSlots = async (
     date,
     area,

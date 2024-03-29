@@ -18,7 +18,9 @@ import {
   UPDATE_NOTIFICATION,
   UPDATE_SERVICES,
   UPDATE_CATEGORY,
-  UPDATE_ZONE
+  UPDATE_ZONE,
+  UPDATE_AFFILIATE,
+  ClEAR_AFFILIATE
 } from "../ActionTypes";
 
 export const updateServices = (data) => ({
@@ -38,6 +40,15 @@ export const updateCoupon = (data) => ({
 
 export const clearCoupon = () => ({
   type: ClEAR_COUPON
+});
+
+export const updateAffiliate = (data) => ({
+  type: UPDATE_AFFILIATE,
+  payload: data,
+});
+
+export const clearAffiliate = () => ({
+  type: ClEAR_AFFILIATE
 });
 
 export const updateBooking = (data) => ({

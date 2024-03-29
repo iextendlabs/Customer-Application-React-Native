@@ -31,6 +31,7 @@ import {
   addPersonalInformation,
   updateCoupon,
   updateNotification,
+  updateAffiliate,
 } from "./redux/actions/Actions";
 import Details from "./Bottom/Details";
 import { ImageBackground } from "react-native";
@@ -39,6 +40,7 @@ import TermsCondition from "./Common/TermsCondition";
 import AboutUs from "./Common/AboutUs";
 import PrivacyPolicy from "./Common/PrivacyPolicy";
 import Staff from "./Common/Staff";
+import JoinAffiliate from "./Screen/JoinAffiliate";
 
 export default function AppNavigator() {
   const cartReduxData = useSelector((state) => state.cart);
@@ -93,6 +95,13 @@ export default function AppNavigator() {
       const couponData = JSON.parse(couponDataJson);
       if (couponData) {
         dispatch(updateCoupon(couponData));
+      }
+
+      const affiliate = await AsyncStorage.getItem(
+        "@affiliate"
+      );
+      if (affiliate) {
+        dispatch(updateAffiliate(affiliate));
       }
 
       const notificationsDataJson = await AsyncStorage.getItem(
@@ -241,6 +250,11 @@ export default function AppNavigator() {
           options={{ headerShown: false }}
           name="Menu"
           component={Menu}
+        />
+        <Stack.Screen
+          options={{ headerShown: false }}
+          name="JoinAffiliate"
+          component={JoinAffiliate}
         />
       </Stack.Navigator>
     </NavigationContainer>

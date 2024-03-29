@@ -12,7 +12,8 @@ import {
   Alert,
   Linking,
   Modal,
-  Button
+  Button,
+  RefreshControl
 } from "react-native";
 import axios from "axios";
 import Header from "../Common/Header";
@@ -261,7 +262,7 @@ export default function Main() {
     setLoading(true);
     try {
       setError("");
-      const response = await fetch(BaseUrl+'AppData.json');
+      const response = await fetch(`${BaseUrl}AppData.json?v=${Math.random()}`);
 
       if (response.ok) {
         const data = await response.json();
@@ -385,6 +386,15 @@ export default function Main() {
   return (
     <View style={{ flex: 1, backgroundColor: "#FFCACC" }}>
       <Header title={"LipSlay Home Services"} />
+      <ScrollView
+      contentContainerStyle={{ flexGrow: 1 }}
+      refreshControl={
+        <RefreshControl
+          refreshing={loading}
+          onRefresh={getData}
+        />
+      }
+    >
       {error ? (
         <View
           style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
@@ -534,7 +544,7 @@ export default function Main() {
           </View>
         </ScrollView>
       )}
-
+      </ScrollView>
       <UpdateModal visible={updateModalVisible} />
       {renderOfferModal()}
       <Footer />

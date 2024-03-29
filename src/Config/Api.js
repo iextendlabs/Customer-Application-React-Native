@@ -27,6 +27,7 @@ const checkUser = BaseUrl + "api/checkUser?id=";
 const cancelOrder = BaseUrl + "api/cancelOrder?order_id=";
 const signInWithFBUrl = BaseUrl + "api/signInWithFB";
 const orderTotalURL = BaseUrl + "api/orderTotal";
+const joinAffiliateURL = BaseUrl + "api/apply-affiliate";
 export {
   LoginUrl,
   SignupUrl,
@@ -55,5 +56,6 @@ export {
   checkUser,
   cancelOrder,
   signInWithFBUrl,
-  orderTotalURL
+  orderTotalURL,
+  joinAffiliateURL
 };
