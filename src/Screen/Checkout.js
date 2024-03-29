@@ -39,6 +39,7 @@ export default function Checkout() {
   const bookingData = useSelector((state) => state.booking);
   const cartDataIds = cartData.map((item) => item.id);
   const couponData = useSelector((state) => state.coupon);
+  const affiliateData = useSelector((state) => state.affiliate);
   const addressData = useSelector((state) => state.address);
   const [selectedAddress, setSelectedAddress] = useState(null);
   const [selectedDate, setSelectedDate] = useState(null);
@@ -82,7 +83,6 @@ export default function Checkout() {
   const [latitude, setLatitude] = useState(null);
 
   useEffect(() => {
-    affiliateSet();
     orderTotalCall();
   }, []);
 
@@ -100,12 +100,24 @@ export default function Checkout() {
   }, [selectedArea]);
 
   useEffect(() => {
-    if (couponData && couponData.length > 0) {
+    if (couponData && couponData.length > 0 && affiliateData && affiliateData.length > 0) {
+      const couponInfo = couponData[0];
+      const affiliateInfo = affiliateData[0];
+      setCoupon(couponInfo.code);
+      setAffiliate(affiliateInfo);
+      applyCode(couponInfo.code, affiliateInfo);
+    }
+    else if (couponData && couponData.length > 0) {
       const couponInfo = couponData[0];
       setCoupon(couponInfo.code);
       applyCode(couponInfo.code);
     }
-  }, [couponData]);
+    else if (affiliateData && affiliateData.length > 0) {
+      const affiliateInfo = affiliateData[0];
+      setAffiliate(affiliateInfo);
+      applyCode(null, affiliateInfo);
+    }
+  }, [couponData, affiliateData]);
 
   useEffect(() => {
     if (personalInformationData && personalInformationData.length > 0) {
@@ -144,7 +156,7 @@ export default function Checkout() {
           booking.selectedSlot
         );
       }
-      orderTotalCall(booking.selectedStaffId,booking.selectedArea);
+      orderTotalCall(booking.selectedStaffId, booking.selectedArea);
     }
   }, [bookingData, couponDiscount]);
 
@@ -174,18 +186,6 @@ export default function Checkout() {
     fetchAvailableTimeSlots(date.dateString, selectedArea);
   };
 
-  const affiliateSet = async () => {
-
-    try {
-      const affiliate = await AsyncStorage.getItem("@affiliate");
-      setAffiliate(affiliate);
-      if (affiliate) {
-        applyCode(null, affiliate);
-      }
-    } catch (error) {
-    }
-
-  };
   const fetchAvailableTimeSlots = async (
     date,
     area,
@@ -386,11 +386,11 @@ export default function Checkout() {
           }
           if (couponData) {
             setCouponId(couponData.id);
-            orderTotalCall(null,null,couponData.id)
+            orderTotalCall(null, null, couponData.id)
           } else {
             setCouponId("");
             setCouponDiscount("");
-            orderTotalCall(null,null,0)
+            orderTotalCall(null, null, 0)
           }
           setApplyCouponAffiliate("Your codes Apply Successfully.");
 
@@ -409,7 +409,7 @@ export default function Checkout() {
           if (errors.coupon) {
             setCoupon("");
             setCouponId("");
-            orderTotalCall(null,null,0)
+            orderTotalCall(null, null, 0)
             dispatch(clearCoupon());
             await AsyncStorage.removeItem("@couponData");
             setNotValidCoupon(errors.coupon[0]);
@@ -423,14 +423,14 @@ export default function Checkout() {
           setError("Code failed. Please try again.");
         }
       } catch (error) {
-        orderTotalCall(null,null,0)
+        orderTotalCall(null, null, 0)
       } finally {
         setLoading(false);
       }
     } else {
       setAffiliateId("");
       setCouponId("");
-      orderTotalCall(null,null,0)
+      orderTotalCall(null, null, 0)
       setNotValidCoupon("Please Enter Code!");
       setTimeout(() => {
         setNotValidCoupon("");

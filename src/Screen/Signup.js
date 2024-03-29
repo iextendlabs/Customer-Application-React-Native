@@ -13,7 +13,7 @@ import Splash from "../Screen/Splash";
 // import { LoginManager, AccessToken } from 'react-native-fbsdk-next';
 // import { auth } from '../../config';
 import { useDispatch } from "react-redux";
-import { addPersonalInformation, addAddress, updateNotification, clearAddress, clearPersonalInformation } from "../redux/actions/Actions";
+import { addPersonalInformation, addAddress, updateNotification, clearAddress, clearPersonalInformation,updateAffiliate } from "../redux/actions/Actions";
 
 const Signup = () => {
   const dispatch = useDispatch();
@@ -260,6 +260,7 @@ const Signup = () => {
         const userName = response.data.user.name;
         const userEmail = response.data.user.email;
         const accessToken = response.data.access_token;
+        const affiliate_code = response.data.affiliate_code;
 
         // Store access token in AsyncStorage
         await AsyncStorage.setItem("@access_token", accessToken);
@@ -267,6 +268,10 @@ const Signup = () => {
         await AsyncStorage.setItem("@user_name", String(userName));
         await AsyncStorage.setItem("@user_email", String(userEmail));
         await AsyncStorage.setItem("@affiliate", String(affiliate));
+        await AsyncStorage.setItem("@affiliate", String(affiliate_code));
+        dispatch(
+          updateAffiliate(response.data.affiliate_code)
+        );
         const headers = {
           Authorization: `Bearer ${accessToken}`,
         };

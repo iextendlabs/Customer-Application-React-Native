@@ -1,7 +1,7 @@
 import { View, Text, TouchableOpacity } from 'react-native'
 import React from 'react'
 
-const CommonButton = ({onPress, title, bgColor, textColor}) => {
+const CommonButton = ({onPress, title, bgColor, textColor, disabled}) => {
   return (
     <View>
       <TouchableOpacity
@@ -15,9 +15,12 @@ const CommonButton = ({onPress, title, bgColor, textColor}) => {
         alignSelf:'center',
         marginTop:20
       }}
-      onPress={()=>{
-        onPress();
+      onPress={() => {
+        if (!disabled) {
+          onPress();
+        }
       }}
+      disabled={disabled}
       >
       <Text style={{ color:textColor }}>{title}</Text>
       </TouchableOpacity>

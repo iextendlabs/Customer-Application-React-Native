@@ -9,15 +9,13 @@ import {
   ScrollView,
   Dimensions,
   TouchableWithoutFeedback,
-  Alert,
-  Linking,
   Modal,
-  Button
+  RefreshControl
 } from "react-native";
 import axios from "axios";
 import Header from "../Common/Header";
 import Footer from "../Common/Footer";
-import { appIndex, BaseUrl, appOfferUrl } from "../Config/Api";
+import { BaseUrl, appOfferUrl } from "../Config/Api";
 import OfferProductItem from "../Common/OfferProductItem";
 import { useDispatch } from "react-redux";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -26,8 +24,6 @@ import Splash from "../Screen/Splash";
 import { addItemToCart, addItemToWishlist, clearCart, clearWishlist, updateCategories, updateServices, updateZone } from "../redux/actions/Actions";
 import CommonButton from "../Common/CommonButton";
 import StaffCard from "../Common/StaffCard";
-import VersionCheck from 'react-native-version-check';
-import Constants from 'expo-constants';
 
 export default function Main() {
   const navigation = useNavigation();
@@ -42,7 +38,6 @@ export default function Main() {
   const [currentIndex, setCurrentIndex] = useState(0); // Initialize with 0
   const [staffs, setStaffs] = useState(0); // Initialize with 0
   const flatListRef = useRef(null);
-  const [updateModalVisible, setUpdateModalVisible] = useState(false);
   const [offer, setOffer] = useState("");
   const [offerImage, setOfferImage] = useState("");
   const [offerType, setOfferType] = useState("");
@@ -54,7 +49,6 @@ export default function Main() {
 
   useEffect(() => {
     getData();
-    // checkForUpdate();
     getOffer();
   }, []);
 
@@ -89,74 +83,6 @@ export default function Main() {
       checkModalVisibility();
     }
   }, [offer, isUpdate, offerStatus]);
-
-  // const checkForUpdate = async () => {
-  //   try {
-  //     const latestVersion = await VersionCheck.getLatestVersion({
-  //       provider: 'playStore',
-  //       packageName: 'com.lipslay.Customerapp',
-  //     });
-
-  //     const currentVersion = Constants.expoConfig.version;
-
-  //     if (latestVersion !== currentVersion) {
-  //       setUpdateModalVisible(true);
-  //       setOfferModalVisible(false);
-  //       setIsUpdate(true);
-  //     } else {
-  //       setIsUpdate(false);
-  //     }
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
-
-  // const UpdateModal = ({ visible }) => (
-  //   <Modal
-  //     transparent
-  //     animationType="slide"
-  //     visible={visible}
-  //   >
-  //     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-  //       <View style={{ backgroundColor: 'white', padding: 30, borderRadius: 10 }}>
-  //         <Text style={{ fontSize: 20, marginBottom: 10 }}>Update Available</Text>
-  //         <Text style={{ fontSize: 16, marginBottom: 10 }}>
-  //           A new version of the app is available. Please update to the latest version.
-  //         </Text>
-  //         <View style={{
-  //           justifyContent: "space-between",
-  //           flexDirection: "row",
-  //           alignItems: "center",
-  //         }}>
-  //           <Button
-  //             title="Update Now"
-  //             onPress={() => {
-  //               Linking.openURL('market://details?id=com.lipslay.Customerapp');
-  //               setUpdateModalVisible(false);  // Fix: Use setUpdateModalVisible instead of "false"
-  //               setIsUpdate(false);
-  //             }}
-  //           />
-  //           <TouchableOpacity
-  //             style={{
-  //               width: 100,
-  //               height: 35,
-  //               justifyContent: "center",
-  //               alignSelf: "center",
-  //               borderWidth: 0.5,
-  //               borderColor: "#8e8e8e",
-  //             }}
-  //             onPress={() => {
-  //               setUpdateModalVisible(false);
-  //               setIsUpdate(false);
-  //             }}
-  //           >
-  //             <Text style={{ alignSelf: "center" }}>Cancel</Text>
-  //           </TouchableOpacity>
-  //         </View>
-  //       </View>
-  //     </View>
-  //   </Modal>
-  // );
 
   const renderOfferModal = () => {
     if (offer) {
@@ -241,7 +167,7 @@ export default function Main() {
         const [status, type, id, filename] = offers.data.offer.split('_');
         setOffer(offers.data.offer);
         setOfferImage(filename);
-        setOfferId(parseInt(id,10));
+        setOfferId(parseInt(id, 10));
         setOfferType(type);
         setOfferStatus(status);
       }
@@ -261,7 +187,7 @@ export default function Main() {
     setLoading(true);
     try {
       setError("");
-      const response = await fetch(BaseUrl+'AppData.json');
+      const response = await fetch(`${BaseUrl}AppData.json?v=${Math.random()}`);
 
       if (response.ok) {
         const data = await response.json();
@@ -305,7 +231,7 @@ export default function Main() {
             data.services.some((serviceItem) => serviceItem.id === wishlistItem.id)
           )
           : [];
-        
+
         dispatch(clearWishlist());
         updatedWishlistData.forEach((item) => {
           dispatch(addItemToWishlist(item));
@@ -326,12 +252,12 @@ export default function Main() {
     }
     setLoading(false);
   };
-  
+
 
   const moveToNextSlide = () => {
     if (!isUpdate && flatListRef.current) {
       const nextIndex = (currentIndex + 1) % sliderImages.length;
-  
+
       if (!isNaN(nextIndex)) {
         flatListRef.current.scrollToOffset({
           offset: nextIndex * width,
@@ -385,157 +311,165 @@ export default function Main() {
   return (
     <View style={{ flex: 1, backgroundColor: "#FFCACC" }}>
       <Header title={"LipSlay Home Services"} />
-      {error ? (
-        <View
-          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
-        >
-          <Text>Please check your internet connection and try again.</Text>
-        </View>
-      ) : (
-        <ScrollView showsVerticalScrollIndicator={false}>
-          <View>
-            {sliderImages.length > 0 && (
-              <FlatList
-                ref={flatListRef}
-                data={sliderImages}
-                horizontal
-                pagingEnabled
-                showsHorizontalScrollIndicator={false}
-                keyExtractor={(item, index) => index.toString()}
-                onScroll={(e) => {
-                  const x = e.nativeEvent.contentOffset.x;
-                  setCurrentIndex(Math.round(x / width));
-                }}
-                renderItem={({ item }) => {
-                  const [type, id, filename] = item.split('_');
+      <ScrollView
+        contentContainerStyle={{ flexGrow: 1 }}
+        refreshControl={
+          <RefreshControl
+            refreshing={loading}
+            onRefresh={getData}
+          />
+        }
+      >
+        {error ? (
+          <View
+            style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+          >
+            <Text>Please check your internet connection and try again.</Text>
+          </View>
+        ) : (
+          <ScrollView showsVerticalScrollIndicator={false}>
+            <View>
+              {sliderImages.length > 0 && (
+                <FlatList
+                  ref={flatListRef}
+                  data={sliderImages}
+                  horizontal
+                  pagingEnabled
+                  showsHorizontalScrollIndicator={false}
+                  keyExtractor={(item, index) => index.toString()}
+                  onScroll={(e) => {
+                    const x = e.nativeEvent.contentOffset.x;
+                    setCurrentIndex(Math.round(x / width));
+                  }}
+                  renderItem={({ item }) => {
+                    const [type, id, filename] = item.split('_');
 
-                  return (
-                    <View
-                      style={{
-                        width: width,
-                        justifyContent: "center",
-                        alignItems: "center",
-                      }}
-                    >
-                      <TouchableWithoutFeedback onPress={() => {
-                        console.log(type);
-                        if (type === 'category') {
-                          navigation.navigate("Search", {
-                            category: parseInt(id,10),
-                          });
-                        } else if (type === 'service') {
-                          const filteredService = services.find(service => service.id === parseInt(id, 10));
-
-                          if (filteredService) {
-                            navigation.navigate("Details", {
-                              service: filteredService,
+                    return (
+                      <View
+                        style={{
+                          width: width,
+                          justifyContent: "center",
+                          alignItems: "center",
+                        }}
+                      >
+                        <TouchableWithoutFeedback onPress={() => {
+                          console.log(type);
+                          if (type === 'category') {
+                            navigation.navigate("Search", {
+                              category: parseInt(id, 10),
                             });
+                          } else if (type === 'service') {
+                            const filteredService = services.find(service => service.id === parseInt(id, 10));
+
+                            if (filteredService) {
+                              navigation.navigate("Details", {
+                                service: filteredService,
+                              });
+                            }
                           }
-                        }
-                      }}>
-                        <Image
-                          source={{
-                            uri: BaseUrl + "slider-images/" + filename,
-                          }}
-                          style={{
-                            width: "90%",
-                            height: 200,
-                            borderRadius: 10,
-                          }}
-                        />
-                      </TouchableWithoutFeedback>
-                    </View>
-                  );
+                        }}>
+                          <Image
+                            source={{
+                              uri: BaseUrl + "slider-images/" + filename,
+                            }}
+                            style={{
+                              width: "90%",
+                              height: 200,
+                              borderRadius: 10,
+                            }}
+                          />
+                        </TouchableWithoutFeedback>
+                      </View>
+                    );
+                  }}
+                />
+              )}
+              <View
+                style={{
+                  flexDirection: "row",
+                  width: width,
+                  justifyContent: "center",
+                  alignItems: "center",
+                  marginTop: 10,
                 }}
+              >
+                {sliderImages.map((item, index) => (
+                  <View
+                    key={index.toString()}
+                    style={{
+                      width: currentIndex === index ? 40 : 8,
+                      height: 8,
+                      borderRadius: currentIndex === index ? 5 : 4,
+                      backgroundColor:
+                        currentIndex === index ? "#ff9ca0" : "#fff",
+                      marginLeft: 5,
+                    }}
+                  ></View>
+                ))}
+              </View>
+            </View>
+            <CommonButton
+              title={"Check Booking"}
+              bgColor={"#fd245f"}
+              textColor={"#fff"}
+              onPress={() => {
+                navigation.navigate("Booking");
+              }}
+            />
+
+            <View style={{ flex: 1, padding: 16 }}>
+              <FlatList
+                data={categories}
+                numColumns={3}
+                keyExtractor={(item) => item.id.toString()}
+                renderItem={renderCategoryItem}
               />
-            )}
-            <View
+            </View>
+            <Text
               style={{
-                flexDirection: "row",
-                width: width,
-                justifyContent: "center",
-                alignItems: "center",
-                marginTop: 10,
+                marginTop: 14,
+                color: "#000",
+                fontSize: 25,
+                fontWeight: "700",
+                alignSelf: "center",
               }}
             >
-              {sliderImages.map((item, index) => (
-                <View
-                  key={index.toString()}
-                  style={{
-                    width: currentIndex === index ? 40 : 8,
-                    height: 8,
-                    borderRadius: currentIndex === index ? 5 : 4,
-                    backgroundColor:
-                      currentIndex === index ? "#ff9ca0" : "#fff",
-                    marginLeft: 5,
-                  }}
-                ></View>
-              ))}
-            </View>
-          </View>
-          <CommonButton
-            title={"Check Booking"}
-            bgColor={"#fd245f"}
-            textColor={"#fff"}
-            onPress={() => {
-              navigation.navigate("Booking");
-            }}
-          />
-
-          <View style={{ flex: 1, padding: 16 }}>
-            <FlatList
-              data={categories}
-              numColumns={3}
-              keyExtractor={(item) => item.id.toString()}
-              renderItem={renderCategoryItem}
-            />
-          </View>
-          <Text
-            style={{
-              marginTop: 14,
-              color: "#000",
-              fontSize: 25,
-              fontWeight: "700",
-              alignSelf: "center",
-            }}
-          >
-            Offers
-          </Text>
-          <View>
-            <FlatList
-              data={selectedServices}
-              showsHorizontalScrollIndicator={false}
-              horizontal
-              keyExtractor={(item, index) => item.id.toString()}
-              renderItem={({ item }) => <OfferProductItem item={item} />}
-            />
-          </View>
-          <Text
-            style={{
-              marginTop: 14,
-              color: "#000",
-              fontSize: 25,
-              fontWeight: "700",
-              alignSelf: "center",
-            }}
-          >
-            Our Team
-          </Text>
-          <View style={{ marginBottom: 70 }}>
-            {staffs.length > 0 && (
+              Offers
+            </Text>
+            <View>
               <FlatList
-                data={staffs}
-                horizontal
+                data={selectedServices}
                 showsHorizontalScrollIndicator={false}
+                horizontal
                 keyExtractor={(item, index) => item.id.toString()}
-                renderItem={({ item }) => <StaffCard item={item} />}
+                renderItem={({ item }) => <OfferProductItem item={item} />}
               />
-            )}
-          </View>
-        </ScrollView>
-      )}
-
-      {/* <UpdateModal visible={updateModalVisible} /> */}
+            </View>
+            <Text
+              style={{
+                marginTop: 14,
+                color: "#000",
+                fontSize: 25,
+                fontWeight: "700",
+                alignSelf: "center",
+              }}
+            >
+              Our Team
+            </Text>
+            <View style={{ marginBottom: 70 }}>
+              {staffs.length > 0 && (
+                <FlatList
+                  data={staffs}
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  keyExtractor={(item, index) => item.id.toString()}
+                  renderItem={({ item }) => <StaffCard item={item} />}
+                />
+              )}
+            </View>
+          </ScrollView>
+        )}
+      </ScrollView>
       {renderOfferModal()}
       <Footer />
     </View>

@@ -9,6 +9,7 @@ import BookingReducers from '../reducers/BookingReducers';
 import CouponReducers from '../reducers/CouponReducers';
 import NotificationReducers from '../reducers/NotificationReducers';
 import CategoryReducers from '../reducers/CategoryReducers';
+import AffiliateReducers from '../reducers/AffiliateReducers';
 
 const rootReducer = combineReducers({
   cart: cartReducers,     
@@ -21,6 +22,7 @@ const rootReducer = combineReducers({
   coupon: CouponReducers,
   Notifications: NotificationReducers,
   categories: CategoryReducers,
+  affiliate: AffiliateReducers,
 });
 
 const store = createStore(rootReducer);
