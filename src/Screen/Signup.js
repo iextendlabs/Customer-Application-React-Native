@@ -7,13 +7,8 @@ import { SignupUrl, signInWithFBUrl } from "../Config/Api";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Splash from "../Screen/Splash";
-// import messaging from "@react-native-firebase/messaging";
-// import { getAuth, FacebookAuthProvider, signInWithCredential } from 'firebase/auth';
-// import { onAuthStateChanged } from 'firebase/auth';
-// import { LoginManager, AccessToken } from 'react-native-fbsdk-next';
-// import { auth } from '../../config';
 import { useDispatch } from "react-redux";
-import { addPersonalInformation, addAddress, updateNotification, clearAddress, clearPersonalInformation,updateAffiliate } from "../redux/actions/Actions";
+import { addPersonalInformation, addAddress, updateNotification, clearAddress, clearPersonalInformation, updateAffiliate } from "../redux/actions/Actions";
 
 const Signup = () => {
   const dispatch = useDispatch();
@@ -34,161 +29,20 @@ const Signup = () => {
   const [error, setError] = useState("");
   const [termsChecked, setTermsChecked] = useState(false);
   const [fcmToken, setFcmToken] = useState("");
+  const [number, setNumber] = useState("");
+  const [whatsapp, setWhatsapp] = useState("");
+  const [selectedCountryForNumber, setSelectedCountryForNumber] = useState(null);
+  const [selectedCountryForWhatsapp, setSelectedCountryForWhatsapp] = useState(null);
 
-  // const signInWithFB = async () => {
-  //   setLoading(true);
-  //   try {
-  //     const result = await LoginManager.logInWithPermissions(['public_profile', 'email']);
+  const handleSelectCountryForNumber = (country) => {
+    setSelectedCountryForNumber(country.cca2);
+    setNumber('+' + country.callingCode['0']);
+  };
 
-  //     if (result.isCancelled) {
-  //       setLoading(false);
-  //       console.log('Login canceled');
-  //       return;
-  //     }
-
-  //     const data = await AccessToken.getCurrentAccessToken();
-
-  //     if (!data) {
-  //       setLoading(false);
-  //       return;
-  //     }
-  //     const facebookCredential = FacebookAuthProvider.credential(data.accessToken);
-
-  //     const response = await signInWithCredential(auth, facebookCredential);
-
-  //     if (response) {
-  //       saveLoginWithFB(response['_tokenResponse']['fullName'], response['_tokenResponse']['email']);
-  //     }
-  //   } catch (error) {
-  //     setLoading(false);
-  //     console.log(error);
-  //   }
-  // };
-
-  // const saveLoginWithFB = async (name, email) => {
-  //   setError("");
-  //   setLoading(true);
-  //   try {
-  //     const response = await axios.post(signInWithFBUrl, {
-  //       name: name,
-  //       email: email,
-  //       fcmToken: fcmToken,
-  //     });
-  //     const data = response.data;
-
-  //     if (response.status === 200) {
-  //       if (data.user_info !== null) {
-  //         dispatch(clearAddress());
-  //         dispatch(clearPersonalInformation());
-  //         const addressInfo = {
-  //           building: data.user_info.buildingName || "",
-  //           villa: data.user_info.flatVilla || "",
-  //           street: data.user_info.street || "",
-  //           area: data.user_info.area || "",
-  //           landmark: data.user_info.landmark || "",
-  //           city: data.user_info.city || "",
-  //           district: data.user_info.district || "",
-  //         };
-
-  //         const personalInfo = {
-  //           name: data.user.name,
-  //           email: data.user.email,
-  //           number: data.user_info.number || "",
-  //           whatsapp: data.user_info.whatsapp || "",
-  //           gender: data.user_info.gender || "",
-  //         };
-
-  //         await AsyncStorage.setItem(
-  //           "@addressData",
-  //           JSON.stringify(addressInfo)
-  //         );
-  //         await AsyncStorage.setItem(
-  //           "@personalInformation",
-  //           JSON.stringify(personalInfo)
-  //         );
-  //         dispatch(addPersonalInformation(personalInfo));
-  //         dispatch(addAddress(addressInfo));
-  //       }
-
-  //       const accessToken = data.access_token;
-
-  //       await AsyncStorage.setItem("@access_token", accessToken);
-  //       await AsyncStorage.setItem("@user_id", String(data.user.id));
-  //       await AsyncStorage.setItem("@user_name", String(data.user.name));
-  //       await AsyncStorage.setItem("@user_email", String(data.user.email));
-
-  //       dispatch(
-  //         updateNotification(data.notifications)
-  //       );
-  //       await AsyncStorage.setItem("@notifications", JSON.stringify(data.notifications));
-  //       const headers = {
-  //         Authorization: `Bearer ${accessToken}`,
-  //       };
-
-  //       if (route.params && route.params.Navigate) {
-  //         navigation.reset({
-  //           index: 1,
-  //           routes: [
-  //             { name: 'Main' },
-  //             { name: route.params.Navigate },
-  //           ],
-  //         });
-  //       } else {
-  //         navigation.reset({
-  //           index: 0,
-  //           routes: [{ name: "Main" }],
-  //         });
-  //       }
-  //     } else if (response.status === 203) {
-  //       const accessToken = data.access_token;
-
-  //       await AsyncStorage.setItem("@access_token", accessToken);
-  //       await AsyncStorage.setItem("@user_id", String(data.user.id));
-  //       await AsyncStorage.setItem("@user_name", String(data.user.name));
-  //       await AsyncStorage.setItem("@user_email", String(data.user.email));
-
-  //       const headers = {
-  //         Authorization: `Bearer ${accessToken}`,
-  //       };
-
-  //       if (route.params && route.params.Navigate) {
-  //         navigation.reset({
-  //           index: 1,
-  //           routes: [
-  //             { name: 'Main' },
-  //             { name: route.params.Navigate },
-  //           ],
-  //         });
-  //       } else {
-  //         navigation.reset({
-  //           index: 0,
-  //           routes: [{ name: "Main" }],
-  //         });
-  //       }
-  //     } else {
-  //       setError("Login failed. Please try again.");
-  //     }
-  //   } catch (error) {
-  //     setError("There is something wrong. Please try again");
-  //   }
-  //   setLoading(false);
-  // };
-
-  // try {
-
-  //   const unsubscribeOnTokenRefreshed = messaging().onTokenRefresh((fcmToken) => {
-  //     // Save the FCM token to your server or user's device storage
-  //     console.log('FCM Token:', fcmToken);
-  //   });
-
-  //   messaging()
-  //     .getToken()
-  //     .then(fcmToken => {
-  //       setFcmToken(fcmToken);
-  //     });
-  // } catch (error) {
-
-  // }
+  const handleSelectCountryForWhatsapp = (country) => {
+    setSelectedCountryForWhatsapp(country.cca2);
+    setWhatsapp('+' + country.callingCode['0']);
+  };
 
   const isValidEmail = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -199,45 +53,51 @@ const Signup = () => {
     setError("");
     setNotValidAffiliate("");
     setLoading(true);
-    if (name === "") {
+    if (!name) {
       setBadName(true);
       setLoading(false);
       return;
+    }
+    setBadName(false);
+
+    if (!email) {
+      setBadEmail(true);
+      setLoading(false);
+      return;
+    } else if (!isValidEmail(email)) {
+      setBadEmail(false);
+      setError("Enter a valid email address.");
+      setLoading(false);
+      return;
+    }
+    setBadEmail(false);
+
+    if (!password) {
+      setBadPassword(true);
+      setLoading(false);
+      return;
+    }
+    setBadPassword(false);
+
+    if (!confirmPassword) {
+      setBadConfirmPassword(true);
+      setLoading(false);
+      return;
+    }
+    setBadConfirmPassword(false);
+
+    if (password !== confirmPassword) {
+      setNotValidPassword(true);
+      setLoading(false);
+      return;
     } else {
-      setBadName(false);
-      if (email === "") {
-        setBadEmail(true);
-        setLoading(false);
-        return;
-      } else {
-        if (!isValidEmail(email)) {
-          setLoading(false);
-          setError("Enter a valid email address.");
-          return;
-        }
-        setBadEmail(false);
-        if (password === "") {
-          setBadPassword(true);
-          setLoading(false);
-          return;
-        } else {
-          setBadPassword(false);
-          if (confirmPassword === "") {
-            setBadConfirmPassword(true);
-            setLoading(false);
-            return;
-          } else {
-            setBadConfirmPassword(false);
-            if (password !== confirmPassword) {
-              setNotValidPassword(true);
-              setLoading(false);
-              return;
-            } else {
-              setNotValidPassword(false);
-            }
-          }
-        }
-      }
+      setNotValidPassword(false);
+    }
+
+    if (selectedCountryForNumber === null || selectedCountryForWhatsapp === null) {
+      setError("Please select country for number and Whatsapp.");
+      setLoading(false);
+      return;
     }
 
     if (!termsChecked) {
@@ -253,6 +113,8 @@ const Signup = () => {
         password: password,
         affiliate: affiliate,
         fcmToken: fcmToken,
+        number: number,
+        whatsapp: whatsapp,
       });
 
       if (response.status === 200) {
@@ -287,7 +149,11 @@ const Signup = () => {
           ],
         });
       } else if (response.status === 201) {
-        setError(response.data.errors.email);
+        if (response.data.msg) {
+          setError(response.data.msg);
+        } else if (response.data.errors.email) {
+          setError(response.data.errors.email);
+        }
         setNotValidAffiliate(response.data.errors.affiliate);
       } else {
         setError("Signup failed. Please try again.");
@@ -390,6 +256,24 @@ const Signup = () => {
           </Text>
         )}
 
+        <CustomTextInput
+          value={number}
+          onChangeText={(txt) => setNumber(txt)}
+          placeholder={"Enter Phone Number"}
+          keyboardType={"numeric"}
+          onSelectCountry={handleSelectCountryForNumber} // Make sure to pass the correct function
+          selectedCountry={selectedCountryForNumber}
+          isNumber={true}
+        />
+        <CustomTextInput
+          value={whatsapp}
+          onChangeText={(txt) => setWhatsapp(txt)}
+          placeholder={"Enter Whatsapp Number"}
+          keyboardType={"numeric"}
+          onSelectCountry={handleSelectCountryForWhatsapp} // Make sure to pass the correct function
+          selectedCountry={selectedCountryForWhatsapp}
+          isNumber={true}
+        />
         <CustomTextInput
           placeholder={"Enter Affiliate Code (Optional)"}
           icon={require("../images/affiliate.png")}
