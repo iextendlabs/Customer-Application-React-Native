@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
+import { StyleSheet, Text, View, Image, TouchableOpacity,ScrollView } from "react-native";
 import React from "react";
 import Header from "../Common/Header";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -112,147 +112,149 @@ export default function Profile() {
   
   return (
     <View style={{ flex: 1, backgroundColor: "#FFCACC" }}>
-      <Image
-        source={require("../images/profile.png")}
-        style={{ width: 80, height: 80, alignSelf: "center", marginTop: 10 }}
-      />
-      {message !== "" && (
-        <Text style={{
-          color: "red",
-          fontSize: 16,
-          fontWeight: "bold",
-          margin: 10,
-        }}>{message}</Text>
-      )}
-      <Text style={{ alignSelf: "center", marginTop: 2, fontSize: 18 }}>
-        {name}
-      </Text>
-      <Text style={{ alignSelf: "center", marginTop: 2, fontSize: 18 }}>
-        {email}
-      </Text>
-      <TouchableOpacity
-        style={{
-          width: "90%",
-          alignSelf: "center",
-          height: 50,
-          borderBottomWidth: 0.3,
-          borderBottomColor: "#8e8e8e",
-          marginTop: 5,
-          justifyContent: "center",
-        }}
-        onPress={() => {
-          navigation.navigate("PersonalInformation", { previousRouteName: 'Profile' });
-        }}
-      >
-        <Text>Personal Information</Text>
-      </TouchableOpacity>
-      <TouchableOpacity
-        style={{
-          width: "90%",
-          alignSelf: "center",
-          height: 50,
-          borderBottomWidth: 0.3,
-          borderBottomColor: "#8e8e8e",
-          justifyContent: "center",
-        }}
-        onPress={() => {
-          navigation.navigate("Address");
-        }}
-      >
-        <Text>My Address</Text>
-      </TouchableOpacity>
-      <TouchableOpacity
-        style={{
-          width: "90%",
-          alignSelf: "center",
-          height: 50,
-          borderBottomWidth: 0.3,
-          borderBottomColor: "#8e8e8e",
-          justifyContent: "center",
-        }}
-        onPress={() => {
-          navigation.navigate("MyOrders");
-        }}
-      >
-        <Text>My Bookings</Text>
-      </TouchableOpacity>
-      <TouchableOpacity
-        style={{
-          width: "90%",
-          alignSelf: "center",
-          height: 50,
-          borderBottomWidth: 0.3,
-          borderBottomColor: "#8e8e8e",
-          justifyContent: "center",
-        }}
-        onPress={() => {
-          navigation.navigate("MyVoucher");
-        }}
-      >
-        <Text>My Voucher</Text>
-      </TouchableOpacity>
-      <TouchableOpacity
-        style={{
-          width: "90%",
-          alignSelf: "center",
-          height: 50,
-          borderBottomWidth: 0.3,
-          borderBottomColor: "#8e8e8e",
-          justifyContent: "center",
-        }}
-        onPress={() => navigation.navigate("JoinAffiliate")}
-      >
-        <Text>Join Affiliate</Text>
-      </TouchableOpacity>
-      <TouchableOpacity
-        style={{
-          width: "90%",
-          alignSelf: "center",
-          height: 50,
-          borderBottomWidth: 0.3,
-          borderBottomColor: "#8e8e8e",
-          justifyContent: "center",
-        }}
-        onPress={() => {
-          navigation.navigate("Chat");
-        }}
-      >
-        <Text>Customer Support</Text>
-      </TouchableOpacity>
-      <View style={{ flexDirection: "row", justifyContent: "space-around" }}>
+      <ScrollView>
+        <Image
+          source={require("../images/profile.png")}
+          style={{ width: 80, height: 80, alignSelf: "center", marginTop: 10 }}
+        />
+        {message !== "" && (
+          <Text style={{
+            color: "red",
+            fontSize: 16,
+            fontWeight: "bold",
+            margin: 10,
+          }}>{message}</Text>
+        )}
+        <Text style={{ alignSelf: "center", marginTop: 2, fontSize: 18 }}>
+          {name}
+        </Text>
+        <Text style={{ alignSelf: "center", marginTop: 2, fontSize: 18 }}>
+          {email}
+        </Text>
         <TouchableOpacity
           style={{
-            width: 120,
-            height: 40,
-            marginTop: 10,
-            justifyContent: "center",
+            width: "90%",
             alignSelf: "center",
-            borderWidth: 0.5,
-            borderColor: "#8e8e8e",
+            height: 50,
+            borderBottomWidth: 0.3,
+            borderBottomColor: "#8e8e8e",
+            marginTop: 5,
+            justifyContent: "center",
           }}
           onPress={() => {
-            deleteAccount();
+            navigation.navigate("PersonalInformation", { previousRouteName: 'Profile' });
           }}
         >
-          <Text style={{ alignSelf: "center" }}>Delete Account</Text>
+          <Text>Personal Information</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={{
-            width: 80,
-            height: 40,
-            marginTop: 10,
-            justifyContent: "center",
+            width: "90%",
             alignSelf: "center",
-            borderWidth: 0.5,
-            borderColor: "#8e8e8e",
+            height: 50,
+            borderBottomWidth: 0.3,
+            borderBottomColor: "#8e8e8e",
+            justifyContent: "center",
           }}
           onPress={() => {
-            logout();
+            navigation.navigate("Address");
           }}
         >
-          <Text style={{ alignSelf: "center" }}>Logout</Text>
+          <Text>My Address</Text>
         </TouchableOpacity>
-      </View>
+        <TouchableOpacity
+          style={{
+            width: "90%",
+            alignSelf: "center",
+            height: 50,
+            borderBottomWidth: 0.3,
+            borderBottomColor: "#8e8e8e",
+            justifyContent: "center",
+          }}
+          onPress={() => {
+            navigation.navigate("MyOrders");
+          }}
+        >
+          <Text>My Bookings</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={{
+            width: "90%",
+            alignSelf: "center",
+            height: 50,
+            borderBottomWidth: 0.3,
+            borderBottomColor: "#8e8e8e",
+            justifyContent: "center",
+          }}
+          onPress={() => {
+            navigation.navigate("MyVoucher");
+          }}
+        >
+          <Text>My Voucher</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={{
+            width: "90%",
+            alignSelf: "center",
+            height: 50,
+            borderBottomWidth: 0.3,
+            borderBottomColor: "#8e8e8e",
+            justifyContent: "center",
+          }}
+          onPress={() => navigation.navigate("JoinAffiliate")}
+        >
+          <Text>Join Affiliate</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={{
+            width: "90%",
+            alignSelf: "center",
+            height: 50,
+            borderBottomWidth: 0.3,
+            borderBottomColor: "#8e8e8e",
+            justifyContent: "center",
+          }}
+          onPress={() => {
+            navigation.navigate("Chat");
+          }}
+        >
+          <Text>Customer Support</Text>
+        </TouchableOpacity>
+        <View style={{ flexDirection: "row", justifyContent: "space-around" }}>
+          <TouchableOpacity
+            style={{
+              width: 120,
+              height: 40,
+              marginTop: 10,
+              justifyContent: "center",
+              alignSelf: "center",
+              borderWidth: 0.5,
+              borderColor: "#8e8e8e",
+            }}
+            onPress={() => {
+              deleteAccount();
+            }}
+          >
+            <Text style={{ alignSelf: "center" }}>Delete Account</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={{
+              width: 80,
+              height: 40,
+              marginTop: 10,
+              justifyContent: "center",
+              alignSelf: "center",
+              borderWidth: 0.5,
+              borderColor: "#8e8e8e",
+            }}
+            onPress={() => {
+              logout();
+            }}
+          >
+            <Text style={{ alignSelf: "center" }}>Logout</Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
       <Footer />
     </View>
   );

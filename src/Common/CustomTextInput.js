@@ -35,7 +35,7 @@ const CustomTextInput = ({
 
       <View
         style={{
-          width: "85%",
+          width: "90%",
           height: 50,
           borderWidth: 0.5,
           borderRadius: 10,

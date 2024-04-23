@@ -1,9 +1,9 @@
-import { View, Text, Image, ScrollView, TouchableOpacity } from "react-native";
+import { View, Text, Image, ScrollView, TouchableOpacity, Modal } from "react-native";
 import React, { useState } from "react";
 import CustomTextInput from "../Common/CustomTextInput";
 import CommonButton from "../Common/CommonButton";
 import { useNavigation, useRoute } from "@react-navigation/native";
-import { SignupUrl, signInWithFBUrl } from "../Config/Api";
+import { SignupUrl, UpdateCustomerInfoUrl, signInWithFBUrl } from "../Config/Api";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Splash from "../Screen/Splash";
@@ -34,6 +34,30 @@ const Signup = () => {
   const [error, setError] = useState("");
   const [termsChecked, setTermsChecked] = useState(false);
   const [fcmToken, setFcmToken] = useState("");
+  const [number, setNumber] = useState("");
+  const [userId, setUserId] = useState("");
+  const [whatsapp, setWhatsapp] = useState("");
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selectedCountryForNumber, setSelectedCountryForNumber] = useState(null);
+  const [selectedCountryForWhatsapp, setSelectedCountryForWhatsapp] = useState(null);
+  const [modalError, setModalError] = useState("");
+
+  const handleSelectCountryForNumber = (country) => {
+    setSelectedCountryForNumber(country.cca2);
+    setNumber('+' + country.callingCode['0']);
+  };
+
+  const handleSelectCountryForWhatsapp = (country) => {
+    setSelectedCountryForWhatsapp(country.cca2);
+    setWhatsapp('+' + country.callingCode['0']);
+  };
+  const openModal = () => {
+    setModalVisible(true);
+  };
+
+  const closeModal = () => {
+    setModalVisible(false);
+  };
 
   const signInWithFB = async () => {
     setLoading(true);
@@ -53,25 +77,28 @@ const Signup = () => {
         return;
       }
       const facebookCredential = FacebookAuthProvider.credential(data.accessToken);
-
       const response = await signInWithCredential(auth, facebookCredential);
 
       if (response) {
+        setModalError("");
+        setNumber("");
+        setWhatsapp("");
+        setLoading(false);
         saveLoginWithFB(response['_tokenResponse']['fullName'], response['_tokenResponse']['email']);
       }
     } catch (error) {
       setLoading(false);
-      console.log(error);
     }
   };
 
-  const saveLoginWithFB = async (name, email) => {
-    setError("");
+  const saveLoginWithFB = async (fbName, fbEmail) => {
+
     setLoading(true);
+    setError("");
     try {
       const response = await axios.post(signInWithFBUrl, {
-        name: name,
-        email: email,
+        name: fbName,
+        email: fbEmail,
         fcmToken: fcmToken,
       });
       const data = response.data;
@@ -150,7 +177,35 @@ const Signup = () => {
         const headers = {
           Authorization: `Bearer ${accessToken}`,
         };
+        setUserId(data.user.id);
 
+        openModal();
+      } else {
+        setError("Login failed. Please try again.");
+      }
+    } catch (error) {
+      setError("There is something wrong. Please try again");
+    }
+    setLoading(false);
+  };
+
+  const updateCustomer = async () => {
+
+    if (selectedCountryForNumber === null || selectedCountryForWhatsapp === null) {
+      setModalError("Please select country for number and Whatsapp.");
+      setLoading(false);
+      return;
+    }
+    setLoading(true);
+    setError("");
+    try {
+      const response = await axios.post(UpdateCustomerInfoUrl, {
+        number: number,
+        whatsapp: whatsapp,
+        user_id: userId,
+      });
+
+      if (response.status === 200) {
         if (route.params && route.params.Navigate) {
           navigation.reset({
             index: 1,
@@ -171,6 +226,7 @@ const Signup = () => {
     } catch (error) {
       setError("There is something wrong. Please try again");
     }
+    closeModal();
     setLoading(false);
   };
 
@@ -199,45 +255,51 @@ const Signup = () => {
     setError("");
     setNotValidAffiliate("");
     setLoading(true);
-    if (name === "") {
+    if (!name) {
       setBadName(true);
       setLoading(false);
       return;
+    }
+    setBadName(false);
+
+    if (!email) {
+      setBadEmail(true);
+      setLoading(false);
+      return;
+    } else if (!isValidEmail(email)) {
+      setBadEmail(false);
+      setError("Enter a valid email address.");
+      setLoading(false);
+      return;
+    }
+    setBadEmail(false);
+
+    if (!password) {
+      setBadPassword(true);
+      setLoading(false);
+      return;
+    }
+    setBadPassword(false);
+
+    if (!confirmPassword) {
+      setBadConfirmPassword(true);
+      setLoading(false);
+      return;
+    }
+    setBadConfirmPassword(false);
+
+    if (password !== confirmPassword) {
+      setNotValidPassword(true);
+      setLoading(false);
+      return;
     } else {
-      setBadName(false);
-      if (email === "") {
-        setBadEmail(true);
-        setLoading(false);
-        return;
-      } else {
-        if (!isValidEmail(email)) {
-          setLoading(false);
-          setError("Enter a valid email address.");
-          return;
-        }
-        setBadEmail(false);
-        if (password === "") {
-          setBadPassword(true);
-          setLoading(false);
-          return;
-        } else {
-          setBadPassword(false);
-          if (confirmPassword === "") {
-            setBadConfirmPassword(true);
-            setLoading(false);
-            return;
-          } else {
-            setBadConfirmPassword(false);
-            if (password !== confirmPassword) {
-              setNotValidPassword(true);
-              setLoading(false);
-              return;
-            } else {
-              setNotValidPassword(false);
-            }
-          }
-        }
-      }
+      setNotValidPassword(false);
+    }
+
+    if (selectedCountryForNumber === null || selectedCountryForWhatsapp === null) {
+      setError("Please select country for number and Whatsapp.");
+      setLoading(false);
+      return;
     }
 
     if (!termsChecked) {
@@ -253,6 +315,8 @@ const Signup = () => {
         password: password,
         affiliate: affiliate,
         fcmToken: fcmToken,
+        number: number,
+        whatsapp: whatsapp,
       });
 
       if (response.status === 200) {
@@ -286,7 +350,13 @@ const Signup = () => {
           ],
         });
       } else if (response.status === 201) {
-        setError(response.data.errors.email);
+        if (response.data.msg) {
+          console.log(response.data.msg);
+
+          setError(response.data.msg);
+        } else if (response.data.errors.email) {
+          setError(response.data.errors.email);
+        }
         setNotValidAffiliate(response.data.errors.affiliate);
       } else {
         setError("Signup failed. Please try again.");
@@ -388,7 +458,24 @@ const Signup = () => {
             The password and confirm-password must match.
           </Text>
         )}
-
+        <CustomTextInput
+          value={number}
+          onChangeText={(txt) => setNumber(txt)}
+          placeholder={"Enter Phone Number"}
+          keyboardType={"numeric"}
+          onSelectCountry={handleSelectCountryForNumber} // Make sure to pass the correct function
+          selectedCountry={selectedCountryForNumber}
+          isNumber={true}
+        />
+        <CustomTextInput
+          value={whatsapp}
+          onChangeText={(txt) => setWhatsapp(txt)}
+          placeholder={"Enter Whatsapp Number"}
+          keyboardType={"numeric"}
+          onSelectCountry={handleSelectCountryForWhatsapp} // Make sure to pass the correct function
+          selectedCountry={selectedCountryForWhatsapp}
+          isNumber={true}
+        />
         <CustomTextInput
           placeholder={"Enter Affiliate Code (Optional)"}
           icon={require("../images/affiliate.png")}
@@ -478,7 +565,7 @@ const Signup = () => {
           }}
         />
         <CommonButton
-          title={"Register With Facebook"}
+          title={"Continue With Facebook"}
           bgColor={"#0064e0"}
           textColor={"#fff"}
           onPress={() => {
@@ -501,6 +588,68 @@ const Signup = () => {
           Already Have Account?
         </Text>
       </View>
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={closeModal}
+      >
+        <View style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "rgba(0, 0, 0, 0.5)" }}>
+          <View style={{ backgroundColor: "#FFF", padding: 20, borderRadius: 10, width: '100%' }}>
+            {modalError && (
+              <Text style={{ color: "red" }}>
+                {modalError}
+              </Text>
+            )}
+            <Text style={{ fontSize: 16, marginBottom: 10 }}>Enter Additional Information</Text>
+            <CustomTextInput
+              value={number}
+              onChangeText={(txt) => setNumber(txt)}
+              placeholder={"Enter Phone Number"}
+              keyboardType={"numeric"}
+              onSelectCountry={handleSelectCountryForNumber} // Make sure to pass the correct function
+              selectedCountry={selectedCountryForNumber}
+              isNumber={true}
+            />
+            <CustomTextInput
+              value={whatsapp}
+              onChangeText={(txt) => setWhatsapp(txt)}
+              placeholder={"Enter Whatsapp Number"}
+              keyboardType={"numeric"}
+              onSelectCountry={handleSelectCountryForWhatsapp} // Make sure to pass the correct function
+              selectedCountry={selectedCountryForWhatsapp}
+              isNumber={true}
+            />
+            <View style={{ flexDirection: "row", justifyContent: "space-between", marginTop: 20 }}>
+              <TouchableOpacity
+                onPress={() => {
+                  closeModal();
+                  if (route.params && route.params.Navigate) {
+                    navigation.reset({
+                      index: 1,
+                      routes: [
+                        { name: 'Main' },
+                        { name: route.params.Navigate },
+                      ],
+                    });
+                  } else {
+                    navigation.reset({
+                      index: 0,
+                      routes: [{ name: "Main" }],
+                    });
+                  }
+                }}
+                style={{ padding: 10, backgroundColor: "#DDD", borderRadius: 5 }}
+              >
+                <Text>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={updateCustomer} style={{ padding: 10, backgroundColor: "#000", borderRadius: 5 }}>
+                <Text style={{ color: "#FFF" }}>Submit</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </ScrollView>
   );
 };
