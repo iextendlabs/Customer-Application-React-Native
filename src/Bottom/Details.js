@@ -165,13 +165,10 @@ export default function Details() {
   };
 
   const onAddToCart = async (item) => {
-    const isItemInCart = cartData.some((cartItem) => cartItem.id === item.id);
+    const isItemInCart = cartData.some((cartItem) => cartItem.service_id === item.id);
 
     if (!isItemInCart) {
-      dispatch(addItemToCart(item));
-      saveToAsyncStorage("@cartData", [...cartData, item]);
-      handleMessage("Added to Cart.");
-
+      navigation.navigate("AddToCart",{ service: item });
     } else {
       setMsg("Item is already in the cart.");
     }

@@ -23,13 +23,6 @@ export default function ProductItem({ item }) {
   const wishlistData = useSelector((state) => state.wishlist);
   const [messageModalVisible, setMessageModalVisible] = useState(false);
   const [msg, setMsg] = useState(false);
-  // const toastOptions = {
-  //   type: "info",
-  //   backgroundColor: "#fff",
-  //   color: "#000",
-  //   duration: 1500,
-  //   margin: 20,
-  // };
 
   const handleMessage = (msg) => {
     setMsg(msg);
@@ -45,21 +38,12 @@ export default function ProductItem({ item }) {
   };
 
   const onAddToCart = async (item) => {
-    const isItemInCart = cartData.some((cartItem) => cartItem.id === item.id);
+    const isItemInCart = cartData.some((cartItem) => cartItem.service_id === item.id);
 
     if (!isItemInCart) {
-      dispatch(addItemToCart(item));
-      saveToAsyncStorage("@cartData", [...cartData, item]);
-      handleMessage("Added to Cart.");
-      // showMessage({
-      //   message: "Added to Cart.",
-      //   ...toastOptions,
-      // });
+      navigation.navigate("AddToCart",{ service: item });
     } else {
-      // showMessage({
-      //   message: "Item is already in the cart.",
-      //   ...toastOptions,
-      // });
+      handleMessage("Item is already in the cart.");
     }
   };
 

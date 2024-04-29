@@ -83,16 +83,38 @@ export default function MyOrders() {
   };
 
   const reOrder = async (item) => {
-    await AsyncStorage.removeItem("@cartData");
+    await AsyncStorage.removeItem("@cart");
     dispatch(clearCart());
-
-    item.order_services.forEach((order_service, index) => {
-      dispatch(addItemToCart(order_service.service));
-      saveToAsyncStorage("@cartData", [...cartData, order_service.service]);
-    });
-
+    const today = new Date();
+    const formattedDate = `${today.getFullYear()}-${(today.getMonth() + 1)
+      .toString()
+      .padStart(2, "0")}-${today.getDate().toString().padStart(2, "0")}`;
+  
+    for (const order_service of item.order_services) {
+      const cartData = {
+        'service': order_service.service,
+        'service_id': order_service.service.id,
+        'staff_id': item.service_staff_id,
+        'staff': item.staff_name,
+        'slot_id': item.time_slot_id,
+        'slot': item.time_slot_value,
+        'date': formattedDate,
+      };
+      
+      dispatch(addItemToCart(cartData));
+  
+      try {
+        const existingCart = await AsyncStorage.getItem('@cart');
+        const updatedCart = existingCart ? JSON.parse(existingCart) : [];
+        updatedCart.push(cartData);
+        await AsyncStorage.setItem('@cart', JSON.stringify(updatedCart));
+      } catch (error) {
+        console.error("Error updating cart:", error);
+      }
+    }
+  
     navigation.navigate("Cart");
-  };
+  };  
 
   const closeModal = () => {
     getOrders();
@@ -156,7 +178,7 @@ Total Order Charges: AED ${order.total_amount}
   const handleCancelOrder = async (order_id) => {
     setLoading(true);
     try {
-      const response = await axios.get(cancelOrder+order_id);
+      const response = await axios.get(cancelOrder + order_id);
       if (response.status === 200) {
         getOrders();
         setMsg(response.data.msg);

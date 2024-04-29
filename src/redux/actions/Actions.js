@@ -20,7 +20,9 @@ import {
   UPDATE_CATEGORY,
   UPDATE_ZONE,
   UPDATE_AFFILIATE,
-  ClEAR_AFFILIATE
+  ClEAR_AFFILIATE,
+  UPDATE_CUSTOMER_ZONE,
+  UPDATE_OR_ADD_TO_CART
 } from "../ActionTypes";
 
 export const updateServices = (data) => ({
@@ -75,6 +77,11 @@ export const clearCart = () => ({
   type: CLEAR_CART
 });
 
+export const updateOrAddToCart = (data) => ({
+  type: UPDATE_OR_ADD_TO_CART,
+  payload: data,
+});
+
 export const addItemToWishlist = (data) => ({
   type: ADD_TO_WISHLIST,
   payload: data,
@@ -124,4 +131,9 @@ export const updateNotification = (data) => ({
 
 export const clearNotification = () => ({
   type: ClEAR_NOTIFICATION
+});
+
+export const updateCustomerZone = (data) => ({
+  type: UPDATE_CUSTOMER_ZONE,
+  payload: data,
 });

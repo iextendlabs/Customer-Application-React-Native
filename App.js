@@ -1,4 +1,4 @@
-import { Alert, View, Image, Linking } from "react-native";
+import { Alert, View, StatusBar } from "react-native";
 import React, { useEffect, useState } from "react";
 import { Provider } from "react-redux";
 import MainContainer from "./src/MainContainer";
@@ -35,6 +35,7 @@ const App = () => {
   return (
     <Provider store={store}>
       <View style={{ flex: 1 }}>
+        <StatusBar hidden={false} />
         <MainContainer />
       </View>
     </Provider>

@@ -13,7 +13,7 @@ import { onAuthStateChanged } from 'firebase/auth';
 import { LoginManager, AccessToken } from 'react-native-fbsdk-next';
 import { auth } from '../../config';
 import { useDispatch } from "react-redux";
-import { addPersonalInformation, addAddress, updateNotification, clearAddress, clearPersonalInformation, updateAffiliate } from "../redux/actions/Actions";
+import { addPersonalInformation, addAddress, updateNotification, clearAddress, clearPersonalInformation, updateAffiliate, updateCustomerZone } from "../redux/actions/Actions";
 
 const Signup = () => {
   const dispatch = useDispatch();
@@ -107,6 +107,10 @@ const Signup = () => {
         if (data.user_info !== null) {
           dispatch(clearAddress());
           dispatch(clearPersonalInformation());
+          if (data.user_info.area) {
+            dispatch(updateCustomerZone(data.user_info.area));
+            await AsyncStorage.setItem('@customerZone', data.user_info.area);
+          }
           const addressInfo = {
             building: data.user_info.buildingName || "",
             villa: data.user_info.flatVilla || "",

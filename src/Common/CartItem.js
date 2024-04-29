@@ -1,143 +1,96 @@
-import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
 import React from "react";
+import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
 import { BaseUrl } from "../Config/Api";
 
-export default function CartItem({ item, onRemoveFromCart, onAddToCart , onAddToWishlist, onRemoveFromWishlist, isWishlist }) {
+export default function CartItem({ item, onRemoveFromCart, isCheckout, onEditCart, isExcluded }) {
   return (
-    <View
-      style={{
-        width: "95%",
-        height: 175,
-        borderRadius: 10,
-        elevation: 5,
-        marginLeft: 10,
-        marginBottom: 10,
-        backgroundColor: "#FFCACC"
-      }}
-    >
-      <Image
-        source={{
-          uri: BaseUrl + "service-images/" + item.image,
-        }}
-        defaultSource={require('../images/logo.png')}
-        style={{
-          width: "100%",
-          height: "50%",
-          borderTopLeftRadius: 10,
-          borderTopRightRadius: 10,
-        }}
-      />
-      <Text
-        style={{ marginLeft: 10, marginTop: 10, fontSize: 15, fontWeight: 600 }}
-      >
-        {item.name}
-      </Text>
-      <View
-        style={{
-          flexDirection: "row",
-          justifyContent: "space-between",
-          paddingLeft: 10,
-          paddingRight: 10,
-          marginTop: 10,
-          alignItem: "center",
-        }}
-      >
-        <Text style={{ fontSize: 15, fontWeight: "600" }}>
-          AED{" "}
-          {item.discount ? (
-            <>
-              
-              <Text
-                style={{ textDecorationLine: "line-through", color: "red" }}
-              >
-                {item.price}
-              </Text>
-              <Text style={{ marginRight: 5, color: "#333" }}>
-                {" "+item.discount}
-              </Text>
-            </>
-          ) : (
-            item.price
-          )}
-        </Text>
-        {isWishlist ? (
-          <TouchableOpacity
-          style={{
-            borderWidth: 1,
-            borderRadius: 10,
-            padding: 4,
-          }}
-          onPress={() => {
-            onAddToCart(item);
-          }}
-        >
-          <Text>Add to Cart</Text>
-        </TouchableOpacity>
-        ) : (
-          <TouchableOpacity
-            style={{
-              borderWidth: 1,
-              borderRadius: 10,
-              padding: 4,
-            }}
-            onPress={() => {
-              onRemoveFromCart();
-            }}
-          >
-            <Text>Remove</Text>
-          </TouchableOpacity>
-        )}
+    <View style={[styles.card, isExcluded ? styles.excluded : null]}>
+      <View>
+        <Image
+          source={{ uri: `${BaseUrl}service-images/${item.service.image}` }}
+          defaultSource={require('../images/logo.png')}
+          style={styles.image}
+        />
       </View>
-      {isWishlist ? (
-        <TouchableOpacity
-        style={{
-          width: 30,
-          height: 30,
-          backgroundColor: "#fff",
-          borderRadius: 20,
-          elevation: 5,
-          position: "absolute",
-          top: 10,
-          right: 10,
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-        onPress={() => {
-          onRemoveFromWishlist();
-        }}
-      >
-        <Image
-          source={require("../images/heart_fill.png")}
-          style={{ width: 18, height: 18, tintColor:'red' }}
-        />
-      </TouchableOpacity>
-      ):(
-        <TouchableOpacity
-        style={{
-          width: 30,
-          height: 30,
-          backgroundColor: "#fff",
-          borderRadius: 20,
-          elevation: 5,
-          position: "absolute",
-          top: 10,
-          right: 10,
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-        onPress={() => {
-          onAddToWishlist(item);
-        }}
-      >
-        <Image
-          source={require("../images/heart.png")}
-          style={{ width: 18, height: 18 }}
-        />
-      </TouchableOpacity>
+      <View style={{ marginLeft: 10 }}>
+        <Text style={styles.title}>Service Detail:</Text>
+        <View style={styles.details}>
+          <Text>{item.service.name}</Text>
+          <Text>
+            AED{" "}
+            {item.service.discount ? (
+              <>
+                <Text style={styles.originalPrice}>{item.service.price}</Text>
+                <Text style={styles.discountPrice}> {item.service.discount}</Text>
+              </>
+            ) : (
+              item.service.price
+            )}
+          </Text>
+        </View>
+        <Text style={styles.title}>Booking Detail:</Text>
+        <View style={styles.details}>
+          <Text>{item.date}</Text>
+          <Text>{item.staff}</Text>
+          <Text>{item.slot}</Text>
+        </View>
+      </View>
+      {isCheckout ? (
+        <TouchableOpacity style={styles.removeButton} onPress={onEditCart}>
+          <Image source={require('../images/pen.png')} style={styles.removeIcon} />
+        </TouchableOpacity>
+      ) : (
+        <TouchableOpacity style={styles.removeButton} onPress={onRemoveFromCart}>
+          <Image source={require('../images/close.png')} style={styles.removeIcon} />
+        </TouchableOpacity>
       )}
-      
     </View>
   );
 }
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  card: {
+    backgroundColor: "#FFCACC",
+    borderRadius: 10,
+    elevation: 5,
+    marginVertical: 10,
+    marginHorizontal: 10,
+    padding: 10,
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  excluded: {
+    borderColor: "red",
+    borderWidth: 2,
+  },
+  image: {
+    width: 80,
+    height: 120,
+    borderRadius: 10,
+  },
+  title: {
+    fontWeight: "700",
+    fontSize: 16,
+  },
+  details: {
+    marginLeft: 10,
+  },
+  originalPrice: {
+    textDecorationLine: "line-through",
+    color: "red",
+  },
+  discountPrice: {
+    color: "#333",
+  },
+  removeButton: {
+    backgroundColor: "#ffe8ea",
+    padding: 4,
+    position: "absolute",
+    top: 7,
+    right: 7,
+  },
+  removeIcon: {
+    width: 20,
+    height: 20,
+  },
+});

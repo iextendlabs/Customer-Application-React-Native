@@ -15,19 +15,32 @@ import { orderPDFDownloadUrl } from "../Config/Api";
 export default function OrderSuccess() {
   const route = useRoute();
   const navigation = useNavigation();
+  const [orderIds, setOrderIds] = useState([]);
 
   const handleDownloadPDF = async (order_id) => {
     const url = `${orderPDFDownloadUrl}${order_id}`;
     Linking.openURL(url);
   };
 
+  useEffect(() => {
+    if (route.params && route.params.order_ids) {
+      const orderIds = route.params.order_ids;
+      const formattedOrderIds = orderIds.join(', ');
+      setOrderIds(formattedOrderIds);
+    }
+  }, [route.params?.order_ids]);
+
   const handleShare = async () => {
     try {
+      
+
+
       const message = `
-Order Id#${route.params.order_id}
-Staff: ${route.params.staff}
-Appointment Date: ${route.params.date}
-Slot: ${route.params.slot}
+Order Id#${orderIds}
+Sub Total: AED ${route.params.sub_total}
+Discount: AED ${route.params.discount}
+Staff Charges: AED ${route.params.staff_charges}
+Transport Charges: AED ${route.params.transport_charges}
 Total Order Charges: AED ${route.params.total_amount}
 `;
 
@@ -64,11 +77,12 @@ Total Order Charges: AED ${route.params.total_amount}
       <Text style={{ fontSize: 15, alignSelf: "center", marginTop: 20 }}>
         Your Order Placed Successfully!
       </Text>
-      <Text>Order Id: {route.params.order_id}</Text>
-      <Text>Appointment: {route.params.date}</Text>
-      <Text>Staff: {route.params.staff}</Text>
-      <Text>Slot: {route.params.slot}</Text>
-      <Text>Total Amount: AED {route.params.total_amount}</Text>
+      <Text>Order Id: {orderIds}</Text>
+      <Text>Sub Total: AED {route.params.sub_total}</Text>
+      <Text>Discount: AED {route.params.discount}</Text>
+      <Text>Staff Charges: AED {route.params.staff_charges}</Text>
+      <Text>Transport Charges: AED {route.params.transport_charges}</Text>
+      <Text>Total Order Charges: AED {route.params.total_amount}</Text>
       <View
         style={{
           flexDirection: "row",
@@ -76,24 +90,6 @@ Total Order Charges: AED ${route.params.total_amount}
           marginTop: 10,
         }}
       >
-        <TouchableOpacity
-          style={styles.buttons}
-          onPress={() => {
-            navigation.navigate("RescheduleOrder", {
-              order_id: route.params.order_id,
-            });
-          }}
-        >
-          <Text>Reschedule</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.buttons}
-          onPress={() => {
-            handleDownloadPDF(route.params.order_id);
-          }}
-        >
-          <Text>PDF Download</Text>
-        </TouchableOpacity>
         <TouchableOpacity
           style={styles.buttons}
           onPress={() => {

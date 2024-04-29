@@ -17,6 +17,7 @@ import {
   availableTimeSlotUrl,
   UpdateOrderUrl,
   BaseUrl,
+  servicesTimeSlotUrl,
 } from "../Config/Api";
 import { useNavigation } from "@react-navigation/native";
 import { useDispatch } from "react-redux";
@@ -49,6 +50,7 @@ export default function RescheduleOrder() {
   const [modalVisible, setModalVisible] = useState(false);
   const [note, setNote] = useState(null);
   const [couponDiscount, setCouponDiscount] = useState(null);
+  const [serviceIds, setServicesIds] = useState(null);
 
   useEffect(() => {
     getOrders();
@@ -78,6 +80,8 @@ export default function RescheduleOrder() {
         setCouponDiscount(data.orderTotal.discount)
         setNote(data.order.order_comment);
         setLoading(false);
+        setServicesIds(data.orderServicesId);
+        console.log(data.orderServicesId);
       } else {
         setError("Please try again.");
       }
@@ -104,7 +108,7 @@ export default function RescheduleOrder() {
     setAvailableSlot([]);
     try {
       const response = await axios.get(
-        `${availableTimeSlotUrl}area=${area}&date=${date}`
+        `${servicesTimeSlotUrl}area=${area}&date=${date}&service_id=${serviceIds}`
       );
 
       if (response.status === 200) {
@@ -135,9 +139,9 @@ export default function RescheduleOrder() {
     setSelectedStaffCharges(staff_charges);
     setOrderTotal(
       parseFloat(servicesTotal) +
-        parseFloat(staff_charges) +
-        parseFloat(transportCharges) - 
-        couponDiscount
+      parseFloat(staff_charges) +
+      parseFloat(transportCharges) -
+      couponDiscount
     );
   };
 
@@ -503,7 +507,7 @@ export default function RescheduleOrder() {
         date: selectedDate,
         id: route.params.order_id,
         time_slot_id: selectedSlotId,
-        order_comment:note
+        order_comment: note
       });
 
       if (response.status === 200) {

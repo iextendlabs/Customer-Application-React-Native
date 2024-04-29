@@ -50,17 +50,9 @@ export default function OfferProductItem({ item, isPackage }) {
   };
 
   const onAddToCart = async (item) => {
-    const isItemInCart = cartData.some((cartItem) => cartItem.id === item.id);
-
+    const isItemInCart = cartData.some((cartItem) => cartItem.service_id === item.id);
     if (!isItemInCart) {
-      dispatch(addItemToCart(item));
-      saveToAsyncStorage("@cartData", [...cartData, item]);
-      handleMessage("Added to Cart.");
-
-      showMessage({
-        message: "Added to Cart.",
-        ...toastOptions,
-      });
+      navigation.navigate("AddToCart",{ service: item });
     } else {
       showMessage({
         message: "Item is already in the cart.",

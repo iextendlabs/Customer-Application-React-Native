@@ -9,7 +9,7 @@ import axios from "axios";
 import { useEffect } from "react";
 import Splash from "../Screen/Splash";
 import { useDispatch } from "react-redux";
-import { addPersonalInformation, addAddress, updateNotification, clearAddress, clearPersonalInformation } from "../redux/actions/Actions";
+import { addPersonalInformation, addAddress, updateNotification, clearAddress, clearPersonalInformation, updateCustomerZone } from "../redux/actions/Actions";
 import { BackHandler } from "react-native";
 import messaging from "@react-native-firebase/messaging";
 import { getAuth, FacebookAuthProvider, signInWithCredential } from 'firebase/auth';
@@ -110,6 +110,11 @@ const Login = () => {
         if (data.user_info !== null) {
           dispatch(clearAddress());
           dispatch(clearPersonalInformation());
+          if (data.user_info.area) {
+            dispatch(updateCustomerZone(data.user_info.area));
+            await AsyncStorage.setItem('@customerZone', data.user_info.area);
+          }
+
           const addressInfo = {
             building: data.user_info.buildingName || "",
             villa: data.user_info.flatVilla || "",
@@ -309,6 +314,10 @@ const Login = () => {
         if (data.user_info !== null) {
           dispatch(clearAddress());
           dispatch(clearPersonalInformation());
+          if (data.user_info.area) {
+            dispatch(updateCustomerZone(data.user_info.area));
+            await AsyncStorage.setItem('@customerZone', data.user_info.area);
+          }
           const addressInfo = {
             building: data.user_info.buildingName || "",
             villa: data.user_info.flatVilla || "",

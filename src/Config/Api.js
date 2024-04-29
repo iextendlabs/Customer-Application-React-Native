@@ -1,14 +1,15 @@
-const BaseUrl = "https://lipslay.com/";
+const BaseUrl = "https://test.lipslay.com/";
 
 const LoginUrl = BaseUrl + "api/customerLogin";
 const SignupUrl = BaseUrl + "api/customerSignup";
 const applyCouponAffiliateUrl = BaseUrl + "api/applyCouponAffiliate";
 const appIndex = BaseUrl + "api/appIndex";
 const availableTimeSlotUrl = BaseUrl + "api/availableTimeSlot?";
+const servicesTimeSlotUrl = BaseUrl + "api/servicesTimeSlot?";
 const getOrdersUrl = BaseUrl + "api/getOrders?";
 const getServiceUrl = BaseUrl + "api/getServiceDetails?service_id=";
 const editOrderUrl = BaseUrl + "api/editOrder?";
-const AddOrderUrl = BaseUrl + "api/addOrder";
+const AddOrderUrl = BaseUrl + "api/addNewOrder";
 const UpdateOrderUrl = BaseUrl + "api/updateOrder";
 const filterServicesUrl = BaseUrl + "api/filterServices?";
 const UpdateCustomerInfoUrl = BaseUrl + "api/updateCustomerInfo";
@@ -26,7 +27,7 @@ const appOfferUrl = BaseUrl + "api/appOffer";
 const checkUser = BaseUrl + "api/checkUser?id=";
 const cancelOrder = BaseUrl + "api/cancelOrder?order_id=";
 const signInWithFBUrl = BaseUrl + "api/signInWithFB";
-const orderTotalURL = BaseUrl + "api/orderTotal";
+const orderTotalURL = BaseUrl + "api/OrderTotalSummary";
 const joinAffiliateURL = BaseUrl + "api/apply-affiliate";
 export {
   LoginUrl,
@@ -57,5 +58,6 @@ export {
   cancelOrder,
   signInWithFBUrl,
   orderTotalURL,
-  joinAffiliateURL
+  joinAffiliateURL,
+  servicesTimeSlotUrl
 };

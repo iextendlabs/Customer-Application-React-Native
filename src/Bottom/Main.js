@@ -285,11 +285,11 @@ export default function Main() {
         );
 
         const wishlistData = await AsyncStorage.getItem("@wishlistData");
-        const cartData = await AsyncStorage.getItem("@cartData");
+        const cartData = await AsyncStorage.getItem("@cart");
 
         const updatedCartData = cartData
           ? JSON.parse(cartData).filter((cartItem) =>
-            data.services.some((serviceItem) => serviceItem.id === cartItem.id)
+            data.services.some((serviceItem) => serviceItem.id === cartItem.service_id)
           )
           : [];
 
@@ -298,8 +298,8 @@ export default function Main() {
           dispatch(addItemToCart(item));
         });
 
-        await AsyncStorage.removeItem("@cartData");
-        await AsyncStorage.setItem("@cartData", JSON.stringify(updatedCartData));
+        await AsyncStorage.removeItem("@cart");
+        await AsyncStorage.setItem("@cart", JSON.stringify(updatedCartData));
 
         const updatedWishlistData = wishlistData
           ? JSON.parse(wishlistData).filter((wishlistItem) =>
