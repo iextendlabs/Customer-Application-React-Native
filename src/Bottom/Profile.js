@@ -112,7 +112,6 @@ export default function Profile() {
   
   return (
     <View style={{ flex: 1, backgroundColor: "#FFCACC" }}>
-      <ScrollView>
         <Image
           source={require("../images/profile.png")}
           style={{ width: 80, height: 80, alignSelf: "center", marginTop: 10 }}
@@ -254,7 +253,6 @@ export default function Profile() {
             <Text style={{ alignSelf: "center" }}>Logout</Text>
           </TouchableOpacity>
         </View>
-      </ScrollView>
       <Footer />
     </View>
   );
