@@ -134,8 +134,7 @@ export default function Search() {
             }}> Sub Category</Text>
             <FlatList
               data={subCategory}
-              horizontal
-              showsHorizontalScrollIndicator={false}
+              numColumns={3}
               keyExtractor={(item) => item.id.toString()}
               renderItem={renderCategoryItem}
             />

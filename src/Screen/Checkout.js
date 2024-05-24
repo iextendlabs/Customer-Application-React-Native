@@ -54,8 +54,8 @@ export default function Checkout() {
   const [servicesTotal, setServicesTotal] = useState(null);
   const [orderTotal, setOrderTotal] = useState(null);
   const [note, setNote] = useState(null);
-  const [affiliate, setAffiliate] = useState("");
-  const [coupon, setCoupon] = useState("");
+  const [affiliate, setAffiliate] = useState(null);
+  const [coupon, setCoupon] = useState(null);
   const [notValidCoupon, setNotValidCoupon] = useState(false);
   const [notValidAffiliate, setNotValidAffiliate] = useState(false);
   const [affiliateId, setAffiliateId] = useState('');
@@ -69,6 +69,8 @@ export default function Checkout() {
   const [cartSlotIds, setCartSlotIds] = useState([]);
   const [groupCartData, setGroupCartData] = useState([]);
   const [excludedServices, setExcludedServices] = useState([]);
+  const [isPersonalInfo, setIsPersonalInfo] = useState(false);
+  const [isAddress, setIsAddress] = useState(false);
 
   useEffect(() => {
     if (cartData && cartData.length > 0) {
@@ -123,6 +125,9 @@ export default function Checkout() {
       setNumber(info.number || null);
       setWhatsapp(info.whatsapp || null);
       setGender(info.gender || null);
+      if(info.name != null && info.email != null && info.number != null && info.whatsapp != null && info.gender != null){
+        setIsPersonalInfo(true)
+      }
     }
   }, [personalInformationData]);
 
@@ -153,6 +158,9 @@ export default function Checkout() {
     setLatitude(item.latitude);
     setLongitude(item.longitude);
 
+    if(item.district != null && item.area != null && item.building != null && item.landmark != null && item.villa != null && item.street != null && item.city != null ){
+      setIsAddress(true)
+    }
   };
 
   const handleSave = async () => {
@@ -187,13 +195,22 @@ export default function Checkout() {
       if (response.status === 200) {
         await AsyncStorage.removeItem("@cart");
         dispatch(clearCart());
-        navigation.navigate("OrderSuccess", {
-          sub_total: response.data.sub_total,
-          discount: response.data.discount,
-          staff_charges: response.data.staff_charges,
-          transport_charges: response.data.transport_charges,
-          total_amount: response.data.total_amount,
-          order_ids: response.data.order_ids,
+        navigation.reset({
+          index: 1, // Set the index based on the position of the route you want to set
+          routes: [
+            { name: 'Main' },  // Replace with the route you want to set in the history
+            { 
+              name: 'OrderSuccess', 
+              params: {
+                sub_total: response.data.sub_total,
+                discount: response.data.discount,
+                staff_charges: response.data.staff_charges,
+                transport_charges: response.data.transport_charges,
+                total_amount: response.data.total_amount,
+                order_ids: response.data.order_ids,
+              } 
+            },   // OrderSuccess screen with parameters
+          ],
         });
       } else if (response.status === 201) {
         if (response.data.excludedServices) {
@@ -268,7 +285,7 @@ export default function Checkout() {
     setCouponDiscount("");
     orderTotalCall(0);
     const userId = await AsyncStorage.getItem("@user_id");
-    if (coupon !== "" || affiliate !== "") {
+    if (coupon !== null || affiliate !== null) {
       setLoading(true);
       try {
         const response = await axios.post(applyCouponAffiliateUrl, {
@@ -296,12 +313,12 @@ export default function Checkout() {
           const errors = response.data.errors;
 
           if (errors.affiliate) {
-            setAffiliate("");
+            setAffiliate(null);
             setNotValidAffiliate(errors.affiliate[0]); // Assuming affiliate is an array
           }
 
           if (errors.coupon) {
-            setCoupon("");
+            setCoupon(null);
             dispatch(clearCoupon());
             await AsyncStorage.removeItem("@couponData");
             setNotValidCoupon(errors.coupon[0]);
@@ -404,7 +421,7 @@ export default function Checkout() {
 
   const renderPersonalInformation = () => (
     <View style={{ borderColor: "#8e8e8e", borderTopWidth: 0.5 }}>
-      {personalInformationData.length !== 0 ? (
+      {isPersonalInfo == true ? (
         <View>
           <View
             style={{
@@ -416,7 +433,6 @@ export default function Checkout() {
             }}
           >
             <Text style={{ marginLeft: 10, fontWeight: "800" }}>Personal</Text>
-            {name !== null && email !== null && (
               <TouchableOpacity
                 style={{
                   borderWidth: 0.2,
@@ -432,7 +448,6 @@ export default function Checkout() {
               >
                 <Text>Change</Text>
               </TouchableOpacity>
-            )}
           </View>
 
           <View
@@ -470,7 +485,7 @@ export default function Checkout() {
                 color: "red",
               }}
             >
-              To Proccess the Order, Need Contact Information!
+              No personal information saved properly. Please verify that.
             </Text>
             <TouchableOpacity
               style={{
@@ -497,7 +512,7 @@ export default function Checkout() {
     <View
       style={{ borderColor: "#8e8e8e", borderTopWidth: 0.5, marginTop: 15 }}
     >
-      {addressData.length !== 0 ? (
+      {isAddress == true ? (
         <View>
           <View
             style={{
@@ -509,7 +524,6 @@ export default function Checkout() {
             }}
           >
             <Text style={{ marginLeft: 10, fontWeight: "800" }}>Address</Text>
-            {address !== null && (
               <TouchableOpacity
                 style={{
                   borderWidth: 0.2,
@@ -525,7 +539,6 @@ export default function Checkout() {
               >
                 <Text>Change</Text>
               </TouchableOpacity>
-            )}
           </View>
 
           <View
@@ -567,7 +580,7 @@ export default function Checkout() {
                 color: "red",
               }}
             >
-              No Addresses Given Yet!
+              No addresses saved properly. Please verify that.
             </Text>
             <TouchableOpacity
               style={{
@@ -693,7 +706,7 @@ export default function Checkout() {
               />
             </View>
             <View style={{ marginBottom: 30 }}>
-              {name !== null && email !== null && address ? (
+              {isPersonalInfo == true && isAddress == true ? (
                 <CommonButton
                   title={"Place Order"}
                   bgColor={"#000"}
@@ -705,12 +718,12 @@ export default function Checkout() {
               ) : (
                 <View style={{ padding: 20 }}>
                   <Text style={styles.innerText}>To Process the Order, Check the Following:</Text>
-                  {personalInformationData.length === 0 && (
-                    <Text style={{ color: 'red' }}>Need Contact Information!</Text>
+                  {isPersonalInfo == false && (
+                    <Text style={{ color: 'red' }}>To proceed with your order, we require your contact information. Please verify the details provided.</Text>
                   )}
 
-                  {addressData.length === 0 && (
-                    <Text style={{ color: 'red' }}>No Addresses Given Yet!</Text>
+                  {isAddress == false && (
+                    <Text style={{ color: 'red' }}>To proceed with your order, please verify that you have provided your contact information accurately.</Text>
                   )}
                 </View>
               )}

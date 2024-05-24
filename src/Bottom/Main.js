@@ -24,7 +24,7 @@ import { useDispatch } from "react-redux";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import Splash from "../Screen/Splash";
-import { addItemToCart, addItemToWishlist, clearCart, clearWishlist, updateCategories, updateServices, updateZone } from "../redux/actions/Actions";
+import { addItemToCart, addItemToWishlist, clearCart, clearWishlist, updateCategories, updateGenderPermission, updateServices, updateZone } from "../redux/actions/Actions";
 import CommonButton from "../Common/CommonButton";
 import StaffCard from "../Common/StaffCard";
 import VersionCheck from 'react-native-version-check';
@@ -278,6 +278,9 @@ export default function Main() {
         dispatch(updateServices(data.services));
         dispatch(updateCategories(data.categories));
         dispatch(updateZone(data.staffZones));
+        dispatch(updateGenderPermission(data.gender_permission));
+        
+        await AsyncStorage.setItem("@gender_permission", String(data.gender_permission));
 
         await AsyncStorage.setItem(
           "@whatsappNumber",
@@ -483,14 +486,14 @@ export default function Main() {
               ))}
             </View>
           </View>
-          <CommonButton
+          {/* <CommonButton
             title={"Check Booking"}
             bgColor={"#fd245f"}
             textColor={"#fff"}
             onPress={() => {
               navigation.navigate("Booking");
             }}
-          />
+          /> */}
 
           <View style={{ flex: 1, padding: 16 }}>
             <FlatList

@@ -1,19 +1,15 @@
-import { View, Text, Image, ScrollView, TouchableOpacity, Modal } from "react-native";
+import { View, Text, Image, ScrollView, TouchableOpacity} from "react-native";
 import React, { useState } from "react";
 import CustomTextInput from "../Common/CustomTextInput";
 import CommonButton from "../Common/CommonButton";
 import { useNavigation, useRoute } from "@react-navigation/native";
-import { SignupUrl, UpdateCustomerInfoUrl, signInWithFBUrl } from "../Config/Api";
+import { SignupUrl} from "../Config/Api";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Splash from "../Screen/Splash";
 import messaging from "@react-native-firebase/messaging";
-import { getAuth, FacebookAuthProvider, signInWithCredential } from 'firebase/auth';
-import { onAuthStateChanged } from 'firebase/auth';
-import { LoginManager, AccessToken } from 'react-native-fbsdk-next';
-import { auth } from '../../config';
 import { useDispatch } from "react-redux";
-import { addPersonalInformation, addAddress, updateNotification, clearAddress, clearPersonalInformation, updateAffiliate, updateCustomerZone } from "../redux/actions/Actions";
+import { addPersonalInformation, clearPersonalInformation, updateAffiliate } from "../redux/actions/Actions";
 
 const Signup = () => {
   const dispatch = useDispatch();
@@ -35,12 +31,9 @@ const Signup = () => {
   const [termsChecked, setTermsChecked] = useState(false);
   const [fcmToken, setFcmToken] = useState("");
   const [number, setNumber] = useState("");
-  const [userId, setUserId] = useState("");
   const [whatsapp, setWhatsapp] = useState("");
-  const [modalVisible, setModalVisible] = useState(false);
   const [selectedCountryForNumber, setSelectedCountryForNumber] = useState(null);
   const [selectedCountryForWhatsapp, setSelectedCountryForWhatsapp] = useState(null);
-  const [modalError, setModalError] = useState("");
 
   const handleSelectCountryForNumber = (country) => {
     setSelectedCountryForNumber(country.cca2);
@@ -50,188 +43,6 @@ const Signup = () => {
   const handleSelectCountryForWhatsapp = (country) => {
     setSelectedCountryForWhatsapp(country.cca2);
     setWhatsapp('+' + country.callingCode['0']);
-  };
-  const openModal = () => {
-    setModalVisible(true);
-  };
-
-  const closeModal = () => {
-    setModalVisible(false);
-  };
-
-  const signInWithFB = async () => {
-    setLoading(true);
-    try {
-      const result = await LoginManager.logInWithPermissions(['public_profile', 'email']);
-
-      if (result.isCancelled) {
-        setLoading(false);
-        console.log('Login canceled');
-        return;
-      }
-
-      const data = await AccessToken.getCurrentAccessToken();
-
-      if (!data) {
-        setLoading(false);
-        return;
-      }
-      const facebookCredential = FacebookAuthProvider.credential(data.accessToken);
-      const response = await signInWithCredential(auth, facebookCredential);
-
-      if (response) {
-        setModalError("");
-        setNumber("");
-        setWhatsapp("");
-        setLoading(false);
-        saveLoginWithFB(response['_tokenResponse']['fullName'], response['_tokenResponse']['email']);
-      }
-    } catch (error) {
-      setLoading(false);
-    }
-  };
-
-  const saveLoginWithFB = async (fbName, fbEmail) => {
-
-    setLoading(true);
-    setError("");
-    try {
-      const response = await axios.post(signInWithFBUrl, {
-        name: fbName,
-        email: fbEmail,
-        fcmToken: fcmToken,
-      });
-      const data = response.data;
-
-      if (response.status === 200) {
-        if (data.user_info !== null) {
-          dispatch(clearAddress());
-          dispatch(clearPersonalInformation());
-          if (data.user_info.area) {
-            dispatch(updateCustomerZone(data.user_info.area));
-            await AsyncStorage.setItem('@customerZone', data.user_info.area);
-          }
-          const addressInfo = {
-            building: data.user_info.buildingName || "",
-            villa: data.user_info.flatVilla || "",
-            street: data.user_info.street || "",
-            area: data.user_info.area || "",
-            landmark: data.user_info.landmark || "",
-            city: data.user_info.city || "",
-            district: data.user_info.district || "",
-          };
-
-          const personalInfo = {
-            name: data.user.name,
-            email: data.user.email,
-            number: data.user_info.number || "",
-            whatsapp: data.user_info.whatsapp || "",
-            gender: data.user_info.gender || "",
-          };
-
-          await AsyncStorage.setItem(
-            "@addressData",
-            JSON.stringify(addressInfo)
-          );
-          await AsyncStorage.setItem(
-            "@personalInformation",
-            JSON.stringify(personalInfo)
-          );
-          dispatch(addPersonalInformation(personalInfo));
-          dispatch(addAddress(addressInfo));
-        }
-
-        const accessToken = data.access_token;
-
-        await AsyncStorage.setItem("@access_token", accessToken);
-        await AsyncStorage.setItem("@user_id", String(data.user.id));
-        await AsyncStorage.setItem("@user_name", String(data.user.name));
-        await AsyncStorage.setItem("@user_email", String(data.user.email));
-
-        dispatch(
-          updateNotification(data.notifications)
-        );
-        await AsyncStorage.setItem("@notifications", JSON.stringify(data.notifications));
-        const headers = {
-          Authorization: `Bearer ${accessToken}`,
-        };
-
-        if (route.params && route.params.Navigate) {
-          navigation.reset({
-            index: 1,
-            routes: [
-              { name: 'Main' },
-              { name: route.params.Navigate },
-            ],
-          });
-        } else {
-          navigation.reset({
-            index: 0,
-            routes: [{ name: "Main" }],
-          });
-        }
-      } else if (response.status === 203) {
-        const accessToken = data.access_token;
-
-        await AsyncStorage.setItem("@access_token", accessToken);
-        await AsyncStorage.setItem("@user_id", String(data.user.id));
-        await AsyncStorage.setItem("@user_name", String(data.user.name));
-        await AsyncStorage.setItem("@user_email", String(data.user.email));
-
-        const headers = {
-          Authorization: `Bearer ${accessToken}`,
-        };
-        setUserId(data.user.id);
-
-        openModal();
-      } else {
-        setError("Login failed. Please try again.");
-      }
-    } catch (error) {
-      setError("There is something wrong. Please try again");
-    }
-    setLoading(false);
-  };
-
-  const updateCustomer = async () => {
-
-    if (selectedCountryForNumber === null || selectedCountryForWhatsapp === null) {
-      setModalError("Please select country for number and Whatsapp.");
-      setLoading(false);
-      return;
-    }
-    setLoading(true);
-    setError("");
-    try {
-      const response = await axios.post(UpdateCustomerInfoUrl, {
-        number: number,
-        whatsapp: whatsapp,
-        user_id: userId,
-      });
-
-      if (response.status === 200) {
-        if (route.params && route.params.Navigate) {
-          navigation.reset({
-            index: 1,
-            routes: [
-              { name: 'Main' },
-              { name: route.params.Navigate },
-            ],
-          });
-        } else {
-          navigation.reset({
-            index: 0,
-            routes: [{ name: "Main" }],
-          });
-        }
-      } else {
-        setError("Login failed. Please try again.");
-      }
-    } catch (error) {
-      setError("There is something wrong. Please try again");
-    }
-    closeModal();
-    setLoading(false);
   };
 
   try {
@@ -339,6 +150,27 @@ const Signup = () => {
         dispatch(
           updateAffiliate(response.data.affiliate_code)
         );
+
+        await AsyncStorage.setItem("@selectedCountryForNumber", selectedCountryForNumber);
+        await AsyncStorage.setItem("@selectedCountryForWhatsapp", selectedCountryForWhatsapp);
+
+        const personalInfo = {
+          name: name,
+          email: email,
+          number: number,
+          whatsapp: whatsapp,
+        };
+  
+        await AsyncStorage.removeItem("@personalInformation");
+  
+        await AsyncStorage.setItem(
+          "@personalInformation",
+          JSON.stringify(personalInfo)
+        );
+
+        dispatch(clearPersonalInformation());
+        dispatch(addPersonalInformation(personalInfo));
+
         const headers = {
           Authorization: `Bearer ${accessToken}`,
         };
@@ -568,14 +400,6 @@ const Signup = () => {
             handleSignup();
           }}
         />
-        <CommonButton
-          title={"Continue With Facebook"}
-          bgColor={"#0064e0"}
-          textColor={"#fff"}
-          onPress={() => {
-            signInWithFB();
-          }}
-        />
         <Text
           style={{
             fontSize: 18,
@@ -592,68 +416,6 @@ const Signup = () => {
           Already Have Account?
         </Text>
       </View>
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={closeModal}
-      >
-        <View style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "rgba(0, 0, 0, 0.5)" }}>
-          <View style={{ backgroundColor: "#FFF", padding: 20, borderRadius: 10, width: '100%' }}>
-            {modalError && (
-              <Text style={{ color: "red" }}>
-                {modalError}
-              </Text>
-            )}
-            <Text style={{ fontSize: 16, marginBottom: 10 }}>Enter Additional Information</Text>
-            <CustomTextInput
-              value={number}
-              onChangeText={(txt) => setNumber(txt)}
-              placeholder={"Enter Phone Number"}
-              keyboardType={"numeric"}
-              onSelectCountry={handleSelectCountryForNumber} // Make sure to pass the correct function
-              selectedCountry={selectedCountryForNumber}
-              isNumber={true}
-            />
-            <CustomTextInput
-              value={whatsapp}
-              onChangeText={(txt) => setWhatsapp(txt)}
-              placeholder={"Enter Whatsapp Number"}
-              keyboardType={"numeric"}
-              onSelectCountry={handleSelectCountryForWhatsapp} // Make sure to pass the correct function
-              selectedCountry={selectedCountryForWhatsapp}
-              isNumber={true}
-            />
-            <View style={{ flexDirection: "row", justifyContent: "space-between", marginTop: 20 }}>
-              <TouchableOpacity
-                onPress={() => {
-                  closeModal();
-                  if (route.params && route.params.Navigate) {
-                    navigation.reset({
-                      index: 1,
-                      routes: [
-                        { name: 'Main' },
-                        { name: route.params.Navigate },
-                      ],
-                    });
-                  } else {
-                    navigation.reset({
-                      index: 0,
-                      routes: [{ name: "Main" }],
-                    });
-                  }
-                }}
-                style={{ padding: 10, backgroundColor: "#DDD", borderRadius: 5 }}
-              >
-                <Text>Cancel</Text>
-              </TouchableOpacity>
-              <TouchableOpacity onPress={updateCustomer} style={{ padding: 10, backgroundColor: "#000", borderRadius: 5 }}>
-                <Text style={{ color: "#FFF" }}>Submit</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-      </Modal>
     </ScrollView>
   );
 };

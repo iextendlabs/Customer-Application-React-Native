@@ -19,7 +19,7 @@ import CommonButton from "../Common/CommonButton";
 import Splash from "../Screen/Splash";
 import Header from "../Common/Header";
 import Footer from "../Common/Footer";
-import { updateBooking } from "../redux/actions/Actions";
+import { updateBooking, updateCustomerZone } from "../redux/actions/Actions";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function Booking() {
@@ -59,6 +59,7 @@ export default function Booking() {
   const [gender, setGender] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [isUser, setIsUser] = useState(false);
+  const customerZone = useSelector((state) => state.customerZone);
 
   useEffect(() => {
     if (selectedDate === null) {
@@ -94,26 +95,40 @@ export default function Booking() {
 
   useEffect(() => {
     if (bookingData && bookingData.length > 0) {
-      const booking = bookingData[0];
-      setSelectedDate(booking.selectedDate || null);
-      setSelectedStaff(booking.selectedStaff || null);
-      setSelectedStaffId(booking.selectedStaffId || null);
-      setSelectedSlot(booking.selectedSlot || null);
-      setSelectedSlotValue(booking.selectedSlotValue || null);
-      setSelectedSlotId(booking.selectedSlotId || null);
-      setSelectedStaffCharges(booking.selectedStaffCharge);
-      setTransportCharges(booking.transportCharges || null);
-      setSelectedArea(booking.selectedArea || null);
-      if (booking.selectedDate && booking.selectedArea) {
-        fetchAvailableTimeSlots(
-          booking.selectedDate,
-          booking.selectedArea,
-          booking.selectedStaffId,
-          booking.selectedSlot
-        );
+      if (customerZone && customerZone.length > 0 && customerZone[0] != bookingData[0].selectedArea) {
+        setSelectedArea(customerZone[0] || "");
+        if (selectedDate && customerZone[0]) {
+          fetchAvailableTimeSlots(selectedDate, customerZone[0]);
+        }
+      }else{
+        const booking = bookingData[0];
+        setSelectedDate(booking.selectedDate || null);
+        setSelectedStaff(booking.selectedStaff || null);
+        setSelectedStaffId(booking.selectedStaffId || null);
+        setSelectedSlot(booking.selectedSlot || null);
+        setSelectedSlotValue(booking.selectedSlotValue || null);
+        setSelectedSlotId(booking.selectedSlotId || null);
+        setSelectedStaffCharges(booking.selectedStaffCharge);
+        setTransportCharges(booking.transportCharges || null);
+        setSelectedArea(booking.selectedArea || null);
+        if (booking.selectedDate && booking.selectedArea) {
+          fetchAvailableTimeSlots(
+            booking.selectedDate,
+            booking.selectedArea,
+            booking.selectedStaffId,
+            booking.selectedSlot
+          );
+        }
+      }
+    }else{
+      if (customerZone && customerZone.length > 0 && customerZone[0] != booking.selectedArea) {
+        setSelectedArea(customerZone[0] || "");
+        if (selectedDate && customerZone[0]) {
+          fetchAvailableTimeSlots(selectedDate, customerZone[0]);
+        }
       }
     }
-  }, [bookingData[0]]);
+  }, [bookingData[0],customerZone]);
 
   useEffect(() => {
     checkUser();
@@ -838,7 +853,7 @@ export default function Booking() {
               }
               bgColor={"#000"}
               textColor={"#fff"}
-              onPress={() => {
+              onPress={async () => {
                 setLoading(true);
                 const bookingInfo = {
                   selectedDate: selectedDate,
@@ -855,6 +870,18 @@ export default function Booking() {
                 dispatch(
                   updateBooking(bookingInfo)
                 );
+
+                dispatch(updateCustomerZone(selectedArea));
+                try {
+                  await AsyncStorage.setItem('@customerZone', selectedArea);
+                  if (cartData.length > 0) {
+                    checkAuthentication("Checkout");
+                  } else {
+                    navigation.navigate("Main");
+                  }
+                } catch (error) {
+                }
+
                 if (cartData.length > 0) {
                   checkAuthentication("Checkout");
                 } else {

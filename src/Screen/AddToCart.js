@@ -27,7 +27,7 @@ export default function AddToCart() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(null);
   const [loading, setLoading] = useState(false);
-  const zones = useSelector((state) => state.zones || []); // Initialize with empty array
+  const zones = useSelector((state) => state.zones || []);
   const [area, setArea] = useState(null);
   const [date, setDate] = useState(null);
   const [staffs, setStaffs] = useState([]);
@@ -40,6 +40,7 @@ export default function AddToCart() {
   const [serviceId, setServiceId] = useState(null);
   const [service, setService] = useState(null);
   const customerZone = useSelector((state) => state.customerZone);
+  const bookingData = useSelector((state) => state.booking);
 
   useEffect(() => {
     if (route.params && route.params.service) {
@@ -72,6 +73,17 @@ export default function AddToCart() {
     }
   }, [area, serviceId]);
 
+  useEffect(() => {
+    if (bookingData && bookingData.length > 0) {
+      const booking = bookingData[0];
+      setDate(booking.selectedDate || null);
+      setSelectedStaff(booking.selectedStaff || null);
+      setSelectedStaffId(booking.selectedStaffId || null);
+      setSelectedSlot(booking.selectedSlot || null);
+      setSelectedSlotValue(booking.selectedSlotValue || null);
+      setSelectedSlotId(booking.selectedSlotId || null);
+    }
+  }, [bookingData[0]]);
 
   useEffect(() => {
     if (customerZone && customerZone.length > 0) {
@@ -439,9 +451,8 @@ export default function AddToCart() {
           {success == null ? (
             <>
               <Text style={{ margin: 10, fontWeight: "800" }}>
-                Zone: {area && area}
+                Zone:
               </Text>
-              {area == null && (
                 <View
                   style={{
                     width: "85%",
@@ -463,7 +474,6 @@ export default function AddToCart() {
                     </Picker>
                   )}
                 </View>
-              )}
 
               <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
                 <Text style={{ margin: 10, fontWeight: "800" }}>

@@ -51,7 +51,7 @@ export default function Footer() {
       >
         <TouchableOpacity
           style={{
-            width: "17%",
+            width: "20%",
             height: "100%",
             justifyContent: "center",
             alignItems: "center",
@@ -71,7 +71,7 @@ export default function Footer() {
         </TouchableOpacity>
         <TouchableOpacity
           style={{
-            width: "17%",
+            width: "20%",
             height: "100%",
             justifyContent: "center",
             alignItems: "center",
@@ -92,7 +92,7 @@ export default function Footer() {
 
         <TouchableOpacity
           style={{
-            width: "17%",
+            width: "20%",
             height: "100%",
             justifyContent: "center",
             alignItems: "center",
@@ -129,7 +129,7 @@ export default function Footer() {
         </TouchableOpacity>
         <TouchableOpacity
           style={{
-            width: "17%",
+            width: "20%",
             height: "100%",
             justifyContent: "center",
             alignItems: "center",
@@ -164,9 +164,9 @@ export default function Footer() {
             </Text>
           </View>
         </TouchableOpacity>
-        <TouchableOpacity
+        {/* <TouchableOpacity
           style={{
-            width: "17%",
+            width: "20%",
             height: "100%",
             justifyContent: "center",
             alignItems: "center",
@@ -183,10 +183,10 @@ export default function Footer() {
               tintColor: route.name == "Booking" ? "#000" : "#8e8e8e",
             }}
           />
-        </TouchableOpacity>
+        </TouchableOpacity> */}
         <TouchableOpacity
           style={{
-            width: "17%",
+            width: "20%",
             height: "100%",
             justifyContent: "center",
             alignItems: "center",

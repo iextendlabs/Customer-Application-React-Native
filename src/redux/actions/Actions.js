@@ -22,7 +22,8 @@ import {
   UPDATE_AFFILIATE,
   ClEAR_AFFILIATE,
   UPDATE_CUSTOMER_ZONE,
-  UPDATE_OR_ADD_TO_CART
+  UPDATE_OR_ADD_TO_CART,
+  UPDATE_GENDER_PERMISSION
 } from "../ActionTypes";
 
 export const updateServices = (data) => ({
@@ -135,5 +136,10 @@ export const clearNotification = () => ({
 
 export const updateCustomerZone = (data) => ({
   type: UPDATE_CUSTOMER_ZONE,
+  payload: data,
+});
+
+export const updateGenderPermission = (data) => ({
+  type: UPDATE_GENDER_PERMISSION,
   payload: data,
 });
