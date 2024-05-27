@@ -146,10 +146,12 @@ const Signup = () => {
         await AsyncStorage.setItem("@user_id", String(userId));
         await AsyncStorage.setItem("@user_name", String(userName));
         await AsyncStorage.setItem("@user_email", String(userEmail));
-        await AsyncStorage.setItem("@affiliate", String(affiliate_code));
-        dispatch(
-          updateAffiliate(response.data.affiliate_code)
-        );
+        if(affiliate_code){
+          await AsyncStorage.setItem("@affiliate", String(affiliate_code));
+          dispatch(
+            updateAffiliate(response.data.affiliate_code)
+          );
+        }
 
         await AsyncStorage.setItem("@selectedCountryForNumber", selectedCountryForNumber);
         await AsyncStorage.setItem("@selectedCountryForWhatsapp", selectedCountryForWhatsapp);

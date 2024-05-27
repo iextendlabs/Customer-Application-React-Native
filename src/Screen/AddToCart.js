@@ -17,7 +17,7 @@ import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import StarRating from "../Common/StarRating";
 import Splash from "../Screen/Splash";
-import { addItemToCart, updateCustomerZone, updateOrAddToCart } from "../redux/actions/Actions";
+import { updateCustomerZone, updateOrAddToCart } from "../redux/actions/Actions";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function AddToCart() {
@@ -40,7 +40,6 @@ export default function AddToCart() {
   const [serviceId, setServiceId] = useState(null);
   const [service, setService] = useState(null);
   const customerZone = useSelector((state) => state.customerZone);
-  const bookingData = useSelector((state) => state.booking);
 
   useEffect(() => {
     if (route.params && route.params.service) {
@@ -74,18 +73,6 @@ export default function AddToCart() {
   }, [area, serviceId]);
 
   useEffect(() => {
-    if (bookingData && bookingData.length > 0) {
-      const booking = bookingData[0];
-      setDate(booking.selectedDate || null);
-      setSelectedStaff(booking.selectedStaff || null);
-      setSelectedStaffId(booking.selectedStaffId || null);
-      setSelectedSlot(booking.selectedSlot || null);
-      setSelectedSlotValue(booking.selectedSlotValue || null);
-      setSelectedSlotId(booking.selectedSlotId || null);
-    }
-  }, [bookingData[0]]);
-
-  useEffect(() => {
     if (customerZone && customerZone.length > 0) {
       setArea(customerZone[0] || "");
     }
@@ -107,35 +94,6 @@ export default function AddToCart() {
       if (response.status === 200) {
         setStaffs(response.data.availableStaff);
         setSlots(response.data.slots);
-
-        const isStaffIdInAvailableStaff = response.data.availableStaff.some(
-          (availableStaff) => availableStaff.id === selectedStaffId
-        );
-
-        if (!isStaffIdInAvailableStaff) {
-          setSelectedStaff(null);
-          setSelectedStaffId(null);
-        }
-
-        if (response.data.slots[selectedStaffId]) {
-          const isSlotInAvailableStaff = response.data.slots[
-            selectedStaffId
-          ].some(
-            (slot) =>
-              slot[0] === selectedSlotId &&
-              slot[1] === selectedSlotValue
-          );
-
-          if (!isSlotInAvailableStaff) {
-            setSelectedSlotId(null);
-            setSelectedSlot(null);
-            setSelectedSlotValue(null);
-          }
-        } else {
-          setSelectedSlotId(null);
-          setSelectedSlot(null);
-          setSelectedSlotValue(null);
-        }
       } else if (response.status === 201) {
         setStaffs([]);
         setSlots([]);
@@ -524,7 +482,7 @@ export default function AddToCart() {
                       markedDates={
                         date ? { [date]: { selected: true } } : {}
                       }
-                      minDate={new Date()}
+                      minDate={new Date().toISOString().split('T')[0]}
                     />
                   </View>
                 </View>

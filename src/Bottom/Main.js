@@ -486,14 +486,14 @@ export default function Main() {
               ))}
             </View>
           </View>
-          {/* <CommonButton
+          <CommonButton
             title={"Check Booking"}
             bgColor={"#fd245f"}
             textColor={"#fff"}
             onPress={() => {
               navigation.navigate("Booking");
             }}
-          /> */}
+          />
 
           <View style={{ flex: 1, padding: 16 }}>
             <FlatList

@@ -212,7 +212,6 @@ export default function Details() {
       const addOnIds = data.addONs.map(item => item.add_on_id);
       const addOn = services[0].filter(item => addOnIds.includes(item.id.toString()));
       setAddONs(addOn);
-      console.log(variant);
     }
 
     setLoading(false);

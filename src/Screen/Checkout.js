@@ -24,6 +24,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import Splash from "../Screen/Splash";
 import CustomTextInput from "../Common/CustomTextInput";
 import CartItem from "../Common/CartItem";
+import PaymentModal from "../Common/PaymentModal";
 
 export default function Checkout() {
   const dispatch = useDispatch();
@@ -71,7 +72,9 @@ export default function Checkout() {
   const [excludedServices, setExcludedServices] = useState([]);
   const [isPersonalInfo, setIsPersonalInfo] = useState(false);
   const [isAddress, setIsAddress] = useState(false);
-
+  const [paymentMethod, setPaymentMethod] = useState('cash');
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  
   useEffect(() => {
     if (cartData && cartData.length > 0) {
       const updatedGroupCartData = {};
@@ -125,7 +128,7 @@ export default function Checkout() {
       setNumber(info.number || null);
       setWhatsapp(info.whatsapp || null);
       setGender(info.gender || null);
-      if(info.name != null && info.email != null && info.number != null && info.whatsapp != null && info.gender != null){
+      if (info.name != null && info.email != null && info.number != null && info.whatsapp != null && info.gender != null) {
         setIsPersonalInfo(true)
       }
     }
@@ -158,7 +161,7 @@ export default function Checkout() {
     setLatitude(item.latitude);
     setLongitude(item.longitude);
 
-    if(item.district != null && item.area != null && item.building != null && item.landmark != null && item.villa != null && item.street != null && item.city != null ){
+    if (item.district != null && item.area != null && item.building != null && item.landmark != null && item.villa != null && item.street != null && item.city != null) {
       setIsAddress(true)
     }
   };
@@ -199,8 +202,8 @@ export default function Checkout() {
           index: 1, // Set the index based on the position of the route you want to set
           routes: [
             { name: 'Main' },  // Replace with the route you want to set in the history
-            { 
-              name: 'OrderSuccess', 
+            {
+              name: 'OrderSuccess',
               params: {
                 sub_total: response.data.sub_total,
                 discount: response.data.discount,
@@ -208,7 +211,7 @@ export default function Checkout() {
                 transport_charges: response.data.transport_charges,
                 total_amount: response.data.total_amount,
                 order_ids: response.data.order_ids,
-              } 
+              }
             },   // OrderSuccess screen with parameters
           ],
         });
@@ -247,6 +250,12 @@ export default function Checkout() {
       }
     } catch (error) { }
     setLoading(false);
+  };
+
+  const handlePaymentModalSubmit = (transactionId) => {
+    // Handle payment submission with DPO Pay transaction ID
+    // You can make API calls or handle payment logic here
+    setShowPaymentModal(false); // Close the modal after submission
   };
 
   const orderTotalCall = async (coupon_id = null) => {
@@ -433,21 +442,21 @@ export default function Checkout() {
             }}
           >
             <Text style={{ marginLeft: 10, fontWeight: "800" }}>Personal</Text>
-              <TouchableOpacity
-                style={{
-                  borderWidth: 0.2,
-                  borderRadius: 4,
-                  padding: 7,
-                  marginRight: 20,
-                  alignSelf: "center",
-                  justifyContent: "center",
-                }}
-                onPress={() => {
-                  navigation.navigate("PersonalInformation");
-                }}
-              >
-                <Text>Change</Text>
-              </TouchableOpacity>
+            <TouchableOpacity
+              style={{
+                borderWidth: 0.2,
+                borderRadius: 4,
+                padding: 7,
+                marginRight: 20,
+                alignSelf: "center",
+                justifyContent: "center",
+              }}
+              onPress={() => {
+                navigation.navigate("PersonalInformation");
+              }}
+            >
+              <Text>Change</Text>
+            </TouchableOpacity>
           </View>
 
           <View
@@ -524,21 +533,21 @@ export default function Checkout() {
             }}
           >
             <Text style={{ marginLeft: 10, fontWeight: "800" }}>Address</Text>
-              <TouchableOpacity
-                style={{
-                  borderWidth: 0.2,
-                  borderRadius: 4,
-                  padding: 7,
-                  marginRight: 20,
-                  alignSelf: "center",
-                  justifyContent: "center",
-                }}
-                onPress={() => {
-                  navigation.navigate("Address");
-                }}
-              >
-                <Text>Change</Text>
-              </TouchableOpacity>
+            <TouchableOpacity
+              style={{
+                borderWidth: 0.2,
+                borderRadius: 4,
+                padding: 7,
+                marginRight: 20,
+                alignSelf: "center",
+                justifyContent: "center",
+              }}
+              onPress={() => {
+                navigation.navigate("Address");
+              }}
+            >
+              <Text>Change</Text>
+            </TouchableOpacity>
           </View>
 
           <View
@@ -707,14 +716,37 @@ export default function Checkout() {
             </View>
             <View style={{ marginBottom: 30 }}>
               {isPersonalInfo == true && isAddress == true ? (
-                <CommonButton
-                  title={"Place Order"}
-                  bgColor={"#000"}
-                  textColor={"#fff"}
-                  onPress={() => {
-                    handleSave();
-                  }}
-                />
+                // <>
+                //   <Text style={{
+                //     margin: 10,
+                //     fontWeight: "800",
+                //   }}>Payment Method:</Text>
+                //   <View style={styles.paymentMethodContainer}>
+                //     <View style={styles.paymentMethodOption}>
+                //       <TouchableOpacity
+                //         style={[styles.paymentMethodOption, paymentMethod === 'cash' && styles.paymentMethodOptionSelected]}
+                //         onPress={() => setPaymentMethod('cash')}
+                //       >
+                //         <Text style={[styles.paymentMethodText, paymentMethod === 'cash' && styles.paymentMethodTextSelected]}>Cash on Delivery</Text>
+                //       </TouchableOpacity>
+                //       <TouchableOpacity
+                //         style={[styles.paymentMethodOption, paymentMethod === 'card' && styles.paymentMethodOptionSelected]}
+                //         onPress={() => { setPaymentMethod('card'); setShowPaymentModal(true);}}
+                //       >
+                //         <Text style={[styles.paymentMethodText, paymentMethod === 'card' && styles.paymentMethodTextSelected]}>Card Pay</Text>
+                //       </TouchableOpacity>
+                //     </View>
+                //   </View>
+
+                  <CommonButton
+                    title={"Place Order"}
+                    bgColor={"#000"}
+                    textColor={"#fff"}
+                    onPress={() => {
+                      handleSave();
+                    }}
+                  />
+                // </>
               ) : (
                 <View style={{ padding: 20 }}>
                   <Text style={styles.innerText}>To Process the Order, Check the Following:</Text>
@@ -769,6 +801,11 @@ export default function Checkout() {
           </>
         </>
       </View>
+      {/* <PaymentModal 
+        visible={showPaymentModal}
+        onClose={() => {setShowPaymentModal(false); setPaymentMethod('cash');}}
+        onSubmit={handlePaymentModalSubmit}
+      /> */}
     </ScrollView>
   );
 }
@@ -778,5 +815,29 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     fontSize: 16,
     color: 'red',
+  },
+  paymentMethodContainer: {
+    marginBottom: 20,
+    paddingHorizontal: 20,
+  },
+  paymentMethodOption: {
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    marginBottom: 10,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#000',
+  },
+  paymentMethodOptionSelected: {
+    backgroundColor: '#ec407a',
+    borderColor: '#ec407a',
+  },
+  paymentMethodText: {
+    fontSize: 14,
+    color: '#333',
+  },
+  paymentMethodTextSelected: {
+    fontSize: 14,
+    color: '#fff',
   },
 });
