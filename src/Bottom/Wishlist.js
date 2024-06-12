@@ -44,7 +44,7 @@ export default function Wishlist() {
       const isItemInCart = cartData.some((cartItem) => cartItem.service_id === item.id);
 
       if (!isItemInCart) {
-        navigation.navigate("AddToCart",{ service: item });
+        navigation.navigate("AddToCart", { service_id: item.id });
       } else {
         console.log("Item is already in the cart");
       }
@@ -64,7 +64,7 @@ export default function Wishlist() {
       <Header title={"Wishlist"} />
       {wishlistData.length !== 0 ? (
         <FlatList
-        style={{marginBottom:80}}
+          style={{ marginBottom: 80 }}
           data={wishlistData}
           renderItem={({ item, index }) => (
             <WishlistItem
@@ -91,7 +91,7 @@ export default function Wishlist() {
           </Text>
         </View>
       )}
-      <Footer/>
+      <Footer />
     </View>
   );
 }

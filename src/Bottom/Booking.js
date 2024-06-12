@@ -22,6 +22,7 @@ import Footer from "../Common/Footer";
 import { updateCustomerZone, updateOrAddToCart } from "../redux/actions/Actions";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import CustomTextInput from "../Common/CustomTextInput";
+import { RadioButton } from 'react-native-paper';
 
 export default function Booking() {
   const dispatch = useDispatch();
@@ -47,6 +48,9 @@ export default function Booking() {
   const [selectedService, setSelectedService] = useState(null);
   const [selectedServiceId, setSelectedServiceId] = useState(null);
   const [success, setSuccess] = useState(null);
+  const [serviceOptions, setServiceOptions] = useState([]);
+  const [selectedOption, setSelectedOption] = useState(null);
+  const [optionPrice, setOptionPrice] = useState(null);
 
   useEffect(() => {
     filter();
@@ -59,6 +63,9 @@ export default function Booking() {
     setSelectedSlot(null);
     setSelectedSlotValue(null);
     setSelectedSlotId(null);
+    setServiceOptions([]);
+    setSelectedOption(null);
+    setOptionPrice(null);
   }, [search]);
 
   useEffect(() => {
@@ -102,9 +109,20 @@ export default function Booking() {
   const handleServiceSelect = (service) => {
     setSelectedService(service);
     setSelectedServiceId(service.id);
+    if (service.options) {
+      setServiceOptions(service.options);
+      setSelectedOption(null);
+    } else {
+      setServiceOptions(null);
+    }
     if (selectedDate && selectedArea) {
       fetchAvailableTimeSlots(selectedDate, selectedArea, service.id);
     }
+  };
+
+  const handleOptionSelect = (option) => {
+    setSelectedOption(option.id);
+    setOptionPrice(option.option_price);
   };
 
   const handleDateSelect = (date) => {
@@ -151,13 +169,13 @@ export default function Booking() {
   const handleBookNow = async () => {
     setLoading(true);
     const cartData = {
-      'service': selectedService,
       'service_id': selectedServiceId,
       'staff_id': selectedStaffId,
       'staff': selectedStaff,
       'slot_id': selectedSlotId,
       'slot': selectedSlotValue,
       'date': selectedDate,
+      'option_id': selectedOption ?? null
     };
 
     dispatch(updateCustomerZone(selectedArea));
@@ -176,6 +194,31 @@ export default function Booking() {
 
     setLoading(false);
   };
+
+  const renderOptions = () => (
+    <View style={{ borderColor: "#8e8e8e", borderTopWidth: 0.5 }}>
+      {serviceOptions.length > 0 && (
+        <>
+          <Text style={{ margin: 10, fontWeight: "800" }}>Options:</Text>
+          <RadioButton.Group
+            onValueChange={(value) => setSelectedOption(value)}
+            value={selectedOption}
+          >
+            {serviceOptions.map((option) => (
+              <TouchableOpacity
+                key={option.id}
+                style={{ flexDirection: "row", alignItems: "center", marginLeft: 30 }}
+                onPress={() => handleOptionSelect(option)}
+              >
+                <RadioButton value={option.id} />
+                <Text>{option.option_name} - AED {option.option_price}</Text>
+              </TouchableOpacity>
+            ))}
+          </RadioButton.Group>
+        </>
+      )}
+    </View>
+  );
 
   const renderDate = () => (
     <View
@@ -454,22 +497,29 @@ export default function Booking() {
                       </Text>
                       <Text style={{ fontSize: 15, fontWeight: "600" }}>
                         AED{" "}
-                        {item.discount ? (
-                          <>
-                            <Text
-                              style={{ textDecorationLine: "line-through", color: "red" }}
-                            >
-                              {item.price}
-                            </Text>
-                            <Text style={{ marginRight: 5, color: "#333" }}>
-                              {" " + item.discount}
-                            </Text>
-                          </>
+                        {optionPrice ? (
+                          optionPrice
                         ) : (
-                          item.price
+                          <>
+                            {item.discount ? (
+                              <>
+                                <Text
+                                  style={{ textDecorationLine: "line-through", color: "red" }}
+                                >
+                                  {item.price}
+                                </Text>
+                                <Text style={{ marginRight: 5, color: "#333" }}>
+                                  {" " + item.discount}
+                                </Text>
+                              </>
+                            ) : (
+                              item.price
+                            )}
+                          </>
                         )}
+
                       </Text>
-                      <Text style={{ fontSize: 15}}>
+                      <Text style={{ fontSize: 15 }}>
                         {item.duration}
                       </Text>
                     </View>
@@ -525,7 +575,7 @@ export default function Booking() {
                           item.price
                         )}
                       </Text>
-                      <Text style={{ fontSize: 15}}>
+                      <Text style={{ fontSize: 15 }}>
                         {item.duration}
                       </Text>
                     </View>
@@ -687,7 +737,8 @@ export default function Booking() {
                 </>
               )}
             </>
-            {selectedService && (
+            {serviceOptions.length > 0 && renderOptions()}
+            {selectedService && (serviceOptions.length == 0 || (serviceOptions.length > 0 && selectedOption)) && (
               <>
                 <Text style={{ width: "85%", alignSelf: "center", padding: 10 }}>
                   Zone:

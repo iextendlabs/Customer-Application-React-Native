@@ -11,28 +11,35 @@ import {
 import CommonButton from "../Common/CommonButton";
 import { BaseUrl } from "../Config/Api";
 
-const OrderServiceItem = ({ service }) => (
+const OrderServiceItem = ({ item }) => (
   <View style={styles.serviceItemContainer}>
     <Image
       source={{
-        uri: `${BaseUrl}service-images/${service.image}`,
+        uri: `${BaseUrl}service-images/${item.service.image}`,
       }}
       defaultSource={require("../images/logo.png")}
       style={styles.serviceItemImage}
     />
     <View style={styles.serviceItemText}>
-      <Text style={styles.serviceItemName}>{service.name}</Text>
-      <Text style={styles.serviceItemPrice}>
-        AED{" "}
-        {service.discount ? (
-          <>
-            <Text style={styles.strikeThroughText}>{service.price}</Text>
-            <Text style={styles.discountText}>{" " + service.discount}</Text>
-          </>
-        ) : (
-          service.price
-        )}
-      </Text>
+      <Text style={styles.serviceItemName}>{item.service.name}</Text>
+      {item.option_name ? (
+        <>
+          <Text>AED {item.price}</Text>
+          <Text>{item.option_name}</Text>
+        </>
+      ) : (
+        <Text style={styles.serviceItemPrice}>
+          AED{" "}
+          {item.service.discount ? (
+            <>
+              <Text style={styles.strikeThroughText}>{item.service.price}</Text>
+              <Text style={styles.discountText}>{" " + item.service.discount}</Text>
+            </>
+          ) : (
+            item.service.price
+          )}
+        </Text>
+      )}
     </View>
   </View>
 );
@@ -66,7 +73,7 @@ export default function OrderDetailModel({ visible, order, onClose }) {
             <FlatList
               data={services}
               renderItem={({ item }) => (
-                <OrderServiceItem service={item.service} />
+                <OrderServiceItem item={item} />
               )}
             />
           </View>

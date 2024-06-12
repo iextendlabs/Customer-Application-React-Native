@@ -38,25 +38,31 @@ export default function AddToCart() {
   const [selectedSlotValue, setSelectedSlotValue] = useState(null);
   const [selectedSlotId, setSelectedSlotId] = useState(null);
   const [serviceId, setServiceId] = useState(null);
-  const [service, setService] = useState(null);
+  const [optionId, setOptionId] = useState(null);
   const customerZone = useSelector((state) => state.customerZone);
 
   useEffect(() => {
-    if (route.params && route.params.service) {
-      const { service } = route.params;
-      setService(service);
-      setServiceId(service.id);
-    }
+    if (route.params) {
+      if (route.params.service_id) {
+        const { service_id } = route.params;
+        setServiceId(service_id);
+      }
 
-    if (route.params && route.params.staff_name && route.params.staff_id && route.params.slot_id && route.params.slot && route.params.date) {
-      const { staff_name, staff_id, slot_id, slot, date } = route.params;
-      setSelectedSlotValue(slot);
-      setSelectedSlotId(slot_id);
-      setSelectedStaff(staff_name);
-      setSelectedStaffId(staff_id);
-      setDate(date);
+      if (route.params.option_id) {
+        setOptionId(route.params.option_id);
+      }
+
+      if (route.params.staff_name && route.params.staff_id && route.params.slot_id && route.params.slot && route.params.date) {
+        const { staff_name, staff_id, slot_id, slot, date, option_id } = route.params;
+        setSelectedSlotValue(slot);
+        setSelectedSlotId(slot_id);
+        setSelectedStaff(staff_name);
+        setSelectedStaffId(staff_id);
+        setDate(date);
+        setOptionId(option_id);
+      }
     }
-  }, [route.params?.service]);
+  }, [route.params?.service_id]);
 
   useEffect(() => {
     if (date === null && route.params.date === undefined) {
@@ -121,32 +127,32 @@ export default function AddToCart() {
   const handleApply = async () => {
     setLoading(true);
     const cartData = {
-      'service': service,
       'service_id': serviceId,
       'staff_id': selectedStaffId,
       'staff': selectedStaff,
       'slot_id': selectedSlotId,
       'slot': selectedSlotValue,
       'date': date,
+      'option_id': optionId
     };
-  
+
     dispatch(updateCustomerZone(area));
     dispatch(updateOrAddToCart(cartData));
     try {
       await AsyncStorage.setItem('@customerZone', area);
       const existingCart = await AsyncStorage.getItem('@cart');
       let updatedCart = existingCart ? JSON.parse(existingCart) : [];
-      updatedCart = updatedCart.filter(item => item.service_id !== serviceId); 
+      updatedCart = updatedCart.filter(item => item.service_id !== serviceId);
       updatedCart.push(cartData);
       await AsyncStorage.setItem('@cart', JSON.stringify(updatedCart));
       setSuccess("Booking added successfully.");
     } catch (error) {
       setError("Failed to add booking.");
     }
-  
+
     setLoading(false);
   };
-  
+
 
   const renderStaff = () => (
     <View style={{ borderColor: "#8e8e8e", borderTopWidth: 0.5 }}>
@@ -411,27 +417,27 @@ export default function AddToCart() {
               <Text style={{ margin: 10, fontWeight: "800" }}>
                 Zone:
               </Text>
-                <View
-                  style={{
-                    width: "85%",
-                    alignSelf: "center",
-                    borderWidth: 0.5,
-                    borderColor: "#8e8e8e",
-                    borderRadius: 10,
-                  }}
-                >
-                  {zones[0].length > 0 && (
-                    <Picker
-                      selectedValue={area}
-                      onValueChange={(itemValue, itemIndex) => setArea(itemValue)}
-                    >
-                      <Picker.Item label="Select Area" value="" />
-                      {zones[0].map((zone, index) => (
-                        <Picker.Item key={index.toString()} label={zone} value={zone} />
-                      ))}
-                    </Picker>
-                  )}
-                </View>
+              <View
+                style={{
+                  width: "85%",
+                  alignSelf: "center",
+                  borderWidth: 0.5,
+                  borderColor: "#8e8e8e",
+                  borderRadius: 10,
+                }}
+              >
+                {zones[0].length > 0 && (
+                  <Picker
+                    selectedValue={area}
+                    onValueChange={(itemValue, itemIndex) => setArea(itemValue)}
+                  >
+                    <Picker.Item label="Select Area" value="" />
+                    {zones[0].map((zone, index) => (
+                      <Picker.Item key={index.toString()} label={zone} value={zone} />
+                    ))}
+                  </Picker>
+                )}
+              </View>
 
               <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
                 <Text style={{ margin: 10, fontWeight: "800" }}>

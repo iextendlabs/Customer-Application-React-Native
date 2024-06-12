@@ -1,13 +1,18 @@
 import React from "react";
 import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
 import { BaseUrl } from "../Config/Api";
+import { useSelector } from "react-redux";
 
 export default function CartItem({ item, onRemoveFromCart, isCheckout, onEditCart, isExcluded }) {
+  const services = useSelector((state) => state.services);
+  const service = item.service_id ? services[0].find(o => o.id === item.service_id) || null : null;
+  const option = item.option_id && service.options ? service.options.find(o => o.id === item.option_id) || null : null;
+
   return (
     <View style={[styles.card, isExcluded ? styles.excluded : null]}>
       <View>
         <Image
-          source={{ uri: `${BaseUrl}service-images/${item.service.image}` }}
+          source={{ uri: `${BaseUrl}service-images/${service.image}` }}
           defaultSource={require('../images/logo.png')}
           style={styles.image}
         />
@@ -15,18 +20,25 @@ export default function CartItem({ item, onRemoveFromCart, isCheckout, onEditCar
       <View style={{ marginLeft: 10 }}>
         <Text style={styles.title}>Service Detail:</Text>
         <View style={styles.details}>
-          <Text>{item.service.name}</Text>
-          <Text>
-            AED{" "}
-            {item.service.discount ? (
-              <>
-                <Text style={styles.originalPrice}>{item.service.price}</Text>
-                <Text style={styles.discountPrice}> {item.service.discount}</Text>
-              </>
-            ) : (
-              item.service.price
-            )}
-          </Text>
+          <Text>{service.name}</Text>
+          {option ? (
+            <>
+              <Text>AED {option.option_price}</Text>
+              <Text>{option.option_name}</Text>
+            </>
+          ) : (
+            <Text>
+              AED{" "}
+              {service.discount ? (
+                <>
+                  <Text style={styles.originalPrice}>{service.price}</Text>
+                  <Text style={styles.discountPrice}> {service.discount}</Text>
+                </>
+              ) : (
+                service.price
+              )}
+            </Text>
+          )}
         </View>
         <Text style={styles.title}>Booking Detail:</Text>
         <View style={styles.details}>

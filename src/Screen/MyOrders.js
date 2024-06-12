@@ -89,20 +89,20 @@ export default function MyOrders() {
     const formattedDate = `${today.getFullYear()}-${(today.getMonth() + 1)
       .toString()
       .padStart(2, "0")}-${today.getDate().toString().padStart(2, "0")}`;
-  
+
     for (const order_service of item.order_services) {
       const cartData = {
-        'service': order_service.service,
         'service_id': order_service.service.id,
         'staff_id': item.service_staff_id,
         'staff': item.staff_name,
         'slot_id': item.time_slot_id,
         'slot': item.time_slot_value,
         'date': formattedDate,
+        'option_id': order_service.option_id ? parseInt(order_service.option_id) : null
       };
-      
+
       dispatch(addItemToCart(cartData));
-  
+
       try {
         const existingCart = await AsyncStorage.getItem('@cart');
         const updatedCart = existingCart ? JSON.parse(existingCart) : [];
@@ -112,9 +112,9 @@ export default function MyOrders() {
         console.error("Error updating cart:", error);
       }
     }
-  
+
     navigation.navigate("Cart");
-  };  
+  };
 
   const closeModal = () => {
     getOrders();

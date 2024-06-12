@@ -68,19 +68,21 @@ export default function Checkout() {
   const [cartServiceIds, setCartServiceIds] = useState([]);
   const [cartStaffIds, setCartStaffIds] = useState([]);
   const [cartSlotIds, setCartSlotIds] = useState([]);
+  const [cartOptions, setCartOptions] = useState({});
   const [groupCartData, setGroupCartData] = useState([]);
   const [excludedServices, setExcludedServices] = useState([]);
   const [isPersonalInfo, setIsPersonalInfo] = useState(false);
   const [isAddress, setIsAddress] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState('cash');
   const [showPaymentModal, setShowPaymentModal] = useState(false);
-  
+
   useEffect(() => {
     if (cartData && cartData.length > 0) {
       const updatedGroupCartData = {};
       const serviceIds = [];
       const staffIds = [];
       const slotIds = [];
+      const options = {};
 
       cartData.forEach((item) => {
         const key = `${item.date}_${item.staff_id}_${item.slot_id}`;
@@ -91,32 +93,36 @@ export default function Checkout() {
         serviceIds.push(item.service_id);
         staffIds.push(item.staff_id);
         slotIds.push(item.slot_id);
+        options[item.service_id] = item.option_id;
       });
 
       setGroupCartData(updatedGroupCartData);
       setCartServiceIds(serviceIds);
       setCartStaffIds(staffIds);
       setCartSlotIds(slotIds);
+      setCartOptions(options);
     }
   }, [cartData]);
 
   useEffect(() => {
-    if (couponData && couponData.length > 0 && affiliateData && affiliateData.length > 0 && cartServiceIds.length > 0) {
-      const couponInfo = couponData[0];
-      const affiliateInfo = affiliateData[0];
-      setCoupon(couponInfo.code);
-      setAffiliate(affiliateInfo);
-      applyCode(couponInfo.code, affiliateInfo);
-    }
-    else if (couponData && couponData.length > 0) {
-      const couponInfo = couponData[0];
-      setCoupon(couponInfo.code);
-      applyCode(couponInfo.code);
-    }
-    else if (affiliateData && affiliateData.length > 0) {
-      const affiliateInfo = affiliateData[0];
-      setAffiliate(affiliateInfo);
-      applyCode(null, affiliateInfo);
+    if(cartServiceIds.length > 0){
+      if (couponData && couponData.length > 0 && affiliateData && affiliateData.length > 0) {
+        const couponInfo = couponData[0];
+        const affiliateInfo = affiliateData[0];
+        setCoupon(couponInfo.code);
+        setAffiliate(affiliateInfo);
+        applyCode(couponInfo.code, affiliateInfo);
+      }
+      else if (couponData && couponData.length > 0) {
+        const couponInfo = couponData[0];
+        setCoupon(couponInfo.code);
+        applyCode(couponInfo.code);
+      }
+      else if (affiliateData && affiliateData.length > 0) {
+        const affiliateInfo = affiliateData[0];
+        setAffiliate(affiliateInfo);
+        applyCode(null, affiliateInfo);
+      }
     }
   }, [couponData, affiliateData, cartServiceIds]);
 
@@ -167,6 +173,7 @@ export default function Checkout() {
   };
 
   const handleSave = async () => {
+    const userId = await AsyncStorage.getItem("@user_id");
     setLoading(true);
 
     const requestData = {
@@ -189,7 +196,9 @@ export default function Checkout() {
       coupon_code: coupon,
       latitude: latitude,
       longitude: longitude,
-      orderTotal: orderTotal
+      orderTotal: orderTotal,
+      options: cartOptions,
+      user_id: userId,
     };
 
     try {
@@ -217,7 +226,6 @@ export default function Checkout() {
         });
       } else if (response.status === 201) {
         if (response.data.excludedServices) {
-          console.log(response.data.excludedServices);
           setExcludedServices(response.data.excludedServices);
         }
         setOrderError(response.data.msg);
@@ -265,6 +273,7 @@ export default function Checkout() {
       group_data: groupCartData,
       zone: area,
       coupon_id: coupon_id ?? couponId,
+      options: cartOptions,
     };
 
     try {
@@ -293,6 +302,11 @@ export default function Checkout() {
     setCouponId("");
     setCouponDiscount("");
     orderTotalCall(0);
+    setError("");
+    setNotValidAffiliate(false);
+    setNotValidCoupon(false);
+    setApplyCouponAffiliate(false);
+    
     const userId = await AsyncStorage.getItem("@user_id");
     if (coupon !== null || affiliate !== null) {
       setLoading(true);
@@ -301,7 +315,8 @@ export default function Checkout() {
           coupon: coupon,
           affiliate: affiliate,
           user_id: userId,
-          service_ids: cartServiceIds
+          service_ids: cartServiceIds,
+          options: cartOptions,
         });
 
         if (response.status === 200) {
@@ -367,12 +382,13 @@ export default function Checkout() {
               item={item}
               isCheckout={true}
               onEditCart={() => navigation.navigate("AddToCart", {
-                service: item.service,
+                service_id: item.service.id,
                 staff_name: item.staff,
                 staff_id: item.staff_id,
                 slot_id: item.slot_id,
                 slot: item.slot,
-                date: item.date
+                date: item.date,
+                option_id: item.option_id
               })}
               onRemoveFromCart={() => console.log('Remove item:', item)}
               isExcluded={isExcluded}
@@ -738,14 +754,14 @@ export default function Checkout() {
                 //     </View>
                 //   </View>
 
-                  <CommonButton
-                    title={"Place Order"}
-                    bgColor={"#000"}
-                    textColor={"#fff"}
-                    onPress={() => {
-                      handleSave();
-                    }}
-                  />
+                <CommonButton
+                  title={"Place Order"}
+                  bgColor={"#000"}
+                  textColor={"#fff"}
+                  onPress={() => {
+                    handleSave();
+                  }}
+                />
                 // </>
               ) : (
                 <View style={{ padding: 20 }}>

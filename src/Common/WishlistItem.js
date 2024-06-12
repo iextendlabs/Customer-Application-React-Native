@@ -1,8 +1,11 @@
 import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
 import React from "react";
 import { BaseUrl } from "../Config/Api";
+import { useNavigation } from "@react-navigation/native";
 
 export default function WishlistItem({ item, onAddToCart, onRemoveFromWishlist }) {
+  const navigation = useNavigation();
+
   return (
     <View
       style={{
@@ -67,7 +70,13 @@ export default function WishlistItem({ item, onAddToCart, onRemoveFromWishlist }
             padding: 4,
           }}
           onPress={() => {
-            onAddToCart(item);
+            if (item.options.length > 0) {
+              navigation.navigate("Details", {
+                service: item,
+              });
+            } else {
+              onAddToCart(item);
+            }
           }}
         >
           <Text>Add to Cart</Text>
