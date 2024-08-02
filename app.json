@@ -49,6 +49,7 @@
       "package": "com.lipslay.Customerapp"
     },
     "web": {},
+    "owner": "forexleo",
     "extra": {
       "eas": {
         "projectId": "441d9510-00b2-4425-9516-37a6c5dd3117"

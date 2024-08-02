@@ -80,6 +80,7 @@ export default function Search() {
         flex: 1,
         alignItems: "center",
         margin: 8,
+        marginBottom:25
       }}
       onPress={() => {
         navigation.navigate("Search", {

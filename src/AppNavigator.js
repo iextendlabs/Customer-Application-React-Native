@@ -43,6 +43,7 @@ import PrivacyPolicy from "./Common/PrivacyPolicy";
 import Staff from "./Common/Staff";
 import JoinAffiliate from "./Screen/JoinAffiliate";
 import AddToCart from "./Screen/AddToCart";
+import PaymentScreen from "./Screen/PaymentScreen";
 
 export default function AppNavigator() {
   const cartReduxData = useSelector((state) => state.cart);
@@ -268,6 +269,11 @@ export default function AppNavigator() {
           name="AddToCart"
           component={AddToCart}
         />
+        <Stack.Screen
+          options={{ headerShown: false }}
+          name="Payment"
+          component={PaymentScreen}
+        /> 
       </Stack.Navigator>
     </NavigationContainer>
   );

@@ -24,7 +24,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import Splash from "../Screen/Splash";
 import CustomTextInput from "../Common/CustomTextInput";
 import CartItem from "../Common/CartItem";
-import PaymentModal from "../Common/PaymentModal";
+import { Picker } from "@react-native-picker/picker";
 
 export default function Checkout() {
   const dispatch = useDispatch();
@@ -73,8 +73,7 @@ export default function Checkout() {
   const [excludedServices, setExcludedServices] = useState([]);
   const [isPersonalInfo, setIsPersonalInfo] = useState(false);
   const [isAddress, setIsAddress] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState('cash');
-  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState('Cash-On-Delivery');
 
   useEffect(() => {
     if (cartData && cartData.length > 0) {
@@ -105,7 +104,7 @@ export default function Checkout() {
   }, [cartData]);
 
   useEffect(() => {
-    if(cartServiceIds.length > 0){
+    if (cartServiceIds.length > 0) {
       if (couponData && couponData.length > 0 && affiliateData && affiliateData.length > 0) {
         const couponInfo = couponData[0];
         const affiliateInfo = affiliateData[0];
@@ -199,31 +198,44 @@ export default function Checkout() {
       orderTotal: orderTotal,
       options: cartOptions,
       user_id: userId,
+      payment_method: paymentMethod,
+
     };
 
     try {
       const response = await axios.post(AddOrderUrl, requestData);
 
       if (response.status === 200) {
-        await AsyncStorage.removeItem("@cart");
-        dispatch(clearCart());
-        navigation.reset({
-          index: 1, // Set the index based on the position of the route you want to set
-          routes: [
-            { name: 'Main' },  // Replace with the route you want to set in the history
-            {
-              name: 'OrderSuccess',
-              params: {
-                sub_total: response.data.sub_total,
-                discount: response.data.discount,
-                staff_charges: response.data.staff_charges,
-                transport_charges: response.data.transport_charges,
-                total_amount: response.data.total_amount,
-                order_ids: response.data.order_ids,
-              }
-            },   // OrderSuccess screen with parameters
-          ],
-        });
+        const data = response.data;
+
+        const navigationParams = {
+          sub_total: data.sub_total,
+          discount: data.discount,
+          staff_charges: data.staff_charges,
+          transport_charges: data.transport_charges,
+          total_amount: data.total_amount,
+          order_ids: data.order_ids,
+        };
+
+        if (data.payment_method === "Credit-Debit-Card") {
+          navigation.navigate("Payment", {
+            ...navigationParams,
+            customer_type: data.customer_type
+          });
+        } else {
+          await AsyncStorage.removeItem("@cart");
+          dispatch(clearCart());
+          navigation.reset({
+            index: 1,
+            routes: [
+              { name: 'Main' },
+              {
+                name: 'OrderSuccess',
+                params: navigationParams
+              },
+            ],
+          });
+        }
       } else if (response.status === 201) {
         if (response.data.excludedServices) {
           setExcludedServices(response.data.excludedServices);
@@ -258,12 +270,6 @@ export default function Checkout() {
       }
     } catch (error) { }
     setLoading(false);
-  };
-
-  const handlePaymentModalSubmit = (transactionId) => {
-    // Handle payment submission with DPO Pay transaction ID
-    // You can make API calls or handle payment logic here
-    setShowPaymentModal(false); // Close the modal after submission
   };
 
   const orderTotalCall = async (coupon_id = null) => {
@@ -306,7 +312,7 @@ export default function Checkout() {
     setNotValidAffiliate(false);
     setNotValidCoupon(false);
     setApplyCouponAffiliate(false);
-    
+
     const userId = await AsyncStorage.getItem("@user_id");
     if (coupon !== null || affiliate !== null) {
       setLoading(true);
@@ -732,37 +738,30 @@ export default function Checkout() {
             </View>
             <View style={{ marginBottom: 30 }}>
               {isPersonalInfo == true && isAddress == true ? (
-                // <>
-                //   <Text style={{
-                //     margin: 10,
-                //     fontWeight: "800",
-                //   }}>Payment Method:</Text>
-                //   <View style={styles.paymentMethodContainer}>
-                //     <View style={styles.paymentMethodOption}>
-                //       <TouchableOpacity
-                //         style={[styles.paymentMethodOption, paymentMethod === 'cash' && styles.paymentMethodOptionSelected]}
-                //         onPress={() => setPaymentMethod('cash')}
-                //       >
-                //         <Text style={[styles.paymentMethodText, paymentMethod === 'cash' && styles.paymentMethodTextSelected]}>Cash on Delivery</Text>
-                //       </TouchableOpacity>
-                //       <TouchableOpacity
-                //         style={[styles.paymentMethodOption, paymentMethod === 'card' && styles.paymentMethodOptionSelected]}
-                //         onPress={() => { setPaymentMethod('card'); setShowPaymentModal(true);}}
-                //       >
-                //         <Text style={[styles.paymentMethodText, paymentMethod === 'card' && styles.paymentMethodTextSelected]}>Card Pay</Text>
-                //       </TouchableOpacity>
-                //     </View>
-                //   </View>
+                <>
+                  <Text style={{
+                    margin: 10,
+                    fontWeight: "800",
+                  }}>Payment Method:</Text>
+                  <View style={styles.paymentMethodContainer}>
+                    <Picker
+                      selectedValue={paymentMethod}
+                      onValueChange={(itemValue) => setPaymentMethod(itemValue)}
+                    >
+                      <Picker.Item label={"Cash On Delivery"} value={"Cash-On-Delivery"} />
+                      <Picker.Item label={"Credit or Debit Card"} value={"Credit-Debit-Card"} />
+                    </Picker>
+                  </View>
 
-                <CommonButton
-                  title={"Place Order"}
-                  bgColor={"#000"}
-                  textColor={"#fff"}
-                  onPress={() => {
-                    handleSave();
-                  }}
-                />
-                // </>
+                  <CommonButton
+                    title={"Place Order"}
+                    bgColor={"#000"}
+                    textColor={"#fff"}
+                    onPress={() => {
+                      handleSave();
+                    }}
+                  />
+                </>
               ) : (
                 <View style={{ padding: 20 }}>
                   <Text style={styles.innerText}>To Process the Order, Check the Following:</Text>
@@ -817,11 +816,6 @@ export default function Checkout() {
           </>
         </>
       </View>
-      {/* <PaymentModal 
-        visible={showPaymentModal}
-        onClose={() => {setShowPaymentModal(false); setPaymentMethod('cash');}}
-        onSubmit={handlePaymentModalSubmit}
-      /> */}
     </ScrollView>
   );
 }
@@ -833,8 +827,11 @@ const styles = StyleSheet.create({
     color: 'red',
   },
   paymentMethodContainer: {
-    marginBottom: 20,
-    paddingHorizontal: 20,
+    width: "85%",
+    alignSelf: "center",
+    borderWidth: 0.5,
+    borderColor: "#8e8e8e",
+    borderRadius: 10,
   },
   paymentMethodOption: {
     paddingVertical: 12,
@@ -843,17 +840,5 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     borderWidth: 1,
     borderColor: '#000',
-  },
-  paymentMethodOptionSelected: {
-    backgroundColor: '#ec407a',
-    borderColor: '#ec407a',
-  },
-  paymentMethodText: {
-    fontSize: 14,
-    color: '#333',
-  },
-  paymentMethodTextSelected: {
-    fontSize: 14,
-    color: '#fff',
   },
 });
