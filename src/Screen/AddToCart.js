@@ -17,7 +17,7 @@ import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import StarRating from "../Common/StarRating";
 import Splash from "../Screen/Splash";
-import { updateCustomerZone, updateOrAddToCart } from "../redux/actions/Actions";
+import { addAddress, deleteAddress, updateCustomerZone, updateOrAddToCart } from "../redux/actions/Actions";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function AddToCart() {
@@ -28,6 +28,7 @@ export default function AddToCart() {
   const [success, setSuccess] = useState(null);
   const [loading, setLoading] = useState(false);
   const zones = useSelector((state) => state.zones || []);
+  const address = useSelector((state) => state.address);
   const [area, setArea] = useState(null);
   const [date, setDate] = useState(null);
   const [staffs, setStaffs] = useState([]);
@@ -54,12 +55,15 @@ export default function AddToCart() {
 
       if (route.params.staff_name && route.params.staff_id && route.params.slot_id && route.params.slot && route.params.date) {
         const { staff_name, staff_id, slot_id, slot, date, option_id } = route.params;
+        const currentDate = new Date().toISOString().split('T')[0];
+        if (date === currentDate) {
         setSelectedSlotValue(slot);
         setSelectedSlotId(slot_id);
         setSelectedStaff(staff_name);
         setSelectedStaffId(staff_id);
         setDate(date);
         setOptionId(option_id);
+        }
       }
     }
   }, [route.params?.service_id]);
@@ -135,6 +139,27 @@ export default function AddToCart() {
       'date': date,
       'option_id': optionId
     };
+
+    if (address && address.length > 0 && area) {
+      const addressInfo = {
+        building: address[0].building,
+        villa: address[0].villa,
+        street: address[0].street,
+        area: area,
+        district: address[0].district,
+        landmark: address[0].landmark,
+        city: address[0].city,
+        latitude: address[0].latitude,
+        longitude: address[0].longitude,
+      };
+
+      await AsyncStorage.removeItem("@addressData");
+
+      await AsyncStorage.setItem("@addressData", JSON.stringify(addressInfo));
+
+      dispatch(deleteAddress(0));
+      dispatch(addAddress(addressInfo));
+    }
 
     dispatch(updateCustomerZone(area));
     dispatch(updateOrAddToCart(cartData));

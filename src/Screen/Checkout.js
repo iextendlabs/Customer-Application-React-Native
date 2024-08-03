@@ -388,7 +388,7 @@ export default function Checkout() {
               item={item}
               isCheckout={true}
               onEditCart={() => navigation.navigate("AddToCart", {
-                service_id: item.service.id,
+                service_id: item.service_id,
                 staff_name: item.staff,
                 staff_id: item.staff_id,
                 slot_id: item.slot_id,
