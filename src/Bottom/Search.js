@@ -80,6 +80,7 @@ export default function Search() {
         flex: 1,
         alignItems: "center",
         margin: 8,
+        marginBottom:25
       }}
       onPress={() => {
         navigation.navigate("Search", {
@@ -134,8 +135,7 @@ export default function Search() {
             }}> Sub Category</Text>
             <FlatList
               data={subCategory}
-              horizontal
-              showsHorizontalScrollIndicator={false}
+              numColumns={3}
               keyExtractor={(item) => item.id.toString()}
               renderItem={renderCategoryItem}
             />

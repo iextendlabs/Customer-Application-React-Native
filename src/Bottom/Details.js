@@ -9,11 +9,10 @@ import {
   Share,
   FlatList
 } from "react-native";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Footer from "../Common/Footer";
 import Header from "../Common/Header";
 import { useNavigation, useRoute } from "@react-navigation/native";
-import { useEffect, useState } from "react";
 import { BaseUrl, getServiceUrl } from "../Config/Api";
 import { addItemToCart, addItemToWishlist } from "../redux/actions/Actions";
 import { useDispatch, useSelector } from "react-redux";
@@ -24,11 +23,12 @@ import StarRating from "../Common/StarRating";
 import MessageModal from "../Screen/MessageModal";
 import OfferProductItem from "../Common/OfferProductItem";
 import { Picker } from "@react-native-picker/picker";
+import { RadioButton } from 'react-native-paper';
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#FFF", // Adjust the background color as needed
+    backgroundColor: "#FFF",
   },
   image: {
     width: "100%",
@@ -38,7 +38,6 @@ const styles = StyleSheet.create({
   contentContainer: {
     padding: 20,
   },
-
   price: {
     color: "#333",
     fontSize: 20,
@@ -53,7 +52,6 @@ const styles = StyleSheet.create({
     textDecorationLine: "line-through",
     color: "red",
   },
-
   duration: {
     fontSize: 20,
     fontWeight: "bold",
@@ -100,6 +98,7 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
 });
+
 export default function Details() {
   const services = useSelector((state) => state.services);
   const navigation = useNavigation();
@@ -124,6 +123,10 @@ export default function Details() {
   const [servicePrice, setServicePrice] = useState(null);
   const [serviceDiscount, setServiceDiscount] = useState(null);
   const [serviceId, setServiceId] = useState(null);
+  const [price, setPrice] = useState(null);
+  const [serviceOptions, setServiceOptions] = useState([]);
+  const [selectedOption, setSelectedOption] = useState(null);
+  const [errorMsg, setErrorMsg] = useState("");
 
   const handleMessage = (msg) => {
     setAlertMsg(msg);
@@ -164,14 +167,11 @@ export default function Details() {
     }
   };
 
-  const onAddToCart = async (item) => {
-    const isItemInCart = cartData.some((cartItem) => cartItem.id === item.id);
+  const onAddToCart = async (item, option_id = null) => {
+    const isItemInCart = cartData.some((cartItem) => cartItem.service_id === item.id);
 
     if (!isItemInCart) {
-      dispatch(addItemToCart(item));
-      saveToAsyncStorage("@cartData", [...cartData, item]);
-      handleMessage("Added to Cart.");
-
+      navigation.navigate("AddToCart", { service_id: item.id, option_id: option_id });
     } else {
       setMsg("Item is already in the cart.");
     }
@@ -205,6 +205,8 @@ export default function Details() {
     if (response.status === 200) {
       let data = response.data;
       setDescription(data.services.description);
+      setPrice(data.price);
+      setSelectedOption(data.lowestPriceOption.id);
       setFaqs(data.faqs);
       const variantIds = data.variant.map(item => item.variant_id);
       const variant = services[0].filter(item => variantIds.includes(item.id.toString()));
@@ -215,7 +217,6 @@ export default function Details() {
       const addOnIds = data.addONs.map(item => item.add_on_id);
       const addOn = services[0].filter(item => addOnIds.includes(item.id.toString()));
       setAddONs(addOn);
-      console.log(variant);
     }
 
     setLoading(false);
@@ -224,6 +225,7 @@ export default function Details() {
   useEffect(() => {
     if (route.params && route.params.service) {
       setService(route.params.service);
+      setServiceOptions(route.params.service.options);
       setServiceDuration(route.params.service.duration);
       setServicePrice(route.params.service.price);
       setServiceDiscount(route.params.service.discount);
@@ -247,17 +249,33 @@ export default function Details() {
     }
   };
 
-
   const handleAddToCart = () => {
     const selectedService = services[0].find((services) => services.id === serviceId);
+    if (serviceOptions.length > 0) {
+      if (!selectedOption) {
+        setErrorMsg("Please select an option");
+        return;
+      } else {
+        onAddToCart(selectedService, selectedOption);
+      }
+    } else {
+      onAddToCart(selectedService);
+    }
 
-    onAddToCart(selectedService);
+
   };
+
   const handleAddToWish = () => {
     const selectedService = services[0].find((services) => services.id === serviceId);
-
     onAddToWishList(selectedService);
   };
+
+  const handleOptionSelect = (option) => {
+    setSelectedOption(option.id);
+    setPrice(option.option_price);
+    setErrorMsg("");
+  };
+
   return (
     <View style={{ flex: 1, backgroundColor: "#FFCACC" }}>
       <Header title={service ? service.name : "Details"} />
@@ -269,45 +287,81 @@ export default function Details() {
                 uri: BaseUrl + "service-images/" + service.image,
               }}
               defaultSource={require("../images/logo.png")}
-              style={{
-                width: "100%",
-                height: 200,
-                resizeMode: "cover",
-              }}
+              style={styles.image}
             />
             <Text style={styles.price}>
               AED{" "}
-              {serviceDiscount ? (
-                <>
-                  <Text style={styles.originalPrice}>{servicePrice}</Text>
-                  <Text style={styles.discountedPrice}>
-                    {" " + serviceDiscount}
-                  </Text>
-                </>
+              {price ? (
+                price
               ) : (
-                servicePrice
+                <>
+                  {serviceDiscount ? (
+                    <>
+                      <Text style={styles.originalPrice}>{servicePrice}</Text>
+                      <Text style={styles.discountedPrice}>
+                        {" " + serviceDiscount}
+                      </Text>
+                    </>
+                  ) : (
+                    servicePrice
+                  )}
+                </>
               )}
             </Text>
             <View>
               <Text style={styles.duration}>
-                Duaration:{" "}
+                Duration:{" "}
                 <Image
                   source={require("../images/clock.png")}
-                  style={{
-                    width: 15,
-                    height: 15,
-                  }}
+                  style={{ width: 15, height: 15 }}
                 />
                 {serviceDuration}
               </Text>
             </View>
-            {variants.length > 0 && (
+            {serviceOptions.length > 0 && (
               <>
-                <Text style={{
-                  width: "100%", alignSelf: "center", fontSize: 16,
-                  fontWeight: "bold",
-                  marginBottom: 10,
-                }}>
+                <Text
+                  style={{
+                    width: "100%",
+                    alignSelf: "center",
+                    fontSize: 16,
+                    fontWeight: "bold",
+                    marginBottom: 10,
+                  }}
+                >
+                  Options:
+                </Text>
+                <RadioButton.Group
+                  onValueChange={(value) => setSelectedOption(value)}
+                  value={selectedOption}
+                >
+                  {serviceOptions.map((option) => (
+                    <TouchableOpacity
+                      key={option.id}
+                      style={{ flexDirection: "row", alignItems: "center", marginLeft: 5 }}
+                      onPress={() => handleOptionSelect(option)}
+                    >
+                      <RadioButton value={option.id} />
+                      <Text>{option.option_name} - AED {option.option_price}</Text>
+                    </TouchableOpacity>
+                  ))}
+                </RadioButton.Group>
+              </>
+            )}
+            {errorMsg && (
+              <Text style={{ color: "red", marginBottom: 10 }}>{errorMsg}</Text>
+            )}
+            {/* {variants.length > 0 && (
+              <>
+                <Text
+                  style={{
+                    width: "100%",
+                    alignSelf: "center",
+                    fontSize: 16,
+                    fontWeight: "bold",
+                    marginBottom: 10,
+                  }}
+                >
                   Variants:
                 </Text>
                 <View
@@ -317,7 +371,7 @@ export default function Details() {
                     borderWidth: 0.5,
                     borderColor: "#8e8e8e",
                     borderRadius: 10,
-                    marginBottom: 10
+                    marginBottom: 10,
                   }}
                 >
                   <Picker
@@ -334,8 +388,7 @@ export default function Details() {
                   </Picker>
                 </View>
               </>
-            )}
-
+            )} */}
             <TouchableOpacity
               style={styles.addToCartButton}
               onPress={handleAddToCart}
@@ -410,7 +463,6 @@ export default function Details() {
                 </View>
               )}
               {addONs.length > 0 && (
-
                 <View>
                   <Text
                     style={{
@@ -431,9 +483,7 @@ export default function Details() {
                   />
                 </View>
               )}
-
               {packages.length > 0 && (
-
                 <View>
                   <Text
                     style={{
@@ -455,17 +505,15 @@ export default function Details() {
                 </View>
               )}
             </View>
-
           </ScrollView>
         </>
-      )
-      }
+      )}
       <Footer />
       <MessageModal
         visible={messageModalVisible}
         message={alertMsg}
         onClose={closeModal}
       />
-    </View >
+    </View>
   );
 }

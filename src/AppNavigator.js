@@ -32,6 +32,7 @@ import {
   updateCoupon,
   updateNotification,
   updateAffiliate,
+  updateCustomerZone,
 } from "./redux/actions/Actions";
 import Details from "./Bottom/Details";
 import { ImageBackground } from "react-native";
@@ -41,6 +42,8 @@ import AboutUs from "./Common/AboutUs";
 import PrivacyPolicy from "./Common/PrivacyPolicy";
 import Staff from "./Common/Staff";
 import JoinAffiliate from "./Screen/JoinAffiliate";
+import AddToCart from "./Screen/AddToCart";
+import PaymentScreen from "./Screen/PaymentScreen";
 
 export default function AppNavigator() {
   const cartReduxData = useSelector((state) => state.cart);
@@ -53,14 +56,14 @@ export default function AppNavigator() {
 
   const updateRedux = async () => {
     try {
-      const cartDataJson = await AsyncStorage.getItem("@cartData");
+      const cartDataJson = await AsyncStorage.getItem("@cart");
       const cartData = JSON.parse(cartDataJson) || [];
       cartData.forEach((item) => {
         const isItemInCart = cartReduxData.some(
-          (cartItem) => cartItem.id === item.id
+          (cartItem) => cartItem.service_id === item.service_id
         );
         if (!isItemInCart) {
-          dispatch(addItemToCart(item));
+        dispatch(addItemToCart(item));
         }
       });
 
@@ -87,6 +90,11 @@ export default function AppNavigator() {
       const addressData = JSON.parse(addressDataJson);
       if (addressData) {
         dispatch(addAddress(addressData));
+      }
+
+      const customerZone = await AsyncStorage.getItem("@customerZone");
+      if (customerZone) {
+        dispatch(updateCustomerZone(customerZone));
       }
 
       const couponDataJson = await AsyncStorage.getItem(
@@ -256,6 +264,16 @@ export default function AppNavigator() {
           name="JoinAffiliate"
           component={JoinAffiliate}
         />
+        <Stack.Screen
+          options={{ headerShown: false }}
+          name="AddToCart"
+          component={AddToCart}
+        />
+        <Stack.Screen
+          options={{ headerShown: false }}
+          name="Payment"
+          component={PaymentScreen}
+        /> 
       </Stack.Navigator>
     </NavigationContainer>
   );

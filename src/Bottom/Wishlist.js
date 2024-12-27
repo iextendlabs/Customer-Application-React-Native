@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { FlatList, StyleSheet, Text, View } from "react-native";
-import CartItem from "../Common/CartItem";
+import WishlistItem from "../Common/WishlistItem";
 import { removeFromWishlist, addItemToCart } from "../redux/actions/Actions";
 import Header from "../Common/Header";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -41,11 +41,10 @@ export default function Wishlist() {
     if (user === "" || user === null) {
       navigation.navigate("Login");
     } else {
-      const isItemInCart = cartData.some((cartItem) => cartItem.id === item.id);
+      const isItemInCart = cartData.some((cartItem) => cartItem.service_id === item.id);
 
       if (!isItemInCart) {
-        dispatch(addItemToCart(item));
-        saveToAsyncStorage("@cartData", [...cartData, item]);
+        navigation.navigate("AddToCart", { service_id: item.id });
       } else {
         console.log("Item is already in the cart");
       }
@@ -65,12 +64,11 @@ export default function Wishlist() {
       <Header title={"Wishlist"} />
       {wishlistData.length !== 0 ? (
         <FlatList
-        style={{marginBottom:80}}
+          style={{ marginBottom: 80 }}
           data={wishlistData}
           renderItem={({ item, index }) => (
-            <CartItem
+            <WishlistItem
               item={item}
-              isWishlist={true}
               onAddToCart={() => onAddToCart(item)}
               onRemoveFromWishlist={() => removeItemFromWishlist(item, index)}
             />
@@ -93,7 +91,7 @@ export default function Wishlist() {
           </Text>
         </View>
       )}
-      <Footer/>
+      <Footer />
     </View>
   );
 }

@@ -62,6 +62,11 @@ export default function JoinAffiliateModal({ onClose }) {
         await AsyncStorage.setItem("@affiliate", String(response.data.affiliate_code));
           setSuccess("Affiliate applied successfully.");
           setAffiliateCode("");
+          
+          setTimeout(() => {
+            handleModalClose();
+          }, 2000);
+
         } else if (response.status === 201) {
           setLoading(false);
           setError(response.data.error);

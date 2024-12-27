@@ -2,7 +2,7 @@
   "expo": {
     "name": "Lipslay",
     "slug": "Lipslay_App",
-    "version": "1.1.1",
+    "version": "1.1.7",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -30,7 +30,7 @@
       "bundleIdentifier": "com.lipslay.Customerapp"
     },
     "android": {
-      "versionCode": 12,
+      "versionCode": 19,
       "googleServicesFile": "./google-services.json",
       "permissions": [
         "INTERNET",
@@ -48,22 +48,23 @@
       },
       "package": "com.lipslay.Customerapp"
     },
-    "plugins": [
-      [
-        "react-native-fbsdk-next",
-        {
-          "appID": "649408790562368",
-          "clientToken": "c703dd26fe158274c0fa685053f0e742",
-          "displayName": "Lipslay"
-        }
-      ]
-    ],
     "web": {},
     "owner": "forexleo",
     "extra": {
       "eas": {
         "projectId": "441d9510-00b2-4425-9516-37a6c5dd3117"
       }
-    }
+    },
+    "plugins": [
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "compileSdkVersion": 34,
+            "targetSdkVersion": 34
+          }
+        }
+      ]
+    ]
   }
 }

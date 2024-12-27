@@ -10,6 +10,8 @@ import CouponReducers from '../reducers/CouponReducers';
 import NotificationReducers from '../reducers/NotificationReducers';
 import CategoryReducers from '../reducers/CategoryReducers';
 import AffiliateReducers from '../reducers/AffiliateReducers';
+import CustomerZoneReducers from '../reducers/CustomerZoneReducers';
+import GenderReducers from '../reducers/GenderReducers';
 
 const rootReducer = combineReducers({
   cart: cartReducers,     
@@ -23,6 +25,8 @@ const rootReducer = combineReducers({
   affiliate: AffiliateReducers,
   Notifications: NotificationReducers,
   categories: CategoryReducers,
+  customerZone: CustomerZoneReducers,
+  gender: GenderReducers,
 });
 
 const store = createStore(rootReducer);

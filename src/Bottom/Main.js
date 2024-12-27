@@ -24,7 +24,7 @@ import { useDispatch } from "react-redux";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import Splash from "../Screen/Splash";
-import { addItemToCart, addItemToWishlist, clearCart, clearWishlist, updateCategories, updateServices, updateZone } from "../redux/actions/Actions";
+import { addItemToCart, addItemToWishlist, clearCart, clearWishlist, updateCategories, updateGenderPermission, updateServices, updateZone } from "../redux/actions/Actions";
 import CommonButton from "../Common/CommonButton";
 import StaffCard from "../Common/StaffCard";
 import VersionCheck from 'react-native-version-check';
@@ -278,6 +278,9 @@ export default function Main() {
         dispatch(updateServices(data.services));
         dispatch(updateCategories(data.categories));
         dispatch(updateZone(data.staffZones));
+        dispatch(updateGenderPermission(data.gender_permission));
+        
+        await AsyncStorage.setItem("@gender_permission", String(data.gender_permission));
 
         await AsyncStorage.setItem(
           "@whatsappNumber",
@@ -285,11 +288,11 @@ export default function Main() {
         );
 
         const wishlistData = await AsyncStorage.getItem("@wishlistData");
-        const cartData = await AsyncStorage.getItem("@cartData");
+        const cartData = await AsyncStorage.getItem("@cart");
 
         const updatedCartData = cartData
           ? JSON.parse(cartData).filter((cartItem) =>
-            data.services.some((serviceItem) => serviceItem.id === cartItem.id)
+            data.services.some((serviceItem) => serviceItem.id === cartItem.service_id)
           )
           : [];
 
@@ -298,8 +301,8 @@ export default function Main() {
           dispatch(addItemToCart(item));
         });
 
-        await AsyncStorage.removeItem("@cartData");
-        await AsyncStorage.setItem("@cartData", JSON.stringify(updatedCartData));
+        await AsyncStorage.removeItem("@cart");
+        await AsyncStorage.setItem("@cart", JSON.stringify(updatedCartData));
 
         const updatedWishlistData = wishlistData
           ? JSON.parse(wishlistData).filter((wishlistItem) =>

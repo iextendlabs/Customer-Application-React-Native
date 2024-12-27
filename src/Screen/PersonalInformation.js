@@ -37,6 +37,8 @@ export default function PersonalInformation() {
   const [notValidPassword, setNotValidPassword] = useState(false);
   const [selectedCountryForNumber, setSelectedCountryForNumber] = useState('');
   const [selectedCountryForWhatsapp, setSelectedCountryForWhatsapp] = useState('');
+  const genderPermission = useSelector((state) => state.gender);
+
   const handleSelectCountryForNumber = (country) => {
     setSelectedCountryForNumber(country.cca2);
     setNumber('+'+country.callingCode['0']);
@@ -103,8 +105,12 @@ export default function PersonalInformation() {
       whatsapp.trim() !== "" &&
       selectedGender.trim() !== ""
     ) {
-      if (selectedGender.trim() == "Male") {
+      if(genderPermission[0] == "Female" && selectedGender.trim() == "Male"){
         setError("Sorry, No Male Services Listed in Our App.");
+        return;
+      }
+      if (genderPermission[0] == "Male" && selectedGender.trim() == "Female") {
+        setError("Sorry, No Female Services Listed in Our App.");
         return;
       }
       if (!isValidEmail(email)) {

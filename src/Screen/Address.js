@@ -8,7 +8,7 @@ import axios from "axios";
 import { Picker } from "@react-native-picker/picker";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useDispatch, useSelector } from "react-redux";
-import { addAddress, deleteAddress } from "../redux/actions/Actions";
+import { addAddress, deleteAddress, updateCustomerZone } from "../redux/actions/Actions";
 import * as Location from "expo-location";
 
 export default function Address() {
@@ -24,6 +24,7 @@ export default function Address() {
   const [error, setError] = useState("");
   const address = useSelector((state) => state.address);
   const zones = useSelector((state) => state.zones);
+  const customerZone = useSelector((state) => state.customerZone);
   const [loading, setLoading] = useState(false);
 
   const [longitude, setLongitude] = useState(null);
@@ -50,6 +51,12 @@ export default function Address() {
     }
   }, [address]);
 
+  useEffect(() => {
+    if (customerZone && customerZone.length > 0) {
+      setArea(customerZone[0] || "");
+    }
+  }, [customerZone]);
+
   const handleSaveAddress = async () => {
     setLoading(true);
     setError("");
@@ -74,7 +81,8 @@ export default function Address() {
         latitude: latitude,
         longitude: longitude,
       };
-
+      dispatch(updateCustomerZone(area));
+      await AsyncStorage.setItem('@customerZone', area);
       await AsyncStorage.removeItem("@addressData");
 
       await AsyncStorage.setItem("@addressData", JSON.stringify(addressInfo));
@@ -104,7 +112,7 @@ export default function Address() {
         } else {
           setError("Please try again.");
         }
-      } catch (error) {}
+      } catch (error) { }
 
       navigation.goBack();
       setLoading(false);

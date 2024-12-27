@@ -50,17 +50,9 @@ export default function OfferProductItem({ item, isPackage }) {
   };
 
   const onAddToCart = async (item) => {
-    const isItemInCart = cartData.some((cartItem) => cartItem.id === item.id);
-
+    const isItemInCart = cartData.some((cartItem) => cartItem.service_id === item.id);
     if (!isItemInCart) {
-      dispatch(addItemToCart(item));
-      saveToAsyncStorage("@cartData", [...cartData, item]);
-      handleMessage("Added to Cart.");
-
-      showMessage({
-        message: "Added to Cart.",
-        ...toastOptions,
-      });
+      navigation.navigate("AddToCart", { service_id: item.id });
     } else {
       showMessage({
         message: "Item is already in the cart.",
@@ -191,7 +183,13 @@ export default function OfferProductItem({ item, isPackage }) {
               backgroundColor: "#fd245f",
             }}
             onPress={() => {
-              onAddToCart(item);
+              if (item.options.length > 0) {
+                navigation.navigate("Details", {
+                  service: item,
+                });
+              } else {
+                onAddToCart(item);
+              }
             }}
           >
             <Text style={{ color: "#fff", fontWeight: "700" }}>Book Now</Text>
