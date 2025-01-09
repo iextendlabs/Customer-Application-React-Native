@@ -12,7 +12,7 @@ import CommonButton from "../Common/CommonButton";
 import { BaseUrl } from "../Config/Api";
 
 const OrderServiceItem = ({ item }) => (
-  <View style={styles.serviceItemContainer}>
+  <View style={[styles.serviceItemContainer, styles.highlight]}>
     <Image
       source={{
         uri: `${BaseUrl}service-images/${item.service.image}`,
@@ -26,10 +26,10 @@ const OrderServiceItem = ({ item }) => (
         <>
           <Text>AED {item.price}</Text>
           <Text>
-            {item.option_name.split(',').map((name, index, arr) => (
+            {item.option_name.split(",").map((name, index, arr) => (
               <Text key={index}>
                 {name.trim()}
-                {index < arr.length - 1 ? '\n' : ''}
+                {index < arr.length - 1 ? "\n" : ""}
               </Text>
             ))}
           </Text>
@@ -171,17 +171,26 @@ const styles = StyleSheet.create({
   },
   serviceItemContainer: {
     width: "100%",
-    height: "100%",
     flexDirection: "row",
     marginTop: 10,
+    padding: 10,
+    borderRadius: 8,
+    alignItems: "center",
+  },
+  highlight: {
+    backgroundColor: "#fdefef",
+    borderWidth: 1,
+    borderColor: "#ddd",
   },
   serviceItemImage: {
     width: 70,
     height: 70,
     marginLeft: 10,
+    flexShrink: 0,
   },
   serviceItemText: {
     paddingLeft: 10,
+    flex: 1,
   },
   serviceItemName: {
     fontSize: 15,
