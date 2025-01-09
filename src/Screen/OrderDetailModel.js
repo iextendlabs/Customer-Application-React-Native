@@ -25,7 +25,14 @@ const OrderServiceItem = ({ item }) => (
       {item.option_name ? (
         <>
           <Text>AED {item.price}</Text>
-          <Text>{item.option_name}</Text>
+          <Text>
+            {item.option_name.split(',').map((name, index, arr) => (
+              <Text key={index}>
+                {name.trim()}
+                {index < arr.length - 1 ? '\n' : ''}
+              </Text>
+            ))}
+          </Text>
         </>
       ) : (
         <Text style={styles.serviceItemPrice}>
@@ -164,7 +171,7 @@ const styles = StyleSheet.create({
   },
   serviceItemContainer: {
     width: "100%",
-    height: 70,
+    height: "100%",
     flexDirection: "row",
     marginTop: 10,
   },
@@ -174,7 +181,7 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
   serviceItemText: {
-    padding: 10,
+    paddingLeft: 10,
   },
   serviceItemName: {
     fontSize: 15,

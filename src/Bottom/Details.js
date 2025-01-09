@@ -22,8 +22,7 @@ import HTML from "react-native-render-html";
 import StarRating from "../Common/StarRating";
 import MessageModal from "../Screen/MessageModal";
 import OfferProductItem from "../Common/OfferProductItem";
-import { Picker } from "@react-native-picker/picker";
-import { RadioButton } from 'react-native-paper';
+import { Checkbox } from 'react-native-paper';
 
 const styles = StyleSheet.create({
   container: {
@@ -108,7 +107,6 @@ export default function Details() {
   const [service, setService] = useState(null);
   const [addONs, setAddONs] = useState([]);
   const [variants, setVariants] = useState([]);
-  const [variant, setVariant] = useState([]);
   const [packages, setPackages] = useState([]);
   const [description, setDescription] = useState("Loading...");
   const cartData = useSelector((state) => state.cart);
@@ -123,15 +121,11 @@ export default function Details() {
   const [servicePrice, setServicePrice] = useState(null);
   const [serviceDiscount, setServiceDiscount] = useState(null);
   const [serviceId, setServiceId] = useState(null);
-  const [price, setPrice] = useState(null);
   const [serviceOptions, setServiceOptions] = useState([]);
-  const [selectedOption, setSelectedOption] = useState(null);
+  const [selectedOptions, setSelectedOptions] = useState([]);
+  const [totalPrice, setTotalPrice] = useState(0);
+  const [totalDuration, setTotalDuration] = useState(0);
   const [errorMsg, setErrorMsg] = useState("");
-
-  const handleMessage = (msg) => {
-    setAlertMsg(msg);
-    setMessageModalVisible(true);
-  };
 
   const closeModal = () => {
     setMessageModalVisible(false);
@@ -167,11 +161,11 @@ export default function Details() {
     }
   };
 
-  const onAddToCart = async (item, option_id = null) => {
+  const onAddToCart = async (item, option_ids = []) => {
     const isItemInCart = cartData.some((cartItem) => cartItem.service_id === item.id);
 
     if (!isItemInCart) {
-      navigation.navigate("AddToCart", { service_id: item.id, option_id: option_id });
+      navigation.navigate("AddToCart", { service_id: item.id, option_ids: option_ids });
     } else {
       setMsg("Item is already in the cart.");
     }
@@ -205,8 +199,11 @@ export default function Details() {
     if (response.status === 200) {
       let data = response.data;
       setDescription(data.services.description);
-      setPrice(data.price);
-      setSelectedOption(data.lowestPriceOption.id);
+      if(data.lowestPriceOption){
+        setSelectedOptions([data.lowestPriceOption.id]);
+        setTotalPrice(data.lowestPriceOption.option_price);
+        setTotalDuration(data.lowestPriceOption.option_duration);
+      }
       setFaqs(data.faqs);
       const variantIds = data.variant.map(item => item.variant_id);
       const variant = services[0].filter(item => variantIds.includes(item.id.toString()));
@@ -234,35 +231,18 @@ export default function Details() {
     }
   }, [route.params?.service]);
 
-  const handleVariantChange = (variantId) => {
-    const selectedVariant = variants.find((variant) => variant.id === parseFloat(variantId));
-    if (selectedVariant) {
-      setServicePrice(selectedVariant.price);
-      setServiceDiscount(selectedVariant.discount);
-      setServiceDuration(selectedVariant.duration);
-      setServiceId(selectedVariant.id);
-    } else {
-      setServicePrice(service.price);
-      setServiceDiscount(service.discount);
-      setServiceDuration(service.duration);
-      setServiceId(service.id);
-    }
-  };
-
   const handleAddToCart = () => {
     const selectedService = services[0].find((services) => services.id === serviceId);
-    if (serviceOptions.length > 0) {
-      if (!selectedOption) {
+    if (serviceOptions) {
+      if (selectedOptions.length > 0) {
+        onAddToCart(selectedService, selectedOptions);
+      } else {
         setErrorMsg("Please select an option");
         return;
-      } else {
-        onAddToCart(selectedService, selectedOption);
       }
     } else {
       onAddToCart(selectedService);
     }
-
-
   };
 
   const handleAddToWish = () => {
@@ -271,9 +251,58 @@ export default function Details() {
   };
 
   const handleOptionSelect = (option) => {
-    setSelectedOption(option.id);
-    setPrice(option.option_price);
-    setErrorMsg("");
+    let updatedOptions = [...selectedOptions];
+  
+    if (updatedOptions.includes(option.id)) {
+      updatedOptions = updatedOptions.filter((id) => id !== option.id);
+    } else {
+      updatedOptions.push(option.id);
+    }
+  
+    setSelectedOptions(updatedOptions);
+
+    const newTotalPrice = updatedOptions.reduce((total, optionId) => {
+      const selectedOption = serviceOptions.find((opt) => opt.id === optionId);
+      return total + (selectedOption ? parseFloat(selectedOption.option_price) : 0);
+    }, 0);
+
+    const newTotalDuration = updatedOptions.reduce((total, optionId) => {
+      const selectedOption = serviceOptions.find((opt) => opt.id === optionId);
+      if (selectedOption?.option_duration) {
+        return total + parseDurationToMinutes(selectedOption.option_duration);
+      }
+      return total;
+    }, 0);
+  
+    setTotalPrice(newTotalPrice);
+    setTotalDuration(formatDuration(newTotalDuration));
+  };
+
+  const parseDurationToMinutes = (duration) => {
+    const lowerCaseDuration = duration.toLowerCase();
+    const value = parseFloat(duration.match(/\d+/)?.[0] || 0);
+  
+    if (lowerCaseDuration.includes("hour")) {
+      return value * 60;
+    } else if (lowerCaseDuration.includes("min") || lowerCaseDuration.includes("mint")) {
+      return value;
+    } else {
+      return 0;
+    }
+  };
+
+  const formatDuration = (totalMinutes) => {
+    const hours = Math.floor(totalMinutes / 60);
+    const minutes = totalMinutes % 60;
+  
+    let formattedDuration = "";
+    if (hours > 0) {
+      formattedDuration += `${hours} ${hours === 1 ? "hour" : "hours"}`;
+    }
+    if (minutes > 0) {
+      formattedDuration += `${hours > 0 ? " " : ""}${minutes} ${minutes === 1 ? "minute" : "minutes"}`;
+    }
+    return formattedDuration || 0;
   };
 
   return (
@@ -291,21 +320,17 @@ export default function Details() {
             />
             <Text style={styles.price}>
               AED{" "}
-              {price ? (
-                price
-              ) : (
+              {totalPrice > 0 ? (
+                totalPrice
+              ) : serviceDiscount ? (
                 <>
-                  {serviceDiscount ? (
-                    <>
-                      <Text style={styles.originalPrice}>{servicePrice}</Text>
-                      <Text style={styles.discountedPrice}>
-                        {" " + serviceDiscount}
-                      </Text>
-                    </>
-                  ) : (
-                    servicePrice
-                  )}
+                  <Text style={styles.originalPrice}>{servicePrice}</Text>
+                  <Text style={styles.discountedPrice}>
+                    {" " + serviceDiscount}
+                  </Text>
                 </>
+              ) : (
+                servicePrice
               )}
             </Text>
             <View>
@@ -315,7 +340,7 @@ export default function Details() {
                   source={require("../images/clock.png")}
                   style={{ width: 15, height: 15 }}
                 />
-                {serviceDuration}
+                {totalDuration ? totalDuration  : serviceDuration}
               </Text>
             </View>
             {serviceOptions.length > 0 && (
@@ -331,64 +356,23 @@ export default function Details() {
                 >
                   Options:
                 </Text>
-                <RadioButton.Group
-                  onValueChange={(value) => setSelectedOption(value)}
-                  value={selectedOption}
-                >
-                  {serviceOptions.map((option) => (
-                    <TouchableOpacity
-                      key={option.id}
-                      style={{ flexDirection: "row", alignItems: "center", marginLeft: 5 }}
-                      onPress={() => handleOptionSelect(option)}
-                    >
-                      <RadioButton value={option.id} />
-                      <Text>{option.option_name} - AED {option.option_price}</Text>
-                    </TouchableOpacity>
-                  ))}
-                </RadioButton.Group>
+                {serviceOptions.map((option) => (
+                  <TouchableOpacity
+                    key={option.id}
+                    style={{ flexDirection: "row", alignItems: "center", marginLeft: 5 }}
+                    onPress={() => handleOptionSelect(option)}
+                  >
+                    <Checkbox
+                      status={selectedOptions.includes(option.id) ? "checked" : "unchecked"}
+                    />
+                    <Text>{option.option_name} (AED {option.option_price}) {option.option_duration ?? ''}</Text>
+                  </TouchableOpacity>
+                ))}
               </>
             )}
             {errorMsg && (
               <Text style={{ color: "red", marginBottom: 10 }}>{errorMsg}</Text>
             )}
-            {/* {variants.length > 0 && (
-              <>
-                <Text
-                  style={{
-                    width: "100%",
-                    alignSelf: "center",
-                    fontSize: 16,
-                    fontWeight: "bold",
-                    marginBottom: 10,
-                  }}
-                >
-                  Variants:
-                </Text>
-                <View
-                  style={{
-                    width: "100%",
-                    alignSelf: "center",
-                    borderWidth: 0.5,
-                    borderColor: "#8e8e8e",
-                    borderRadius: 10,
-                    marginBottom: 10,
-                  }}
-                >
-                  <Picker
-                    selectedValue={variant}
-                    onValueChange={(itemValue, itemIndex) => {
-                      setVariant(itemValue);
-                      handleVariantChange(itemValue);
-                    }}
-                  >
-                    <Picker.Item label="Select Variant" value="" />
-                    {variants.map((variant, index) => (
-                      <Picker.Item key={index.toString()} label={variant.name} value={variant.id} />
-                    ))}
-                  </Picker>
-                </View>
-              </>
-            )} */}
             <TouchableOpacity
               style={styles.addToCartButton}
               onPress={handleAddToCart}

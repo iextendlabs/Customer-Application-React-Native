@@ -93,12 +93,12 @@ export default function MyOrders() {
     for (const order_service of item.order_services) {
       const cartData = {
         'service_id': order_service.service.id,
-        'staff_id': item.service_staff_id,
+        'staff_id': parseInt(item.service_staff_id),
         'staff': item.staff_name,
-        'slot_id': item.time_slot_id,
+        'slot_id': parseInt(item.time_slot_id),
         'slot': item.time_slot_value,
         'date': formattedDate,
-        'option_id': order_service.option_id ? parseInt(order_service.option_id) : null
+        'option_ids': order_service.option_id ? order_service.option_id.split(',').map(id => parseInt(id.trim(), 10)) : []
       };
 
       dispatch(addItemToCart(cartData));

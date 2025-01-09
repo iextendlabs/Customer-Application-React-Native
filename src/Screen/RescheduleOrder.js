@@ -81,7 +81,6 @@ export default function RescheduleOrder() {
         setNote(data.order.order_comment);
         setLoading(false);
         setServicesIds(data.orderServicesId);
-        console.log(data.orderServicesId);
       } else {
         setError("Please try again.");
       }

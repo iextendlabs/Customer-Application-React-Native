@@ -39,7 +39,7 @@ export default function AddToCart() {
   const [selectedSlotValue, setSelectedSlotValue] = useState(null);
   const [selectedSlotId, setSelectedSlotId] = useState(null);
   const [serviceId, setServiceId] = useState(null);
-  const [optionId, setOptionId] = useState(null);
+  const [optionIds, setOptionIds] = useState([]);
   const customerZone = useSelector((state) => state.customerZone);
 
   useEffect(() => {
@@ -49,12 +49,12 @@ export default function AddToCart() {
         setServiceId(service_id);
       }
 
-      if (route.params.option_id) {
-        setOptionId(route.params.option_id);
+      if (route.params.option_ids) {
+        setOptionIds(route.params.option_ids);
       }
 
       if (route.params.staff_name && route.params.staff_id && route.params.slot_id && route.params.slot && route.params.date) {
-        const { staff_name, staff_id, slot_id, slot, date, option_id } = route.params;
+        const { staff_name, staff_id, slot_id, slot, date, option_ids } = route.params;
         const currentDate = new Date().toISOString().split('T')[0];
         if (date === currentDate) {
         setSelectedSlotValue(slot);
@@ -62,7 +62,7 @@ export default function AddToCart() {
         setSelectedStaff(staff_name);
         setSelectedStaffId(staff_id);
         setDate(date);
-        setOptionId(option_id);
+        setOptionIds(option_ids);
         }
       }
     }
@@ -137,7 +137,7 @@ export default function AddToCart() {
       'slot_id': selectedSlotId,
       'slot': selectedSlotValue,
       'date': date,
-      'option_id': optionId
+      'option_ids': optionIds
     };
 
     if (address && address.length > 0 && area) {

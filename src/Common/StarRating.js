@@ -32,7 +32,7 @@ const StarRating = ({ rating, size}) => {
       for (let i = 0; i < emptyStars; i++) {
         stars.push(
           <Image
-            key="empty"
+            key={`empty-${i}`}
             source={require("../images/star.png")} // Add the path to your half star image
             style={{ width: size, height: size }}
           />

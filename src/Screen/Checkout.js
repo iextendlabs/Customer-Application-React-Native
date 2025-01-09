@@ -92,7 +92,7 @@ export default function Checkout() {
         serviceIds.push(item.service_id);
         staffIds.push(item.staff_id);
         slotIds.push(item.slot_id);
-        options[item.service_id] = item.option_id;
+        options[item.service_id] = item.option_ids;
       });
 
       setGroupCartData(updatedGroupCartData);
@@ -102,7 +102,7 @@ export default function Checkout() {
       setCartOptions(options);
     }
   }, [cartData]);
-
+ 
   useEffect(() => {
     if (cartServiceIds.length > 0) {
       if (couponData && couponData.length > 0 && affiliateData && affiliateData.length > 0) {
@@ -394,7 +394,7 @@ export default function Checkout() {
                 slot_id: item.slot_id,
                 slot: item.slot,
                 date: item.date,
-                option_id: item.option_id
+                option_ids: item.option_ids
               })}
               onRemoveFromCart={() => console.log('Remove item:', item)}
               isExcluded={isExcluded}

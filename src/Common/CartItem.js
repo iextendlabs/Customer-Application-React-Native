@@ -6,7 +6,55 @@ import { useSelector } from "react-redux";
 export default function CartItem({ item, onRemoveFromCart, isCheckout, onEditCart, isExcluded }) {
   const services = useSelector((state) => state.services);
   const service = item.service_id ? services[0].find(o => o.id === item.service_id) || null : null;
-  const option = item.option_id && service.options ? service.options.find(o => o.id === item.option_id) || null : null;
+
+  const options = item.option_ids && service.options
+  ? service.options.filter(option => item.option_ids.includes(option.id))
+  : [];
+
+  const calculateTotals = (options) => {
+    let totalPrice = 0;
+    let totalMinutes = 0;
+    let optionNames = [];
+  
+    options.forEach(option => {
+      // Add the price
+      if (option.option_price) {
+        totalPrice += parseFloat(option.option_price);
+      }
+  
+      // Collect option names
+      if (option.option_name) {
+        optionNames.push(option.option_name);
+      }
+  
+      // Add the duration
+      if (option.option_duration) {
+        const duration = option.option_duration.toUpperCase();
+        const hoursMatch = duration.match(/(\d+)\s*HOURS?/);
+        const minutesMatch = duration.match(/(\d+)\s*MINS?/);
+  
+        const hours = hoursMatch ? parseInt(hoursMatch[1]) : 0;
+        const minutes = minutesMatch ? parseInt(minutesMatch[1]) : 0;
+  
+        totalMinutes += hours * 60 + minutes;
+      }
+    });
+  
+    // Convert totalMinutes to readable format
+    const totalHours = Math.floor(totalMinutes / 60);
+    const remainingMinutes = totalMinutes % 60;
+  
+    const durationString =
+      totalMinutes === 0
+        ? 0
+        : totalHours > 0
+        ? `${totalHours} hours${remainingMinutes > 0 ? ` ${remainingMinutes} minutes` : ""}`
+        : `${remainingMinutes} minutes`;
+
+    return { totalPrice, durationString, optionNames };
+  };
+  
+  const { totalPrice, durationString, optionNames } = calculateTotals(options);
 
   return (
     <View style={[styles.card, isExcluded ? styles.excluded : null]}>
@@ -21,24 +69,32 @@ export default function CartItem({ item, onRemoveFromCart, isCheckout, onEditCar
         <Text style={styles.title}>Service Detail:</Text>
         <View style={styles.details}>
           <Text>{service.name}</Text>
-          {option ? (
-            <>
-              <Text>AED {option.option_price}</Text>
-              <Text>{option.option_name}</Text>
-            </>
-          ) : (
+          {options && options.length > 0 && (
+            optionNames.map((name, index) => (
+              <Text key={index}>{name}</Text>
+            ))
+          )}
+
             <Text>
-              AED{" "}
-              {service.discount ? (
-                <>
-                  <Text style={styles.originalPrice}>{service.price}</Text>
-                  <Text style={styles.discountPrice}> {service.discount}</Text>
-                </>
+              {durationString ? (
+                <Text>{durationString}</Text>
               ) : (
-                service.price
+                <Text>{service.duration}</Text>
               )}
             </Text>
-          )}
+            <Text>
+              AED{" "}
+              {totalPrice ? (
+                <Text>{totalPrice}</Text>
+              ) : service.discount ? (
+                <>
+                  <Text style={styles.originalPrice}>{service.price}</Text>{" "}
+                  <Text style={styles.discountPrice}>{service.discount}</Text>
+                </>
+              ) : (
+                <Text>{service.price}</Text>
+              )}
+            </Text>
         </View>
         <Text style={styles.title}>Booking Detail:</Text>
         <View style={styles.details}>
