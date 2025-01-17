@@ -8,7 +8,8 @@ import {
   useWindowDimensions,
   Share,
   FlatList,
-  Modal
+  Modal,
+  Dimensions,
 } from "react-native";
 import React, { useState, useEffect } from "react";
 import Footer from "../Common/Footer";
@@ -25,6 +26,8 @@ import MessageModal from "../Screen/MessageModal";
 import OfferProductItem from "../Common/OfferProductItem";
 import { Checkbox } from 'react-native-paper';
 
+const { width, height } = Dimensions.get("window");
+
 const styles = StyleSheet.create({
   additionalImagesContainer: {
     marginTop: 10,
@@ -40,13 +43,27 @@ const styles = StyleSheet.create({
   modalContainer: {
     flex: 1,
     backgroundColor: "rgba(0, 0, 0, 0.8)",
+  },
+  fullScreenImageContainer: {
+    width: width,
+    height: height,
     justifyContent: "center",
     alignItems: "center",
   },
   fullScreenImage: {
-    width: "90%",
-    height: "70%",
+    width: "100%",
+    height: "80%",
     resizeMode: "contain",
+  },
+  imageIndex: {
+    position: "absolute",
+    bottom: 20,
+    right: 20,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    color: "#fff",
+    padding: 5,
+    borderRadius: 5,
+    fontSize: 16,
   },
   closeButton: {
     position: "absolute",
@@ -55,6 +72,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     padding: 10,
     borderRadius: 5,
+    zIndex: 10,
   },
   removeIcon: {
     width: 15,
@@ -162,19 +180,31 @@ export default function Details() {
   const [totalDuration, setTotalDuration] = useState(0);
   const [errorMsg, setErrorMsg] = useState("");
   const [additionalImages, setAdditionalImages] = useState([]);
-  const [selectedImage, setSelectedImage] = useState(null);
   const [isModalVisible, setModalVisible] = useState(false);
+  const [selectedIndex, setSelectedIndex] = useState(0);
 
-  const handleImageClick = (image) => {
-    setSelectedImage(image); // Set the selected image
-    setModalVisible(true);   // Show the modal
+  const handleImageClick = (index) => {
+    setSelectedIndex(index);
+    setModalVisible(true);
   };
 
   const closeModal = () => {
     setMessageModalVisible(false);
-    setSelectedImage(null);
+    setSelectedIndex(0);
     setModalVisible(false);
   };
+
+  const renderImage = ({ item, index }) => (
+    <View style={styles.fullScreenImageContainer}>
+      <Image
+        source={{ uri: BaseUrl + "service-images/additional/" + item }}
+        style={styles.fullScreenImage}
+      />
+      <Text style={styles.imageIndex}>
+        {index + 1}/{additionalImages.length}
+      </Text>
+    </View>
+  );
 
   const handleShare = async () => {
     try {
@@ -371,8 +401,8 @@ ${service.duration ? `**Duration:** ${service.duration}` : ""}
                 keyExtractor={(item, index) => index.toString()}
                 showsHorizontalScrollIndicator={false}
                 contentContainerStyle={styles.additionalImagesContainer}
-                renderItem={({ item }) => (
-                  <TouchableOpacity onPress={() => handleImageClick(item)}>
+                renderItem={({ item, index }) => (
+                  <TouchableOpacity onPress={() => handleImageClick(index)}>
                     <Image
                       source={{ uri: BaseUrl + "service-images/additional/" + item }}
                       style={styles.additionalImage}
@@ -567,12 +597,19 @@ ${service.duration ? `**Duration:** ${service.duration}` : ""}
           <TouchableOpacity style={styles.closeButton} onPress={closeModal}>
             <Image source={require('../images/close.png')} style={styles.removeIcon} />
           </TouchableOpacity>
-          {selectedImage && (
-            <Image
-              source={{ uri: BaseUrl + "service-images/additional/" + selectedImage }}
-              style={styles.fullScreenImage}
-            />
-          )}
+          <FlatList
+            data={additionalImages}
+            horizontal
+            pagingEnabled
+            initialScrollIndex={selectedIndex}
+            keyExtractor={(item, index) => index.toString()}
+            renderItem={renderImage}
+            getItemLayout={(data, index) => ({
+              length: width,
+              offset: width * index,
+              index,
+            })}
+          />
         </View>
       </Modal>
       <MessageModal
