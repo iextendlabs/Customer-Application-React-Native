@@ -7,7 +7,8 @@ import {
   TouchableOpacity,
   useWindowDimensions,
   Share,
-  FlatList
+  FlatList,
+  Modal
 } from "react-native";
 import React, { useState, useEffect } from "react";
 import Footer from "../Common/Footer";
@@ -25,6 +26,40 @@ import OfferProductItem from "../Common/OfferProductItem";
 import { Checkbox } from 'react-native-paper';
 
 const styles = StyleSheet.create({
+  additionalImagesContainer: {
+    marginTop: 10,
+    marginBottom: 20,
+    paddingHorizontal: 5,
+  },
+  additionalImage: {
+    width: 80,
+    height: 80,
+    borderRadius: 5,
+    marginRight: 10,
+  },
+  modalContainer: {
+    flex: 1,
+    backgroundColor: "rgba(0, 0, 0, 0.8)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  fullScreenImage: {
+    width: "90%",
+    height: "70%",
+    resizeMode: "contain",
+  },
+  closeButton: {
+    position: "absolute",
+    top: 50,
+    right: 20,
+    backgroundColor: "#fff",
+    padding: 10,
+    borderRadius: 5,
+  },
+  removeIcon: {
+    width: 15,
+    height: 15,
+  },
   container: {
     flex: 1,
     backgroundColor: "#FFF",
@@ -126,9 +161,19 @@ export default function Details() {
   const [totalPrice, setTotalPrice] = useState(0);
   const [totalDuration, setTotalDuration] = useState(0);
   const [errorMsg, setErrorMsg] = useState("");
+  const [additionalImages, setAdditionalImages] = useState([]);
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [isModalVisible, setModalVisible] = useState(false);
+
+  const handleImageClick = (image) => {
+    setSelectedImage(image); // Set the selected image
+    setModalVisible(true);   // Show the modal
+  };
 
   const closeModal = () => {
     setMessageModalVisible(false);
+    setSelectedImage(null);
+    setModalVisible(false);
   };
 
   const handleShare = async () => {
@@ -140,7 +185,7 @@ export default function Details() {
       const message = `
 **Service:** ${service.name}
 **Price:** AED ${discountedPrice} ${service.discount ? "(Discounted)" : ""}
-**Duration:** ${service.duration}
+${service.duration ? `**Duration:** ${service.duration}` : ""}
 **Description:** ${service.short_description}
 **URL:** ${BaseUrl + "serviceDetail/" + service.id}
 `;
@@ -214,6 +259,7 @@ export default function Details() {
       const addOnIds = data.addONs.map(item => item.add_on_id);
       const addOn = services[0].filter(item => addOnIds.includes(item.id.toString()));
       setAddONs(addOn);
+      setAdditionalImages(data.additional_images);
     }
 
     setLoading(false);
@@ -318,6 +364,23 @@ export default function Details() {
               defaultSource={require("../images/logo.png")}
               style={styles.image}
             />
+            {additionalImages && additionalImages.length > 0 && (
+              <FlatList
+                data={additionalImages}
+                horizontal
+                keyExtractor={(item, index) => index.toString()}
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={styles.additionalImagesContainer}
+                renderItem={({ item }) => (
+                  <TouchableOpacity onPress={() => handleImageClick(item)}>
+                    <Image
+                      source={{ uri: BaseUrl + "service-images/additional/" + item }}
+                      style={styles.additionalImage}
+                    />
+                  </TouchableOpacity>
+                )}
+              />
+            )}
             <Text style={styles.price}>
               AED{" "}
               {totalPrice > 0 ? (
@@ -333,16 +396,18 @@ export default function Details() {
                 servicePrice
               )}
             </Text>
-            <View>
-              <Text style={styles.duration}>
-                Duration:{" "}
-                <Image
-                  source={require("../images/clock.png")}
-                  style={{ width: 15, height: 15 }}
-                />
-                {totalDuration ? totalDuration  : serviceDuration}
-              </Text>
-            </View>
+            {(totalDuration || serviceDuration) && (
+              <View>
+                <Text style={styles.duration}>
+                  Duration:{" "}
+                  <Image
+                    source={require("../images/clock.png")}
+                    style={{ width: 15, height: 15 }}
+                  />
+                  {totalDuration ? totalDuration  : serviceDuration}
+                </Text>
+              </View>
+            )}
             {serviceOptions.length > 0 && (
               <>
                 <Text
@@ -359,7 +424,7 @@ export default function Details() {
                 {serviceOptions.map((option) => (
                   <TouchableOpacity
                     key={option.id}
-                    style={{ flexDirection: "row", alignItems: "center", marginLeft: 5 }}
+                    style={{ flexDirection: "row", alignItems: "center", marginLeft: 5, marginRight: 50, marginBottom: 10 }}
                     onPress={() => handleOptionSelect(option)}
                   >
                     <Checkbox
@@ -493,6 +558,23 @@ export default function Details() {
         </>
       )}
       <Footer />
+      <Modal
+        visible={isModalVisible}
+        transparent={true}
+        onRequestClose={closeModal}
+      >
+        <View style={styles.modalContainer}>
+          <TouchableOpacity style={styles.closeButton} onPress={closeModal}>
+            <Image source={require('../images/close.png')} style={styles.removeIcon} />
+          </TouchableOpacity>
+          {selectedImage && (
+            <Image
+              source={{ uri: BaseUrl + "service-images/additional/" + selectedImage }}
+              style={styles.fullScreenImage}
+            />
+          )}
+        </View>
+      </Modal>
       <MessageModal
         visible={messageModalVisible}
         message={alertMsg}

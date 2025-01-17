@@ -74,14 +74,9 @@ export default function CartItem({ item, onRemoveFromCart, isCheckout, onEditCar
               <Text key={index}>{name}</Text>
             ))
           )}
-
-            <Text>
-              {durationString ? (
-                <Text>{durationString}</Text>
-              ) : (
-                <Text>{service.duration}</Text>
-              )}
-            </Text>
+          {(durationString || service.duration) && (
+            <Text>{durationString || service.duration}</Text>
+          )}
             <Text>
               AED{" "}
               {totalPrice ? (

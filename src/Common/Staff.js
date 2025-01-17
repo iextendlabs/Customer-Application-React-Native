@@ -19,6 +19,7 @@ import StarRating from "../Common/StarRating";
 import Splash from "../Screen/Splash";
 import WebView from "react-native-webview";
 import { useNavigation } from "@react-navigation/native";
+import OfferProductItem from "./OfferProductItem";
 
 const styles = StyleSheet.create({
   contentContainer: {
@@ -38,6 +39,7 @@ export default function Staff() {
   const [user, setUser] = useState([]);
   const [staff, setStaff] = useState([]);
   const [categories, setCategories] = useState([]);
+  const [services, setServices] = useState([]);
   const [reviews, setReviews] = useState([]);
   const [socialLinks, setSocialLinks] = useState("");
   const [averageRating, setAverageRating] = useState("");
@@ -54,6 +56,7 @@ export default function Staff() {
       setUser(data.user);
       setStaff(data.user.staff);
       setCategories(data.service_categories);
+      setServices(data.services);
       setReviews(data.reviews);
       setSocialLinks(data.socialLinks);
       setAverageRating(data.averageRating);
@@ -297,15 +300,26 @@ export default function Staff() {
                     source={{ html: staff.about }}
                     contentWidth={windowDimensions.width}
                   />
-                  {categories.length > 0 && (
+                  {(categories.length > 0 || services.length > 0) && (
                     <View>
                       <Text style={[styles.title, { alignSelf: "center" }]}>My Services</Text>
-                      <FlatList
-                        data={categories}
-                        numColumns={3}
-                        keyExtractor={(item) => item.id.toString()}
-                        renderItem={renderCategoryItem}
-                      />
+                      {categories.length > 0 && (
+                        <FlatList
+                          data={categories}
+                          numColumns={3}
+                          keyExtractor={(item) => item.id.toString()}
+                          renderItem={renderCategoryItem}
+                        />
+                      )}
+                      {services.length > 0 && (
+                        <FlatList
+                          data={services}
+                          showsHorizontalScrollIndicator={false}
+                          horizontal
+                          keyExtractor={(item, index) => item.id.toString()}
+                          renderItem={({ item }) => <OfferProductItem item={item} />}
+                        />
+                      )}
                     </View>
                   )}
                   {reviews.length > 0 && (
