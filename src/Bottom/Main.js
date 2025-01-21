@@ -544,6 +544,14 @@ export default function Main() {
                 renderItem={({ item }) => <StaffCard item={item} />}
               />
             )}
+            <CommonButton
+              title={"Our Team"}
+              bgColor={"#fd245f"}
+              textColor={"#fff"}
+              onPress={() => {
+                navigation.navigate("OurTeam");
+              }}
+            />
           </View>
         </ScrollView>
       )}

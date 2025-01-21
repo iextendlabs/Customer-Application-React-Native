@@ -14,56 +14,24 @@ export default function StaffCard({ item }) {
         });
       }}
     >
-      <View
-        style={{
-          width: 130,
-          height: 225,
-          borderRadius: 10,
-          elevation: 5,
-          backgroundColor: "#fdedee",
-          margin: 5,
-        }}
-      >
-        <View
-          style={{
-            marginTop: 10,
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
+      <View style={styles.cardContainer}>
+        <View style={styles.imageContainer}>
           <Image
             source={{
               uri: BaseUrl + "staff-images/" + item.staff.image,
             }}
             defaultSource={require("../images/logo.png")}
-            style={{
-              width: 100,
-              height: 100,
-              borderRadius: 50,
-            }}
+            style={styles.staffImage}
           />
         </View>
-        <View
-          style={{
-            marginTop: 10,
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <Text
-            style={{
-              fontSize: 15,
-              fontWeight: 700,
-            }}
-          >
-            {item.name}
-          </Text>
-          <Text style={{ height: 25, marginTop: 5 }}>
-            {item.staff.sub_title}
-          </Text>
-          <Text style={{ height: 25, marginTop: 5 }}>
-            {item.staff.charges > 0 && "Charges: AED" + item.staff.charges}
-          </Text>
+        <View style={styles.contentContainer}>
+          <Text style={styles.staffName}>{item.name}</Text>
+          <Text style={styles.subTitle}>{item.staff.sub_title}</Text>
+          {item.staff.charges > 0 && (
+            <Text style={styles.chargesText}>
+              {item.staff.charges > 0 && "Charges: AED" + item.staff.charges}
+            </Text>
+          )}
           <StarRating rating={item.rating} size={12} />
         </View>
       </View>
@@ -71,4 +39,42 @@ export default function StaffCard({ item }) {
   );
 }
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  cardContainer: {
+    width: 155,
+    height: 240,
+    borderRadius: 10,
+    elevation: 5,
+    backgroundColor: "#fdedee",
+    margin: 5,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  imageContainer: {
+    marginTop: 10,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  staffImage: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+  },
+  contentContainer: {
+    marginTop: 10,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  staffName: {
+    fontSize: 15,
+    fontWeight: "700",
+  },
+  subTitle: {
+    height: 25,
+    marginTop: 5,
+  },
+  chargesText: {
+    height: 25,
+    marginTop: 5,
+  },
+});

@@ -309,7 +309,7 @@ ${service.duration ? `**Duration:** ${service.duration}` : ""}
 
   const handleAddToCart = () => {
     const selectedService = services[0].find((services) => services.id === serviceId);
-    if (serviceOptions) {
+    if (serviceOptions.length > 0) {
       if (selectedOptions.length > 0) {
         onAddToCart(selectedService, selectedOptions);
       } else {

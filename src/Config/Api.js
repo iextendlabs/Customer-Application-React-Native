@@ -30,6 +30,7 @@ const signInWithFBUrl = BaseUrl + "api/signInWithFB";
 const orderTotalURL = BaseUrl + "api/OrderTotalSummary";
 const joinAffiliateURL = BaseUrl + "api/apply-affiliate";
 const createPaymentIntent = BaseUrl + "api/create-payment-intent";
+const getStaffUrl = BaseUrl + "api/getStaff";
 
 // const stripe_publishable_key = "pk_test_51OrKDSLOkaB2VOci1EiX49C8YbaO8tNF1EUx8BEtdQkBDOKuHM7pvpKhs1mipwX2igoyLhwCq65xz7SHkZAfmW5B00XcTqrdg6";
 
@@ -67,5 +68,6 @@ export {
   joinAffiliateURL,
   servicesTimeSlotUrl,
   stripe_publishable_key,
-  createPaymentIntent
+  createPaymentIntent,
+  getStaffUrl
 };
