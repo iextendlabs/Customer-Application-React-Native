@@ -25,6 +25,7 @@ import Splash from "../Screen/Splash";
 import CustomTextInput from "../Common/CustomTextInput";
 import CartItem from "../Common/CartItem";
 import { Picker } from "@react-native-picker/picker";
+import * as ImagePicker from "expo-image-picker";
 
 export default function Checkout() {
   const dispatch = useDispatch();
@@ -74,8 +75,10 @@ export default function Checkout() {
   const [isPersonalInfo, setIsPersonalInfo] = useState(false);
   const [isAddress, setIsAddress] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState('Cash-On-Delivery');
+  const [images, setImages] = useState([]);
+  const [isImagePickerOpen, setIsImagePickerOpen] = useState(false);
 
-  useEffect(() => {
+  useEffect(() => { 
     if (cartData && cartData.length > 0) {
       const updatedGroupCartData = {};
       const serviceIds = [];
@@ -152,6 +155,38 @@ export default function Checkout() {
     }
   }, [cartServiceIds, groupCartData, area]);
 
+  const selectImage = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+      multiple: true,
+    });
+    if (!result.canceled) {
+      const selectedImages = result.assets.filter(
+        (asset) =>
+          typeof asset.uri === "string" &&
+          (asset.uri.endsWith("jpeg") ||
+            asset.uri.endsWith("png") ||
+            asset.uri.endsWith("jpg"))
+      );
+
+      if (selectedImages.length > 0) {
+        setImages([...images, ...selectedImages]);
+        setError("");
+      } else {
+        setError("Please select valid image files.");
+      }
+    }
+  };
+  
+  const removeImage = (index) => {
+    const updatedImages = [...images];
+    updatedImages.splice(index, 1);
+    setImages(updatedImages);
+  };
+
   const selectAddress = (item) => {
     setAddress(
       `${item.building} ${item.villa} ${item.street} ${item.district} ${item.area} ${item.city}`
@@ -175,35 +210,57 @@ export default function Checkout() {
     const userId = await AsyncStorage.getItem("@user_id");
     setLoading(true);
 
-    const requestData = {
-      name: name,
-      email: email,
-      buildingName: building,
-      district: district,
-      area: area,
-      landmark: landmark,
-      flatVilla: flatVilla,
-      street: street,
-      city: city,
-      number: number,
-      whatsapp: whatsapp,
-      gender: gender,
-      service_ids: cartServiceIds,
-      order_comment: note,
-      cartData: cartData,
-      affiliate_code: affiliate,
-      coupon_code: coupon,
-      latitude: latitude,
-      longitude: longitude,
-      orderTotal: orderTotal,
-      options: cartOptions,
-      user_id: userId,
-      payment_method: paymentMethod,
+    const formData = new FormData();
 
-    };
+    formData.append("name", name);
+    formData.append("email", email);
+    formData.append("buildingName", building);
+    formData.append("district", district);
+    formData.append("area", area);
+    formData.append("landmark", landmark);
+    formData.append("flatVilla", flatVilla);
+    formData.append("street", street);
+    formData.append("city", city);
+    formData.append("number", number);
+    formData.append("whatsapp", whatsapp);
+    formData.append("gender", gender);
+    formData.append("order_comment", note);
+    formData.append("affiliate_code", affiliate);
+    formData.append("coupon_code", coupon);
+    formData.append("latitude", latitude);
+    formData.append("longitude", longitude);
+    formData.append("orderTotal", orderTotal);
+    formData.append("user_id", userId);
+    formData.append("payment_method", paymentMethod);
+
+    cartData.forEach((item, index) => {
+      Object.keys(item).forEach((key) => {
+        formData.append(`cartData[${index}][${key}]`, item[key]);
+      });
+    });
+
+    cartServiceIds.forEach((id, index) => {
+      formData.append(`service_ids[${index}]`, id);
+    });
+
+    Object.keys(cartOptions).forEach((key) => {
+      formData.append(`options[${key}]`, cartOptions[key]);
+    });
+
+    images.forEach((image, index) => {
+      formData.append(`image[]`, {
+        uri: image.uri,
+        type: "image/jpeg",
+        name: `image_${index + 1}.jpg`,
+      });
+    });
 
     try {
-      const response = await axios.post(AddOrderUrl, requestData);
+      const response = await axios.post(AddOrderUrl, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
 
       if (response.status === 200) {
         const data = response.data;
@@ -736,6 +793,49 @@ export default function Checkout() {
                 multiline
               />
             </View>
+            <View style={{ backgroundColor: "#FFCACC", borderRadius: 10,elevation: 5, margin: 15,padding: 10}}>
+              <Text
+                style={{
+                  margin: 10,
+                  fontWeight: "800",
+                }}
+              >
+                Add Attachment:
+              </Text>
+              {images.length > 0 ? (
+                <>
+                  {images.map((img, index) => (
+                    <View key={index} style={styles.imageContainer}>
+                      <Image
+                        source={{ uri: img.uri }}
+                        style={styles.selectedImage}
+                      />
+                      <TouchableOpacity
+                        style={styles.removeButton}
+                        onPress={() => removeImage(index)}
+                      >
+                        <Text style={styles.removeButtonText}>Remove</Text>
+                      </TouchableOpacity>
+                    </View>
+                  ))}
+                  <TouchableOpacity
+                    style={styles.button}
+                    onPress={selectImage}
+                    disabled={isImagePickerOpen}
+                  >
+                    <Text style={styles.buttonText}>Add More Images</Text>
+                  </TouchableOpacity>
+                </>
+              ) : (
+                <TouchableOpacity
+                  style={styles.button}
+                  onPress={selectImage}
+                  disabled={isImagePickerOpen}
+                >
+                  <Text style={styles.buttonText}>Choose Image</Text>
+                </TouchableOpacity>
+              )}
+            </View>
             <View style={{ marginBottom: 30 }}>
               {isPersonalInfo == true && isAddress == true ? (
                 <>
@@ -840,5 +940,35 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     borderWidth: 1,
     borderColor: '#000',
+  },
+  imageContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  selectedImage: {
+    width: 100,
+    height: 100,
+    borderRadius: 5,
+    margin: 10,
+  },
+  removeButton: {
+    marginLeft: 10,
+    backgroundColor: "#fd245f",
+    padding: 5,
+    borderRadius: 5,
+  },
+  removeButtonText: {
+    color: "#fff",
+  },
+  button: {
+    backgroundColor: "#fd245f",
+    padding: 10,
+    borderRadius: 5,
+    margin: 10,
+  },
+  buttonText: {
+    color: "#fff",
+    textAlign: "center",
   },
 });
