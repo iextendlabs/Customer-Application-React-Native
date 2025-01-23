@@ -112,6 +112,7 @@ export default function Profile() {
   
   return (
     <View style={{ flex: 1, backgroundColor: "#FFCACC" }}>
+      <ScrollView>
         <Image
           source={require("../images/profile.png")}
           style={{ width: 80, height: 80, alignSelf: "center", marginTop: 10 }}
@@ -200,6 +201,19 @@ export default function Profile() {
             borderBottomColor: "#8e8e8e",
             justifyContent: "center",
           }}
+          onPress={() => navigation.navigate("JoinFreelancerProgram")}
+        >
+          <Text>Join Freelancer Program</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={{
+            width: "90%",
+            alignSelf: "center",
+            height: 50,
+            borderBottomWidth: 0.3,
+            borderBottomColor: "#8e8e8e",
+            justifyContent: "center",
+          }}
           onPress={() => navigation.navigate("JoinAffiliate")}
         >
           <Text>Join Affiliate</Text>
@@ -219,7 +233,7 @@ export default function Profile() {
         >
           <Text>Customer Support</Text>
         </TouchableOpacity>
-        <View style={{ flexDirection: "row", justifyContent: "space-around" }}>
+        <View style={{ flexDirection: "row", justifyContent: "space-around", marginBottom:70 }}>
           <TouchableOpacity
             style={{
               width: 120,
@@ -253,6 +267,7 @@ export default function Profile() {
             <Text style={{ alignSelf: "center" }}>Logout</Text>
           </TouchableOpacity>
         </View>
+        </ScrollView>
       <Footer />
     </View>
   );

@@ -31,6 +31,8 @@ const orderTotalURL = BaseUrl + "api/OrderTotalSummary";
 const joinAffiliateURL = BaseUrl + "api/apply-affiliate";
 const createPaymentIntent = BaseUrl + "api/create-payment-intent";
 const getStaffUrl = BaseUrl + "api/getStaff";
+const joinFreelancerProgramURL = BaseUrl + "api/joinFreelancerProgram";
+const getUserUrl = BaseUrl + "api/getUser/";
 
 // const stripe_publishable_key = "pk_test_51OrKDSLOkaB2VOci1EiX49C8YbaO8tNF1EUx8BEtdQkBDOKuHM7pvpKhs1mipwX2igoyLhwCq65xz7SHkZAfmW5B00XcTqrdg6";
 
@@ -69,5 +71,7 @@ export {
   servicesTimeSlotUrl,
   stripe_publishable_key,
   createPaymentIntent,
-  getStaffUrl
+  getStaffUrl,
+  joinFreelancerProgramURL,
+  getUserUrl
 };

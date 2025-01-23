@@ -45,6 +45,7 @@ import JoinAffiliate from "./Screen/JoinAffiliate";
 import AddToCart from "./Screen/AddToCart";
 import PaymentScreen from "./Screen/PaymentScreen";
 import OurTeam from "./Screen/OurTeam";
+import JoinFreelancerProgram from "./Screen/JoinFreelancerProgram";
 
 export default function AppNavigator() {
   const cartReduxData = useSelector((state) => state.cart);
@@ -280,6 +281,11 @@ export default function AppNavigator() {
           name="OurTeam"
           component={OurTeam}
         /> 
+        <Stack.Screen
+          options={{ headerShown: false }}
+          name="JoinFreelancerProgram"
+          component={JoinFreelancerProgram}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );
