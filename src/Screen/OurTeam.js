@@ -43,7 +43,7 @@ export default function OurTeam() {
   }
   return (
     <View style={{ flex: 1, backgroundColor: "#FFCACC" }}>
-      <Header title={"Our Team"} />
+      <Header title={"Our Members"} />
       <ScrollView style={{ marginBottom: 70 }}>
         <FlatList
           data={staff}

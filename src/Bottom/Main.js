@@ -532,7 +532,7 @@ export default function Main() {
               alignSelf: "center",
             }}
           >
-            Our Team
+            Our Members
           </Text>
           <View style={{ marginBottom: 70 }}>
             {staffs.length > 0 && (
@@ -545,7 +545,7 @@ export default function Main() {
               />
             )}
             <CommonButton
-              title={"Our Team"}
+              title={"Our Members"}
               bgColor={"#fd245f"}
               textColor={"#fff"}
               onPress={() => {

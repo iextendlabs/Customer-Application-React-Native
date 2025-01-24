@@ -31,6 +31,10 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 10,
   },
+  location: {
+    fontSize: 18,
+    marginBottom: 10,
+  },
 });
 export default function Staff() {
   const navigation = useNavigation();
@@ -129,6 +133,9 @@ export default function Staff() {
                   <Text style={styles.title}>{user.name}</Text>
                   {staff.sub_title && (
                     <Text style={styles.title}>{staff.sub_title}</Text>
+                  )}
+                  {staff.location && (
+                    <Text style={styles.location}>{staff.location}</Text>
                   )}
                   <Image
                     source={{
