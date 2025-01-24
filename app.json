@@ -2,7 +2,7 @@
   "expo": {
     "name": "Lipslay",
     "slug": "Lipslay_App",
-    "version": "1.2.0",
+    "version": "1.2.1",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -30,7 +30,7 @@
       "bundleIdentifier": "com.lipslay.Customerapp"
     },
     "android": {
-      "versionCode": 22,
+      "versionCode": 23,
       "googleServicesFile": "./google-services.json",
       "permissions": [
         "INTERNET",
